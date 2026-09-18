@@ -1,8 +1,8 @@
 package CRUDTestes;
 
-import crud.Login;
-import crud.LoginDAO;
-import crud.Usuario;
+import br.inatel.redesocial.autenticacao.Login;
+import br.inatel.redesocial.banco.funcoes.LoginDAO;
+import br.inatel.redesocial.autenticacao.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

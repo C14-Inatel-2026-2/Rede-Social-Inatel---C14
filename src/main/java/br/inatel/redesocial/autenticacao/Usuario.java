@@ -1,4 +1,4 @@
-package crud;
+package br.inatel.redesocial.autenticacao;
 
 public class Usuario {
     private final String email;

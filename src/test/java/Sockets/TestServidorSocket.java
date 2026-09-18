@@ -1,6 +1,6 @@
 package Sockets;
 
-import org.example.Servidor;
+import br.inatel.redesocial.servidor.Servidor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

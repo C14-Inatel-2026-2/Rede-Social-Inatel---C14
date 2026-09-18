@@ -1,4 +1,4 @@
-package org.example;
+package br.inatel.redesocial.cliente;
 import java.net.Socket;
 import java.io.*;
 

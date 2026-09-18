@@ -1,9 +1,10 @@
 
-package crud;
+package br.inatel.redesocial.banco.funcoes;
+import br.inatel.redesocial.banco.ConnectionDAO;
 
 import java.sql.SQLException;
 
-public class LoginDAO extends ConnectionDAO{
+public class LoginDAO extends ConnectionDAO {
 
     public boolean auteticaUser(String nome, String password){
         boolean autenticado = false;

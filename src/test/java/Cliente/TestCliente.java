@@ -1,6 +1,6 @@
 package Cliente;
-import org.example.Cliente;
-import org.example.ClienteSocket;
+import br.inatel.redesocial.cliente.Cliente;
+import br.inatel.redesocial.cliente.ClienteSocket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

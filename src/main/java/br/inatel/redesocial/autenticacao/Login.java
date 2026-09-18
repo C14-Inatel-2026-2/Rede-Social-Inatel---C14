@@ -1,4 +1,6 @@
-package crud;
+package br.inatel.redesocial.autenticacao;
+
+import br.inatel.redesocial.banco.funcoes.LoginDAO;
 
 public class Login {
     LoginDAO loginDAO;

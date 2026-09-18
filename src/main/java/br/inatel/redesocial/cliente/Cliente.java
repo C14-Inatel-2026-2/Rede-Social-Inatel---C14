@@ -1,11 +1,12 @@
-package org.example;
+package br.inatel.redesocial.cliente;
+
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Cliente implements Runnable {
 
     private  String mensagemRecebida;
-    private ClienteSocket  clienteSocket;
+    private ClienteSocket clienteSocket;
     private String mensagemEnviada;
 
     public Cliente(ClienteSocket clienteSocket)

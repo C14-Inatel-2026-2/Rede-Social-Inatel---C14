@@ -1,7 +1,7 @@
 package Chat;
 
-import crud.Usuario;
-import org.example.Sala;
+import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.servidor.Sala;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

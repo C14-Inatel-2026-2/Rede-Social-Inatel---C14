@@ -1,11 +1,10 @@
-package org.example;
+package br.inatel.redesocial.servidor;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.IllegalFormatWidthException;
 
 public class Servidor {
     private int porta;

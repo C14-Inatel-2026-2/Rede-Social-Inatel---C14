@@ -1,6 +1,6 @@
 package CRUDTestes;
 
-import crud.Usuario;
+import br.inatel.redesocial.autenticacao.Usuario;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;

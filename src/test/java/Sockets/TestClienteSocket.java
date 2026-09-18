@@ -1,5 +1,5 @@
 package Sockets;
-import org.example.ClienteSocket;
+import br.inatel.redesocial.cliente.ClienteSocket;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 

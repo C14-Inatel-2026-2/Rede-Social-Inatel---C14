@@ -1,6 +1,6 @@
-package org.example;
+package br.inatel.redesocial.servidor;
 
-import crud.Usuario;
+import br.inatel.redesocial.autenticacao.Usuario;
 import java.util.ArrayList;
 
 public class Sala {

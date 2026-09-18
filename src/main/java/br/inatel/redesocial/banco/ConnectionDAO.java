@@ -1,19 +1,19 @@
-package crud;
+package br.inatel.redesocial.banco;
 
 import java.sql.*;
 
 public abstract class ConnectionDAO {
 
-    Connection connection;
+    protected Connection connection;
 
-    PreparedStatement pst;
-    Statement st;
-    ResultSet rs;
+    protected PreparedStatement pst;
+    protected Statement st;
+    protected ResultSet rs;
 
-    String database = "exemplo";
-    String user = "root";
-    String password = "root";
-    String url = "jdbc:mysql://localhost:3306/" + database;
+    protected String database = "exemplo";
+    protected String user = "root";
+    protected String password = "root";
+    protected String url = "jdbc:mysql://localhost:3306/" + database;
 
     public Connection connectToDb() {
         try {
