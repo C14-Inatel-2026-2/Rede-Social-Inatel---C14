@@ -2,7 +2,7 @@ package br.inatel.redesocial.cliente;
 import java.net.Socket;
 import java.io.*;
 
-public class ClienteSocket {
+public class ClienteSocket implements AutoCloseable {
     private Socket socket;
     private BufferedReader leitor;
     private PrintWriter escritor ;
@@ -27,5 +27,11 @@ public class ClienteSocket {
     public Void EnviarMensagem(String mensagemEnviada) throws IOException {
         escritor.println(mensagemEnviada);
         return null;
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.leitor.close();
+        this.escritor.close();
     }
 }
