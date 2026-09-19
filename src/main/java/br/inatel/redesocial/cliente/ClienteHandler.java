@@ -24,7 +24,7 @@ public class ClienteHandler {
             Cliente cliente = this.clienteFactory.criarCliente(clienteSocket);
             Thread threadReceber = this.clienteFactory.criarThread(cliente);
             threadReceber.start();
-            cliente.enviarMensagem();
+            cliente.enviarMensagem(clienteFactory.criarScanner());
         } catch (IOException e) {
             System.out.println("Nao foi possivel conectar ao servidor"+e.getMessage());
         } catch (Exception e) {
