@@ -14,6 +14,9 @@ public class ClienteFactory  {
     public Cliente criarCliente(ClienteSocket clienteSocket) {
         return new Cliente(clienteSocket);
     }
+    public Thread criarThread(Cliente cliente) {
+        return new Thread(cliente);
+    }
 }
 
 
