@@ -11,6 +11,9 @@ public class ClienteHandler {
 
     public  ClienteHandler(int porta , String host,ClienteFactory clienteFactory)
     {
+        if(clienteFactory==null)
+            throw new IllegalArgumentException("Insercao de objeto nullo");
+        
         this.porta=porta;
         this.host=host;
         this.clienteFactory=clienteFactory;
