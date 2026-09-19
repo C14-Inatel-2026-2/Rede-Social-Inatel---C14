@@ -11,6 +11,9 @@ public class ClienteFactory  {
     public ClienteSocket criarClienteSocket(Socket socket) throws IOException {
         return new ClienteSocket(socket);
     }
+    public Cliente criarCliente(ClienteSocket clienteSocket) {
+        return new Cliente(clienteSocket);
+    }
 }
 
 
