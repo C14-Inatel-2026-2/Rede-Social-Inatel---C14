@@ -7,23 +7,24 @@ public class ClienteHandler {
 
     private int porta;
     private String host;
-    public  ClienteHandler(int porta , String host)
+    private ClienteFactory clienteFactory;
+
+    public  ClienteHandler(int porta , String host,ClienteFactory clienteFactory)
     {
         this.porta=porta;
         this.host=host;
+        this.clienteFactory=clienteFactory;
     }
 
     public void gerenciarChat()
     {
-        try (Socket socket = new Socket(this.host, this.porta);
-             ClienteSocket clienteSocket = new ClienteSocket(socket))
+        try (Socket socket = this.clienteFactory.criarSocket(this.host, this.porta);
+             ClienteSocket clienteSocket = this.clienteFactory.criarClienteSocket(socket))
         {
-            Cliente cliente = new Cliente(clienteSocket);
-            Thread threadReceber = new Thread(cliente);
-            System.out.println("Conectado com Sucesso");
+            Cliente cliente = this.clienteFactory.criarCliente(clienteSocket);
+            Thread threadReceber = this.clienteFactory.criarThread(cliente);
             threadReceber.start();
             cliente.enviarMensagem();
-
         } catch (IOException e) {
             System.out.println("Nao foi possivel conectar ao servidor"+e.getMessage());
         } catch (Exception e) {
