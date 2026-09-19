@@ -2,6 +2,7 @@ package br.inatel.redesocial.cliente;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ClienteFactory  {
 
@@ -16,6 +17,10 @@ public class ClienteFactory  {
     }
     public Thread criarThread(Cliente cliente) {
         return new Thread(cliente);
+    }
+    public Scanner criarScanner()
+    {
+        return new Scanner(System.in);
     }
 }
 
