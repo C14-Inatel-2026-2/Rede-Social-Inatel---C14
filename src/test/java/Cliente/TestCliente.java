@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.io.*;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -36,6 +37,15 @@ public class TestCliente
        cliente.receberMensagem();
 
        verify(clienteSocket, times(1)).ReceberMensagem();
+    }
+
+    @Test
+    public  void testSaidaEnviarMensagem() throws IOException {
+        Cliente cliente = new Cliente(clienteSocket);
+        String mensagemEnviada= "oi\nhello\nsaida\n";
+
+        cliente.enviarMensagem (new Scanner(mensagemEnviada));
+        verify(clienteSocket,times(3)).EnviarMensagem(anyString());
     }
 
 }

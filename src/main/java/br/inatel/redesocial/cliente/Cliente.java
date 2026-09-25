@@ -33,8 +33,7 @@ public class Cliente implements Runnable {
         }
     }
 
-    public void enviarMensagem() throws IOException {
-        Scanner sc = new Scanner(System.in);
+    public void enviarMensagem(Scanner sc) throws IOException {
         do {
             System.out.println("Escreva uma mensagem");
             mensagemEnviada = sc.nextLine();
