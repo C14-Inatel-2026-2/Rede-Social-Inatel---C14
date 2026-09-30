@@ -51,6 +51,11 @@ public class LoginTest {
     }
 
     @Test
+    public void testeAutenticarUsuarioNulo(){
+        assertThrows(NullPointerException.class, ()->login.autenticarUsuario(null, senha));
+    }
+
+    @Test
     public void testeVerificarEmail(){
         String emailTeste = Login.verificarEmail(email);
 
