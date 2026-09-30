@@ -39,11 +39,21 @@ public class UsuarioTest {
     }
 
     @Test
-    public void testeSenhaVerificadoraIncorreta(){
+    public void testeAlterarSenhaVerificadoraIncorreta(){
         String verificadoraIncorreta = "EspiritoDePorco99!";
         String senhaNovaValida = "Theofficetop1!";
 
         boolean troca = usuario.alterarSenha(verificadoraIncorreta, senhaNovaValida);
+
+        assertFalse(troca);
+    }
+
+    @Test
+    public void testeAlterarSenhaVerificadoraMasEmMaiusculo(){
+        String verificadoraEmMaiusculo = senha.toUpperCase();
+        String senhaNovaValida = "Theofficetop1!";
+
+        boolean troca = usuario.alterarSenha(verificadoraEmMaiusculo, senhaNovaValida);
 
         assertFalse(troca);
     }
