@@ -37,4 +37,14 @@ public class UsuarioTest {
 
         assertFalse(troca);
     }
+
+    @Test
+    public void testeSenhaVerificadoraIncorreta(){
+        String verificadoraIncorreta = "EspiritoDePorco99!";
+        String senhaNovaValida = "Theofficetop1!";
+
+        boolean troca = usuario.alterarSenha(verificadoraIncorreta, senhaNovaValida);
+
+        assertFalse(troca);
+    }
 }
