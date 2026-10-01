@@ -53,6 +53,7 @@ public class LoginTest {
     @Test
     public void testeAutenticarUsuarioNulo(){
         assertThrows(NullPointerException.class, ()->login.autenticarUsuario(null, senha));
+        Mockito.verifyNoInteractions(loginDAO);
     }
 
     @Test
