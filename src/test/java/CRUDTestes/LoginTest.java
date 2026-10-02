@@ -51,6 +51,21 @@ public class LoginTest {
     }
 
     @Test
+    public void testeAutenticarUsuarioNulo(){
+        assertThrows(NullPointerException.class, ()->login.autenticarUsuario(null, senha));
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
+    public void testeAutenticarUsuarioFalhaEMandaException(){
+        Usuario usuario = new Usuario(email, senha);
+
+        Mockito.when(loginDAO.auteticaUser(email, senha)).thenThrow(RuntimeException.class);
+
+        assertThrows(RuntimeException.class, ()-> login.autenticarUsuario(usuario, senha));
+    }
+
+    @Test
     public void testeVerificarEmail(){
         String emailTeste = Login.verificarEmail(email);
 
