@@ -6,6 +6,14 @@ import javafx.scene.layout.VBox;
 
 public class AuthController {
 
+    private Navigator navigator = Main::showLobby;
+
+    public AuthController() {}
+
+    public AuthController(Navigator navigator) {
+        this.navigator = navigator;
+    }
+
     @FXML private Button tabLogin, tabRegister;
     @FXML private VBox   panelLogin, panelRegister;
 
@@ -41,52 +49,54 @@ public class AuthController {
 
     @FXML
     void onLogin() {
-        String email = loginEmail.getText().trim();
-        String senha = loginSenha.getText();
-
-        if (!isValidEmail(email)) {
-            loginEmailErr.setText("Email inválido");
-            loginEmailErr.setVisible(true);
-            return;
-        }
-        loginEmailErr.setVisible(false);
-
-        // TODO: chamar API de login via HTTP
-        // Por enquanto navega direto para o lobby
-        try {
-            Main.showLobby(email);
-        } catch (Exception e) {
-            showToast("Erro ao navegar: " + e.getMessage());
-        }
+        login(loginEmail.getText().trim(), loginSenha.getText());
     }
 
     @FXML
     void onRegister() {
-        String email = regEmail.getText().trim();
-        String senha = regSenha.getText();
+        register(regEmail.getText().trim(), regSenha.getText());
+    }
+
+    void login(String email, String senha) {
+        if (!isValidEmail(email)) {
+            if (loginEmailErr != null) { loginEmailErr.setText("Email inválido"); loginEmailErr.setVisible(true); }
+            return;
+        }
+        if (loginEmailErr != null) loginEmailErr.setVisible(false);
+
+        if (!isValidSenha(senha)) {
+            showToast("Senha inválida");
+            return;
+        }
+
+        try {
+            navigator.showLobby(email);
+        } catch (Exception e) {
+            showToast("Erro ao navegar: " + e.getMessage());
+        }
+    }
+    void register(String email, String senha) {
         boolean ok = true;
 
         if (!isValidEmail(email)) {
-            regEmailErr.setText("Email inválido");
-            regEmailErr.setVisible(true);
+            if (regEmailErr != null) { regEmailErr.setText("Email inválido"); regEmailErr.setVisible(true); }
             ok = false;
         } else {
-            regEmailErr.setVisible(false);
+            if (regEmailErr != null) regEmailErr.setVisible(false);
         }
 
         if (!isValidSenha(senha)) {
-            regSenhaErr.setText("Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&@#!)");
-            regSenhaErr.setVisible(true);
+            if (regSenhaErr != null) { regSenhaErr.setText("Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&@#!)"); regSenhaErr.setVisible(true); }
             ok = false;
         } else {
-            regSenhaErr.setVisible(false);
+            if (regSenhaErr != null) regSenhaErr.setVisible(false);
         }
 
         if (!ok) return;
 
         // TODO: chamar API de registro via HTTP
         try {
-            Main.showLobby(email);
+            navigator.showLobby(email);
         } catch (Exception e) {
             showToast("Erro ao navegar: " + e.getMessage());
         }
