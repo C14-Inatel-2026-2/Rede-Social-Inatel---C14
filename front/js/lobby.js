@@ -1,9 +1,10 @@
 import { salasAPI } from './api.js';
-import { showToast, requireAuth, logout } from './utils.js';
+import { showToast, requireAuth, logout, setupOrganicMotion } from './utils.js';
 
 requireAuth();
 
 const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+setupOrganicMotion();
 
 // ── Perfil ────────────────────────────────────────────────────────────────────
 document.getElementById('profile-email').textContent = usuario.email || '—';

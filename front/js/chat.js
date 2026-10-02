@@ -1,5 +1,5 @@
 import { ChatSocket } from './socket.js';
-import { requireAuth } from './utils.js';
+import { requireAuth, setupOrganicMotion } from './utils.js';
 
 requireAuth();
 
@@ -16,6 +16,7 @@ const roomNameEl  = document.getElementById('room-name');
 const usersCountEl= document.getElementById('users-count');
 
 roomNameEl.textContent = sala.nome;
+setupOrganicMotion();
 
 // ── Mensagens ─────────────────────────────────────────────────────────────────
 function appendMsg({ tipo, autor, conteudo }) {

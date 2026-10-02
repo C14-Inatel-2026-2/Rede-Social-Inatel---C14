@@ -1,5 +1,5 @@
 import { authAPI } from './api.js';
-import { showToast } from './utils.js';
+import { showToast, setupOrganicMotion } from './utils.js';
 
 // Espelha Login.verificarEmail e Login.verificarSenha do back-end
 const EMAIL_REGEX = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/;
@@ -13,6 +13,8 @@ function setFieldError(inputEl, msgEl, msg) {
     msgEl.style.display = msg ? 'block' : 'none';
     msgEl.textContent = msg || '';
 }
+
+setupOrganicMotion();
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 document.getElementById('form-login')?.addEventListener('submit', async (e) => {
