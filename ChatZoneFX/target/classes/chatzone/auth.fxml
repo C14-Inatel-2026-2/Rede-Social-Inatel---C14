@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="chatzone.AuthController"
+           styleClass="root-bg"
+           prefWidth="420" prefHeight="520">
+
+    <VBox styleClass="auth-box" maxWidth="380" maxHeight="480" alignment="TOP_CENTER" spacing="0">
+        <StackPane.margin><Insets top="20" bottom="20" left="20" right="20"/></StackPane.margin>
+
+        <Label text="💬 ChatZone" styleClass="auth-title"/>
+        <Label text="Chats públicos em tempo real" styleClass="auth-subtitle"/>
+
+        <!-- Tabs -->
+        <HBox styleClass="tabs" spacing="0">
+            <Button fx:id="tabLogin" text="Entrar" styleClass="tab-btn,tab-active"
+                    maxWidth="Infinity" onAction="#onTabLogin" HBox.hgrow="ALWAYS"/>
+            <Button fx:id="tabRegister" text="Criar conta" styleClass="tab-btn"
+                    maxWidth="Infinity" onAction="#onTabRegister" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <!-- Panel Login -->
+        <VBox fx:id="panelLogin" styleClass="tab-panel" spacing="14">
+            <VBox.margin><Insets top="20"/></VBox.margin>
+            <VBox styleClass="form-group" spacing="6">
+                <Label text="Email" styleClass="form-label"/>
+                <TextField fx:id="loginEmail" promptText="seu@email.com" styleClass="form-input"/>
+                <Label fx:id="loginEmailErr" styleClass="error-msg" visible="false" managed="false"/>
+            </VBox>
+            <VBox styleClass="form-group" spacing="6">
+                <Label text="Senha" styleClass="form-label"/>
+                <PasswordField fx:id="loginSenha" promptText="••••••••" styleClass="form-input"/>
+            </VBox>
+            <Button text="Entrar" styleClass="btn-primary" maxWidth="Infinity" onAction="#onLogin"/>
+        </VBox>
+
+        <!-- Panel Registro -->
+        <VBox fx:id="panelRegister" styleClass="tab-panel" spacing="14" visible="false" managed="false">
+            <VBox.margin><Insets top="20"/></VBox.margin>
+            <VBox styleClass="form-group" spacing="6">
+                <Label text="Email" styleClass="form-label"/>
+                <TextField fx:id="regEmail" promptText="seu@email.com" styleClass="form-input"/>
+                <Label fx:id="regEmailErr" styleClass="error-msg" visible="false" managed="false"/>
+            </VBox>
+            <VBox styleClass="form-group" spacing="6">
+                <Label text="Senha" styleClass="form-label"/>
+                <PasswordField fx:id="regSenha" promptText="••••••••" styleClass="form-input"/>
+                <Label text="Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&amp;@#!)" styleClass="hint"/>
+                <Label fx:id="regSenhaErr" styleClass="error-msg" visible="false" managed="false"/>
+            </VBox>
+            <Button text="Criar conta" styleClass="btn-primary" maxWidth="Infinity" onAction="#onRegister"/>
+        </VBox>
+
+    </VBox>
+</StackPane>
