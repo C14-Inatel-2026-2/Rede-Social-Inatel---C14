@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                     mvn -B \
                       org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:checkstyle \
-                      com.github.spotbugs:spotbugs-maven-plugin:4.8.6.6:spotbugs \
+                      com.github.spotbugs:spotbugs-maven-plugin:4.10.5.0:spotbugs \
                       -Dcheckstyle.config.location=google_checks.xml \
                       -Dcheckstyle.failOnViolation=false
                 '''
