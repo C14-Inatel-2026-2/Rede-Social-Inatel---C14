@@ -50,5 +50,16 @@ pipeline {
                 }
             }
         }
+        stage('Deploy') {
+                    when{
+                        branch 'main'
+                    }
+                    steps{
+                        withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]){
+                            sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
+                        }
+                        echo 'Deploy disparado no render'
+                    }
+        }
     }
 }
