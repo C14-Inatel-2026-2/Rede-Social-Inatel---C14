@@ -3,6 +3,13 @@ pipeline {
 
     stages {
 
+        stage('Source') {
+            steps {
+                git branch: 'main',
+                        url: 'https://github.com/USUARIO/REPOSITORIO.git'
+            }
+        }
+
         stage('Test') {
             steps {
                 sh '''
