@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="chatzone.LobbyController"
+           styleClass="root-bg-lobby"
+           prefWidth="860" prefHeight="600">
+
+    <!-- Main content -->
+    <VBox spacing="0" alignment="TOP_CENTER">
+        <padding><Insets top="24" right="16" bottom="24" left="16"/></padding>
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="0" styleClass="lobby-header">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label text="💬 ChatZone" styleClass="lobby-title"/>
+                <Label text="Escolha uma sala e entre na conversa" styleClass="lobby-tagline"/>
+            </VBox>
+            <Button text="👤" styleClass="user-btn" onAction="#onUserBtn"/>
+        </HBox>
+
+        <!-- Rooms grid -->
+        <ScrollPane fitToWidth="true" styleClass="rooms-scroll" VBox.vgrow="ALWAYS">
+            <FlowPane fx:id="roomsGrid" hgap="16" vgap="16" styleClass="rooms-grid">
+                <padding><Insets top="8" right="4" bottom="8" left="4"/></padding>
+            </FlowPane>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Profile modal overlay -->
+    <StackPane fx:id="profileModal" styleClass="modal-overlay" visible="false"
+               onMouseClicked="#onModalClose">
+        <VBox styleClass="modal" maxWidth="320" spacing="12"
+              onMouseClicked="#onModalInnerClick">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Meu Perfil" styleClass="modal-title" HBox.hgrow="ALWAYS"/>
+                <Button text="✕" styleClass="modal-close" onAction="#onModalClose"/>
+            </HBox>
+            <VBox spacing="6">
+                <Label text="Email:" styleClass="profile-label"/>
+                <Label fx:id="profileEmailLabel" text="—" styleClass="profile-value"/>
+            </VBox>
+            <Button text="Sair da conta" styleClass="btn-logout" maxWidth="Infinity" onAction="#onLogout"/>
+        </VBox>
+    </StackPane>
+
+</StackPane>

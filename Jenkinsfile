@@ -3,6 +3,21 @@ pipeline {
 
     stages {
 
+        stage('Source') {
+            steps {
+                echo 'Verificando o código-fonte obtido pelo Jenkins'
+
+                sh '''
+                    echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
+                    echo "Commit atual:"
+                    git log -1 --oneline
+            
+                    echo "Arquivos na raiz do projeto:"
+                    ls -la
+                '''
+            }
+        }
+
         stage('Test') {
             steps {
                 sh '''
