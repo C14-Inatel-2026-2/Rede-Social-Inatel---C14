@@ -5,8 +5,16 @@ pipeline {
 
         stage('Source') {
             steps {
-                git branch: 'main',
-                        url: 'https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git'
+                echo 'Verificando o código-fonte obtido pelo Jenkins'
+
+                sh '''
+                    echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
+                    echo "Commit atual:"
+                    git log -1 --oneline
+            
+                    echo "Arquivos na raiz do projeto:"
+                    ls -la
+                '''
             }
         }
 
