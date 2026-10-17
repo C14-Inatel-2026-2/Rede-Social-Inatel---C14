@@ -11,7 +11,7 @@ pipeline {
                     echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
                     echo "Commit atual:"
                     git log -1 --oneline
-            
+
                     echo "Arquivos na raiz do projeto:"
                     ls -la
                 '''
@@ -70,5 +70,42 @@ pipeline {
                         echo 'Deploy disparado no render'
                     }
         }
-    }
+
+        }
+
+                  post {
+                        success {
+                            withCredentials([
+                                string(
+                                    credentialsId: 'discord-webhook',
+                                    variable: 'DISCORD_WEBHOOK'
+                                )
+                            ]) {
+                                sh '''
+                                    curl -fsS -H "Content-Type: application/json" \
+                                    -X POST \
+                                    -d "{\"content\":\"✅ Sucesso: ${JOB_NAME} - Build #${BUILD_NUMBER}\"}" \
+                                    "$DISCORD_WEBHOOK"
+                                '''
+                            }
+                        }
+
+                        failure {
+                            withCredentials([
+                                string(
+                                    credentialsId: 'discord-webhook',
+                                    variable: 'DISCORD_WEBHOOK'
+                                )
+                            ]) {
+                                sh '''
+                                    curl -fsS -H "Content-Type: application/json" \
+                                    -X POST \
+                                    -d "{\"content\":\"❌ Falha: ${JOB_NAME} - Build #${BUILD_NUMBER}\"}" \
+                                    "$DISCORD_WEBHOOK"
+                                '''
+                            }
+                        }
+                    }
+
+
 }
