@@ -21,6 +21,11 @@ credentials:
               description: "Token do GitHub para baixar o repositorio"
               username: "${GITHUB_USER}"
               password: "${GITHUB_TOKEN}"
+          - string:
+              scope: GLOBAL
+              id: "render-deploy-hook"
+              description: "Deploy Hook do Render"
+              secret: "${RENDER_DEPLOY_HOOK}"
 
 jobs:
   - script: >
