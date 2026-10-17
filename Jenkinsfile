@@ -11,24 +11,35 @@ pipeline {
                     echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
                     echo "Commit atual:"
                     git log -1 --oneline
-            
+
                     echo "Arquivos na raiz do projeto:"
                     ls -la
                 '''
             }
         }
 
-    stage('Build') {
+        stage('Build') {
             steps {
-               echo 'Compilando o projeto '
+                echo 'Compilando o projeto '
 
-               sh '''
-                 java -version
-                 mvn -version
-                 mvn -B -DskipTests clean compile
-               '''
+                sh '''
+                     java -version
+                     mvn -version
+                     mvn -B -DskipTests clean compile
+                   '''
             }
-    }
+        }
+        stage('Análise estática') {
+            steps {
+                sh '''
+                    mvn -B \
+                      org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:checkstyle \
+                      com.github.spotbugs:spotbugs-maven-plugin:4.8.6.6:spotbugs \
+                      -Dcheckstyle.config.location=google_checks.xml \
+                      -Dcheckstyle.failOnViolation=false
+                '''
+            }
+        }
 
         stage('Test') {
             steps {
@@ -44,22 +55,22 @@ pipeline {
             post {
                 always {
                     junit allowEmptyResults: true,
-                        testResults: 'target/surefire-reports/*.xml'
+                    testResults: 'target/surefire-reports/*.xml'
                     recordCoverage tools: [[parser: 'JACOCO',
-                                                        pattern: 'target/site/jacoco/jacoco.xml']]
+                            pattern: 'target/site/jacoco/jacoco.xml']]
                 }
             }
         }
         stage('Deploy') {
-                    when{
-                        branch 'main'
-                    }
-                    steps{
-                        withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]){
-                            sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
-                        }
-                        echo 'Deploy disparado no render'
-                    }
+            when{
+                branch 'main'
+            }
+            steps{
+                withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]){
+                    sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
+                }
+                echo 'Deploy disparado no render'
+            }
         }
     }
 }

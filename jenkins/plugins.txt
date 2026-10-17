@@ -6,3 +6,4 @@ junit
 configuration-as-code
 job-dsl
 coverage
+warnings-ng
