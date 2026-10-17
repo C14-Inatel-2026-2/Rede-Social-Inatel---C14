@@ -18,6 +18,18 @@ pipeline {
             }
         }
 
+    stage('Build') {
+            steps {
+               echo 'Compilando o projeto '
+
+               sh '''
+                 java -version
+                 mvn -version
+                 mvn -B -DskipTests clean compile
+               '''
+            }
+    }
+
         stage('Test') {
             steps {
                 sh '''
@@ -37,6 +49,17 @@ pipeline {
                                                         pattern: 'target/site/jacoco/jacoco.xml']]
                 }
             }
+        }
+        stage('Deploy') {
+                    when{
+                        branch 'main'
+                    }
+                    steps{
+                        withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]){
+                            sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
+                        }
+                        echo 'Deploy disparado no render'
+                    }
         }
     }
 }
