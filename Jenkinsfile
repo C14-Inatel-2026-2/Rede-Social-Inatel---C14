@@ -81,5 +81,44 @@ pipeline {
                 echo 'Deploy disparado no render'
             }
         }
-    }
+
+        }
+
+                  post {
+                        success {
+                            withCredentials([
+                                string(
+                                    credentialsId: 'discord-webhook',
+                                    variable: 'DISCORD_WEBHOOK'
+                                )
+                            ]) {
+                              sh '''
+                                  curl -fsS \
+                                     -H 'Content-Type: application/json' \
+                                     -X POST \
+                                     --data-binary '{"content":"Sucesso: a pipeline terminou!"}' \
+                                     "$DISCORD_WEBHOOK"
+                                '''
+                            }
+                        }
+
+                        failure {
+                            withCredentials([
+                                string(
+                                    credentialsId: 'discord-webhook',
+                                    variable: 'DISCORD_WEBHOOK'
+                                )
+                            ]) {
+                                 sh '''
+                                    curl -fsS \
+                                       -H 'Content-Type: application/json' \
+                                       -X POST \
+                                       --data-binary '{"content":"Falha: a pipeline precisa ser verificada."}' \
+                                       "$DISCORD_WEBHOOK"
+                                    '''
+                            }
+                        }
+                    }
+
+
 }

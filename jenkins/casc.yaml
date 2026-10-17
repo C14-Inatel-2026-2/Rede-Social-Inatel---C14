@@ -26,7 +26,11 @@ credentials:
               id: "render-deploy-hook"
               description: "Deploy Hook do Render"
               secret: "${RENDER_DEPLOY_HOOK}"
-
+          - string:
+              scope: GLOBAL
+              id: "discord-webhook"
+              description: "Webhook de notificacoes do Discord"
+              secret: "${DISCORD_WEBHOOK}"
 jobs:
   - script: >
       multibranchPipelineJob('projeto') {
