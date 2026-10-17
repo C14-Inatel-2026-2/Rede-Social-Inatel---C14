@@ -38,7 +38,7 @@ pipeline {
                                  test-compile \
                                  org.apache.maven.plugins:maven-surefire-plugin:3.5.4:test \
                                  org.jacoco:jacoco-maven-plugin:0.8.14:report \
-                                 -Dmaven.test.failure.ignore=true
+                                 -DfailIfNoTests=false
                            '''
             }
             post {
@@ -48,6 +48,15 @@ pipeline {
                     recordCoverage tools: [[parser: 'JACOCO',
                                                         pattern: 'target/site/jacoco/jacoco.xml']]
                 }
+            }
+        }
+        stage('Package') {
+            steps {
+                echo 'Gerando o artefato da aplicação'
+                sh '''
+                    mvn -B -DskipTests package
+                    test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
+                '''
             }
         }
         stage('Deploy') {
