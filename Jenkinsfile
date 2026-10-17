@@ -81,11 +81,12 @@ pipeline {
                                     variable: 'DISCORD_WEBHOOK'
                                 )
                             ]) {
-                                sh '''
-                                    curl -fsS -H "Content-Type: application/json" \
-                                    -X POST \
-                                    -d "{\"content\":\"✅ Sucesso: ${JOB_NAME} - Build #${BUILD_NUMBER}\"}" \
-                                    "$DISCORD_WEBHOOK"
+                              sh '''
+                                  curl -fsS \
+                                     -H 'Content-Type: application/json' \
+                                     -X POST \
+                                     --data-binary '{"content":"Sucesso: a pipeline terminou!"}' \
+                                     "$DISCORD_WEBHOOK"
                                 '''
                             }
                         }
@@ -97,12 +98,13 @@ pipeline {
                                     variable: 'DISCORD_WEBHOOK'
                                 )
                             ]) {
-                                sh '''
-                                    curl -fsS -H "Content-Type: application/json" \
-                                    -X POST \
-                                    -d "{\"content\":\"❌ Falha: ${JOB_NAME} - Build #${BUILD_NUMBER}\"}" \
-                                    "$DISCORD_WEBHOOK"
-                                '''
+                                 sh '''
+                                    curl -fsS \
+                                       -H 'Content-Type: application/json' \
+                                       -X POST \
+                                       --data-binary '{"content":"Falha: a pipeline precisa ser verificada."}' \
+                                       "$DISCORD_WEBHOOK"
+                                    '''
                             }
                         }
                     }
