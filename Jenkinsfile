@@ -18,6 +18,18 @@ pipeline {
             }
         }
 
+    stage('Build') {
+            steps {
+               echo 'Compilando o projeto '
+
+               sh '''
+                 java -version
+                 mvn -version
+                 mvn -B -DskipTests clean compile
+               '''
+            }
+    }
+
         stage('Test') {
             steps {
                 sh '''
