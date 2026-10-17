@@ -6,7 +6,7 @@ pipeline {
         stage('Source') {
             steps {
                 git branch: 'main',
-                        url: 'https://github.com/USUARIO/REPOSITORIO.git'
+                        url: 'https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git'
             }
         }
 
