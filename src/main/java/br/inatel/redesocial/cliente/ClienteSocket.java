@@ -30,7 +30,6 @@ public class ClienteSocket implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        this.leitor.close();
-        this.escritor.close();
+        this.socket.close();
     }
 }
