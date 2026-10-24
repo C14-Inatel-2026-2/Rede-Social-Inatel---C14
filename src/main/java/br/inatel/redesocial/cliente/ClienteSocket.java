@@ -24,9 +24,8 @@ public class ClienteSocket implements AutoCloseable {
         return leitor.readLine();
     }
 
-    public Void EnviarMensagem(String mensagemEnviada) throws IOException {
+    public void EnviarMensagem(String mensagemEnviada) throws IOException {
         escritor.println(mensagemEnviada);
-        return null;
     }
 
     @Override
