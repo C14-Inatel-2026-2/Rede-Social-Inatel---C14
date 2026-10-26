@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -46,6 +48,19 @@ public class TestClienteSocket {
         assertThrows(IOException.class,() ->{
             ClienteSocket clienteSocket = new ClienteSocket(socket);
         });
+    }
+
+    @Test
+    public  void receberMensagem() throws IOException {
+
+        when(socket.isClosed()).thenReturn(false);
+        when(socket.isConnected()).thenReturn(true);
+        when(socket.getInputStream()).thenReturn(new ByteArrayInputStream("Ola\n".getBytes()));
+        when(socket.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+
+        ClienteSocket clienteSocket = new ClienteSocket(socket);
+
+        assertEquals("Ola",clienteSocket.ReceberMensagem());
     }
 
 }
