@@ -63,4 +63,20 @@ public class TestClienteSocket {
         assertEquals("Ola",clienteSocket.ReceberMensagem());
     }
 
+    @Test
+    public  void enviarMensagem() throws IOException {
+
+        when(socket.isClosed()).thenReturn(false);
+        when(socket.isConnected()).thenReturn(true);
+        when(socket.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+
+        ByteArrayOutputStream saida = new ByteArrayOutputStream();
+        when(socket.getOutputStream()).thenReturn(saida);
+
+        ClienteSocket clienteSocket = new ClienteSocket(socket);
+        clienteSocket.EnviarMensagem("Ola");
+
+        assertEquals("Ola" + System.lineSeparator(), saida.toString());
+    }
+
 }
