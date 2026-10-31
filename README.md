@@ -82,7 +82,7 @@ Os requisitos funcionais descrevem as funcionalidades que o Mesão Chat deverá 
 | RF07 | Limite de participantes | O sistema deverá controlar a quantidade de participantes por sala e impedir novas entradas quando a capacidade máxima for atingida. |
 | RF08 | Envio e recebimento de mensagens | O sistema deverá permitir a troca de mensagens entre usuários conectados à mesma sala. |
 | RF09 | Visualização de senha | O usuário deverá ter a opção de visualizar ou ocultar a senha digitada na tela de login. |
-| RF10 | Notificações de participantes | O sistema deverá informar aos participantes quando um usuário entrar ou sair da sala. |
+| RF10 | Notificações de participantes | O sistema deverá informar aos participantes quando um usuário entrar ou sair da sala. 
 
 ### Requisitos Não Funcionais
 
