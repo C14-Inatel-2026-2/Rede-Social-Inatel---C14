@@ -42,7 +42,7 @@ public class TestClienteSocket {
     }
 
     @Test
-    public void testsocketconected ()
+    public void testsocketconnected ()
     {
         when(socket.isConnected()).thenReturn(false);
         assertThrows(IOException.class,() ->{
