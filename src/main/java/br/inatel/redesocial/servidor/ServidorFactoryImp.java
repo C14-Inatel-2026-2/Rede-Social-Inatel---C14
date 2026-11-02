@@ -20,4 +20,9 @@ public class ServidorFactoryImp implements ServidorFactory {
         return new PrintWriter(socket.getOutputStream(), true);
     }
 
+    @Override
+    public ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory) {
+        return new ServidorSocket(socket,servidorFactory);
+    }
+
 }
