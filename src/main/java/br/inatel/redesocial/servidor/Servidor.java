@@ -26,6 +26,27 @@ public class Servidor {
         this.porta = porta;
         this.servidorFactory = servidorFactory;
     }
+    
+    public void servidorAtivo() {
+        try (ServerSocket serverSocket =
+                     servidorFactory.criarServidor(porta)) {
 
+            while (!serverSocket.isClosed()) {
+                ServidorHandler handler =
+                        servidorFactory.criarServidorHandler(
+                                serverSocket.accept(),
+                                escritores,
+                                servidorFactory
+                        );
 
+                handler.start();
+            }
+
+        } catch (IOException e) {
+            System.err.println(
+                    "Erro durante a execução do servidor: "
+                            + e.getMessage()
+            );
+        }
+    }
 }
