@@ -38,4 +38,6 @@ public class ServidorSocket {
         }
 
     }
+
+    public PrintWriter getEscritor() {return escritor;}
 }
