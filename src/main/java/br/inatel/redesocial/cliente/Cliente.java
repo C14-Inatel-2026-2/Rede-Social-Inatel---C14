@@ -35,7 +35,7 @@ public class Cliente implements Runnable {
 
     public void enviarMensagem(Scanner sc) throws IOException {
         do {
-            System.out.println("Escreva uma mensagem");
+            System.out.println("Escreva uma mensagem: ");
             mensagemEnviada = sc.nextLine();
             this.clienteSocket.EnviarMensagem(mensagemEnviada);
         } while (!mensagemEnviada.equals("saida"));
