@@ -26,10 +26,8 @@ public class ServidorSocket {
     public void enviar(String usuario, String mensagem, Set<PrintWriter> escritores, String salaEnvio) {
         escritores.forEach(escritor ->
         {
-            System.out.println(usuario.split("\u0001")[1]);
-            System.out.println(salaEnvio);
             if(usuario.split("\u0001")[1].equals(salaEnvio)){
-                escritor.println(usuario + " : " + mensagem);
+                escritor.println(usuario.split("\u0001")[0] + " : " + mensagem);
             }
         });
     }
@@ -37,8 +35,6 @@ public class ServidorSocket {
     public void receber(String usuario, Set<PrintWriter> escritores, String salaRecebida) throws IOException {
         String mensagem;
         while ((mensagem = leitura()) != null) {
-            System.out.println(usuario.split("\u0001")[1]);
-            System.out.println(salaRecebida);
             if (usuario.split("\u0001")[1].equals(salaRecebida)){
                 if (mensagem.equals("saiu")) break;
                 enviar(usuario, mensagem, escritores, salaRecebida);
