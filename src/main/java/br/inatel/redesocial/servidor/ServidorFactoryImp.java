@@ -25,4 +25,14 @@ public class ServidorFactoryImp implements ServidorFactory {
         return new ServidorSocket(socket,servidorFactory);
     }
 
+    @Override
+    public ServerSocket criarServidor(int porta) throws IOException {
+        return new ServerSocket(porta);
+    }
+    
+    @Override
+    public ServidorHandler criarServidorHandler(Socket socket, Set<PrintWriter> escritores, ServidorFactory servidorFactory) {
+        return new ServidorHandler(socket, escritores, servidorFactory);
+    }
+
 }

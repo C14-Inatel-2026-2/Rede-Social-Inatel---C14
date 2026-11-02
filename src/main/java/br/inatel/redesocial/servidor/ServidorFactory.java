@@ -15,4 +15,8 @@ public interface ServidorFactory {
 
     ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory);
 
+    ServerSocket criarServidor(int porta) throws IOException;
+
+    ServidorHandler criarServidorHandler(Socket socket, Set<PrintWriter> escritores, ServidorFactory servidorFactory);
+
 }
