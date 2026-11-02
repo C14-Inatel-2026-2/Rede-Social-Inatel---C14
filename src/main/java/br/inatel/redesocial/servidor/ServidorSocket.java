@@ -20,4 +20,12 @@ public class ServidorSocket
             throw new RuntimeException(e);
         }
     }
+
+    public  String leitura() throws IOException {return leitor.readLine();}
+
+    public void enviar(String usuario ,String mensagem, Set<PrintWriter> escritores ) {
+        escritores.forEach(escritor->
+        {
+            escritor.println(usuario+" : "+mensagem);});
+    }
 }
