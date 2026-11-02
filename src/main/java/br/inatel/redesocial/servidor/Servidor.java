@@ -1,28 +1,52 @@
 package br.inatel.redesocial.servidor;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Servidor {
-    private int porta;
-    public Servidor(int porta){
-        if(porta<1 || porta>65535) throw new IllegalArgumentException();
-        this.porta = porta;
-    }
-    public void ativarServidor() {
-        try (ServerSocket socketServidor = new ServerSocket(this.porta);
-             Socket conexao = socketServidor.accept();
-        ) {
 
-            DataInputStream entrada = new DataInputStream(conexao.getInputStream());
-            DataOutputStream saida = new DataOutputStream(conexao.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+    private final int porta;
+    private final ServidorFactory servidorFactory;
+    private final Set<PrintWriter> escritores = new HashSet<>();
+
+    public Servidor(int porta, ServidorFactory servidorFactory) {
+        if (porta < 1 || porta > 65535) {
+            throw new IllegalArgumentException("Porta inválida.");
         }
-        ;
-    }
 
+        if (servidorFactory == null) {
+            throw new IllegalArgumentException(
+                    "A fábrica do servidor não pode ser nula."
+            );
+        }
+
+        this.porta = porta;
+        this.servidorFactory = servidorFactory;
+    }
+    
+    public void servidorAtivo() {
+        try (ServerSocket serverSocket =
+                     servidorFactory.criarServidor(porta)) {
+
+            while (!serverSocket.isClosed()) {
+                ServidorHandler handler =
+                        servidorFactory.criarServidorHandler(
+                                serverSocket.accept(),
+                                escritores,
+                                servidorFactory
+                        );
+
+                handler.start();
+            }
+
+        } catch (IOException e) {
+            System.err.println(
+                    "Erro durante a execução do servidor: "
+                            + e.getMessage()
+            );
+        }
+    }
 }
