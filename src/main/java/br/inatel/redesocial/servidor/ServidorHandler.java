@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Set;
 
-public class ServidorHandler {
+public class ServidorHandler extends Thread {
 
     private Socket socket;
     private static Set<PrintWriter> escritores;
