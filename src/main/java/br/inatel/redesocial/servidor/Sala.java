@@ -12,6 +12,7 @@ public class Sala {
 
 
     public Sala(int capacidadeMaxima, String nome){
+        this.nome = nome;
         quantidadeUsuarios=0;
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
@@ -19,15 +20,17 @@ public class Sala {
     public boolean addUsuario(Usuario usuarioNovo){
         if(quantidadeUsuarios<capacidadeMaxima) {
             quantidadeUsuarios += 1;
+            usuariosAtivos.add(usuarioNovo);
             return true;
         }
-        usuariosAtivos.add(usuarioNovo);
         return false;
     }
     public void removeUsuario(Usuario usuarioRemover){
         if(quantidadeUsuarios>0){
-            quantidadeUsuarios-=1;
-            usuariosAtivos.remove(usuarioRemover);
+            if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
+                usuariosAtivos.remove(usuarioRemover);
+                quantidadeUsuarios-=1;
+            }
         }
     }
 
