@@ -1,8 +1,10 @@
 package br.inatel.redesocial.banco.funcoes;
 
 import br.inatel.redesocial.banco.ConnectionDAO;
+import br.inatel.redesocial.exceptions.EmailJaCadastradoException;
 
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class CadastroDAO extends ConnectionDAO {
 
@@ -17,6 +19,9 @@ public class CadastroDAO extends ConnectionDAO {
             pst.execute();
 
             return true;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new EmailJaCadastradoException("E-mail já está em uso");
+
         } catch (SQLException e) {
             System.out.println("Erro ao cadastrar usuário no banco: " + e.getMessage());
 
