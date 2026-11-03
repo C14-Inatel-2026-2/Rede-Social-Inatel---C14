@@ -4,6 +4,7 @@ import br.inatel.redesocial.autenticacao.Cadastro;
 import br.inatel.redesocial.autenticacao.Login;
 import br.inatel.redesocial.autenticacao.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
 import br.inatel.redesocial.exceptions.EmailInvalidoException;
 import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,5 +62,11 @@ public class CadastroTest {
     public void testeFalhaNoCadastroPorSenhaInvalida() {
         assertThrows(SenhaInvalidaException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaInvalida, login));
+    }
+
+    @Test
+    public void testFalhaNoCadastroPorEmailNaoInformado(){
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(emailNulo, senhaValida, login));
     }
 }
