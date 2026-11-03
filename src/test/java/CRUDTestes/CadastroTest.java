@@ -6,6 +6,7 @@ import br.inatel.redesocial.autenticacao.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.exceptions.CampoObrigatorioException;
 import br.inatel.redesocial.exceptions.EmailInvalidoException;
+import br.inatel.redesocial.exceptions.EmailJaCadastradoException;
 import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,14 +66,24 @@ public class CadastroTest {
     }
 
     @Test
-    public void testFalhaNoCadastroPorEmailNaoInformado(){
+    public void testeFalhaNoCadastroPorEmailNaoInformado(){
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailNulo, senhaValida, login));
     }
 
     @Test
-    public void testFalhaNoCadastroPorSenhaNaoInformada() {
+    public void testeFalhaNoCadastroPorSenhaNaoInformada() {
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaNula, login));
+    }
+
+    @Test
+    public void testeEmailDuplicado(){
+        when(cadastroDAO.insertUsuario(emailValido, senhaValida)).thenThrow(
+                new EmailJaCadastradoException("E-mail já está em uso"));
+
+        assertThrows(EmailJaCadastradoException.class,
+                () -> cadastro.criarUsuario(emailValido, senhaValida, login));
+
     }
 }
