@@ -4,14 +4,14 @@ import br.inatel.redesocial.autenticacao.Cadastro;
 import br.inatel.redesocial.autenticacao.Login;
 import br.inatel.redesocial.autenticacao.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
+import br.inatel.redesocial.exceptions.EmailInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,5 +48,11 @@ public class CadastroTest {
         assertNotNull(usuarioCadastrado);
         assertEquals(emailValido, usuarioCadastrado.getEmail());
         verify(cadastroDAO).insertUsuario(emailValido, senhaValida);
+    }
+
+    @Test
+    public void testeFalhaNoCadastroPorEmailInvalido(){
+        assertThrows(EmailInvalidoException.class,
+                () -> cadastro.criarUsuario(emailInvalido, senhaValida, login));
     }
 }
