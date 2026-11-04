@@ -61,3 +61,38 @@ jobs:
           }
         }
       }
+
+  - script: >
+      multibranchPipelineJob('projeto-front') {
+        displayName('projeto-front')
+        description('Pipeline Front: Build -> Test -> Package')
+        branchSources {
+          branchSource {
+            source {
+              git {
+                id('projeto-front')
+                remote('${GITHUB_REPO_URL}')
+                credentialsId('github')
+                traits {
+                  gitBranchDiscovery()
+                }
+              }
+            }
+          }
+        }
+        factory {
+          workflowBranchProjectFactory {
+            scriptPath('ChatZoneFX/Jenkinsfile')
+          }
+        }
+        triggers {
+          periodicFolderTrigger {
+            interval('1m')
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(5)
+          }
+        }
+      }
