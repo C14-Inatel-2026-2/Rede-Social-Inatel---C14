@@ -17,19 +17,11 @@ public class Login {
         return autenticado;
     }
 
-    public static String verificarEmail(String emailVerificado){
-        if (emailVerificado.matches("^[a-z0-9.]+@[a-z0-9]+\\.[a-z]+(\\.[a-z]+)?$")){
-            return emailVerificado;
-        }
-
-        return "Email inválido";
+    public static boolean verificarEmail(String email) {
+        return email.matches("^[a-z0-9.]+@[a-z0-9]+\\.[a-z]+(\\.[a-z]+)?$");
     }
 
-    public static String verificarSenha(String senhaVerificada){
-        if (senhaVerificada.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!]).{8,}$")){
-            return senhaVerificada;
-        }
-
-        return "Senha inválida";
+    public static boolean verificarSenha(String senha) {
+        return senha.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!]).{8,}$");
     }
 }

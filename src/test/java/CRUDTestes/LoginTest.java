@@ -67,29 +67,29 @@ public class LoginTest {
 
     @Test
     public void testeVerificarEmail(){
-        String emailTeste = Login.verificarEmail(email);
+        boolean emailTeste = Login.verificarEmail(email);
 
-        assertEquals(email, emailTeste);
+        assertTrue(emailTeste);
     }
 
     @Test
     public void testeVerificarEmailInvalido(){
-        String emailTeste = Login.verificarEmail("@inatel.br");
+        boolean emailTeste = Login.verificarEmail("@inatel.br");
 
-        assertEquals("Email inválido", emailTeste);
+        assertFalse(emailTeste);
     }
 
     @Test
     public void testeVerificarSenha(){
-        String senhaTeste = Login.verificarSenha(senha);
+        boolean senhaTeste = Login.verificarSenha(senha);
 
-        assertEquals(senha, senhaTeste);
+        assertTrue(senhaTeste);
     }
 
     @Test
     public void testeVerificarSenhaInvalida(){
-        String senhaTeste = Login.verificarSenha("1234");
+        boolean senhaTeste = Login.verificarSenha("1234");
 
-        assertEquals("Senha inválida", senhaTeste);
+        assertFalse(senhaTeste);
     }
 }
