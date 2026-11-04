@@ -1,5 +1,8 @@
 package br.inatel.redesocial.servidor;
 
+import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
+import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Set;
@@ -9,8 +12,9 @@ public class ServidorHandler extends Thread {
     private Socket socket;
     private static Set<PrintWriter> escritores;
     private ServidorFactory servidorFactory;
-    private String usuario;
-    private String salaAtual;
+    private String emailUsuario;
+    private String nomeSalaAtual;
+    private Sala instanciaSala;
     private ServidorSocket servidorSocket;
 
     public ServidorHandler(Socket socket, Set<PrintWriter> escritores, ServidorFactory servidorFactory) {
@@ -31,25 +35,28 @@ public class ServidorHandler extends Thread {
             synchronized (escritores) {
                 escritores.add(servidorSocket.getEscritor());
             }
-            usuario = servidorSocket.leitura();
-            salaAtual = servidorSocket.leitura();
-            if (GerenciadorSalas.getSala(salaAtual)==null){
+            emailUsuario = servidorSocket.leitura();
+            nomeSalaAtual = servidorSocket.leitura();
+            instanciaSala = GerenciadorSalas.getSala(nomeSalaAtual);
+            if (instanciaSala==null){
                 throw new IllegalArgumentException("Sala não encontrada");
             }
-            if(GerenciadorSalas.getSala(salaAtual).isLotada()){
+            else if(instanciaSala.isLotada()){
                 throw new IllegalArgumentException("Sala lotada!");
             }
-            //todo adicionar usuario às salas do gerenciador de salas (usuario usa email e senha, mas aqui é nome)
-            usuario = usuario.concat("\u0001").concat(salaAtual);
+            GerenciadorUsuarios managerUsuarios = new GerenciadorUsuariosMock();
+            instanciaSala.addUsuario(managerUsuarios.buscaUsuarioPorNome(emailUsuario));
 
-            servidorSocket.enviar(usuario, "novo usuario : ", escritores, salaAtual);
+            emailUsuario = emailUsuario.concat("\u0001").concat(nomeSalaAtual);
 
-            servidorSocket.receber(usuario, escritores, salaAtual);
+            servidorSocket.enviar(emailUsuario, "novo usuario : ", escritores, nomeSalaAtual);
 
+            servidorSocket.receber(emailUsuario, escritores, nomeSalaAtual);
+            
             synchronized (escritores) {
                 escritores.remove(servidorSocket.getEscritor());
             }
-            servidorSocket.enviar(usuario, "saiu : ", escritores, salaAtual);
+            servidorSocket.enviar(emailUsuario, "saiu : ", escritores, nomeSalaAtual);
 
         } catch (IOException e) {
             e.printStackTrace();
