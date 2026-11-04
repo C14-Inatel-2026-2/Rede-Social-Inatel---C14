@@ -10,7 +10,7 @@ public abstract class ConnectionDAO {
     protected Statement st;
     protected ResultSet rs;
 
-    protected String database = "exemplo";
+    protected String database = "db";
     protected String user = "root";
     protected String password = "root";
     protected String url = "jdbc:mysql://localhost:3306/" + database;
