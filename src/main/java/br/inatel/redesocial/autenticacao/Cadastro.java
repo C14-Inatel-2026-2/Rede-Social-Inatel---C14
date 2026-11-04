@@ -28,12 +28,12 @@ public class Cadastro {
 
     private boolean verificacoesParaCriacao(String email, String senha, Login login){
 
-        if(login.verificarEmail(email).equals("Email inválido")) {
+        if(!login.verificarEmail(email)) {
             throw new EmailInvalidoException(
                     "Formato de email inválido");
         }
 
-        if (login.verificarSenha(senha).equals("Senha inválida")) {
+        if (!login.verificarSenha(senha)) {
             throw new SenhaInvalidaException(
                     "Formato de senha inválida");
         }
