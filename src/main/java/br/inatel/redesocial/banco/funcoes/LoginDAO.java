@@ -9,7 +9,7 @@ public class LoginDAO extends ConnectionDAO {
     public boolean auteticaUser(String nome, String password){
         boolean autenticado = false;
         connectToDb();
-        String sql = "SELECT infos FROM user WHERE password=? AND nome=?";
+        String sql = "SELECT email FROM usuario WHERE senha=? AND email=?";
 
         try {
             pst = connection.prepareStatement(sql);
