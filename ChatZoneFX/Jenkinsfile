@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Source') {
+            steps {
+                echo 'Verificando o código-fonte do front'
+                sh '''
+                    echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
+                    git log -1 --oneline
+                    ls -la ChatZoneFX
+                '''
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Compilando o front (ChatZoneFX)'
+                dir('ChatZoneFX') {
+                    sh '''
+                        java -version
+                        mvn -version
+                        mvn -B -DskipTests clean compile
+                    '''
+                }
+            }
+        }
+
+        stage('Análise estática') {
+            steps {
+                dir('ChatZoneFX') {
+                    sh '''
+                mvn -B \
+                  org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:checkstyle \
+                  com.github.spotbugs:spotbugs-maven-plugin:4.10.5.0:spotbugs \
+                  -Dcheckstyle.config.location=google_checks.xml \
+                  -Dcheckstyle.failOnViolation=false
+            '''
+                }
+            }
+
+        }
+
+        stage('Test') {
+            steps {
+                dir('ChatZoneFX') {
+                    sh 'mvn -B test -DfailIfNoTests=false'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true,
+                            testResults: 'ChatZoneFX/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                echo 'Gerando o artefato do front'
+                dir('ChatZoneFX') {
+                    sh '''
+                        mvn -B -DskipTests package
+                        test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
+                    '''
+                }
+            }
+        }
+
+    }
+
+
+}

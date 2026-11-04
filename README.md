@@ -45,7 +45,7 @@ O deploy é executado somente para a branch `main` e dispara o Deploy Hook do Re
 
 ### Configuração local
 
-1. Copie `.env.example` para `.env`.
+1. Copie `.env` para `.env`.
 2. Preencha as credenciais do Jenkins, do GitHub e o `RENDER_DEPLOY_HOOK`.
 3. Inicie o Jenkins:
 
@@ -63,7 +63,7 @@ O Jenkins ficará disponível em `http://localhost:8080`. O job multibranch é c
 - `Package`: gera o JAR e verifica se o artefato foi criado.
 - `Deploy`: dispara o deploy no Render somente na `main`.
 
-Nunca versione o arquivo `.env`; use `.env.example` como modelo.
+Nunca versione o arquivo `.env`; use `.env` como modelo.
 
 ## Requisitos do Sistema
 

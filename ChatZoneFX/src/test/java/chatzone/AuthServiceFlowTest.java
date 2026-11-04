@@ -1,15 +1,35 @@
 package chatzone;
 
+import br.inatel.redesocial.autenticacao.Cadastro;
+import br.inatel.redesocial.autenticacao.Login;
+import br.inatel.redesocial.autenticacao.Cadastro;
+import br.inatel.redesocial.banco.funcoes.CadastroDAO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AuthServiceFlowTest {
+
+    private Navigator navigator;
+    private AuthController controller;
+
+    @BeforeEach
+    void setup() {
+        navigator = mock(Navigator.class);
+        Login login = mock(Login.class);
+        when(login.autenticarUsuario(any(), any())).thenReturn(true);
+        Cadastro cadastro = mock(Cadastro.class);
+        controller = new AuthController(login, cadastro, navigator);
+    }
 
     @Test
     void loginComCredenciaisValidas_retornaLoginOk() {
@@ -28,10 +48,8 @@ class AuthServiceFlowTest {
 
     @Test
     void loginQuandoNavegacaoFalha_naoPropagaExcecao() throws Exception {
-        Navigator navigator = mock(Navigator.class);
         doThrow(new Exception("Falha na navegação"))
                 .when(navigator).showLobby("user@email.com");
-        AuthController controller = new AuthController(navigator);
 
         assertDoesNotThrow(() -> controller.login("user@email.com", "Senha@123"));
         verify(navigator).showLobby("user@email.com");
@@ -39,10 +57,8 @@ class AuthServiceFlowTest {
 
     @Test
     void cadastroQuandoNavegacaoFalha_naoPropagaExcecao() throws Exception {
-        Navigator navigator = mock(Navigator.class);
         doThrow(new Exception("Falha na navegação"))
                 .when(navigator).showLobby("user@email.com");
-        AuthController controller = new AuthController(navigator);
 
         assertDoesNotThrow(() -> controller.register("user@email.com", "Senha@123"));
         verify(navigator).showLobby("user@email.com");
