@@ -1,124 +1,121 @@
-pipeline {
-    agent any
+    pipeline {
+        agent any
 
-    stages {
+        stages {
 
-        stage('Source') {
-            steps {
-                echo 'Verificando o código-fonte obtido pelo Jenkins'
+            stage('Source') {
+                steps {
+                    echo 'Verificando o código-fonte obtido pelo Jenkins'
 
-                sh '''
-                    echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
-                    echo "Commit atual:"
-                    git log -1 --oneline
-
-                    echo "Arquivos na raiz do projeto:"
-                    ls -la
-                '''
+                    sh '''
+                        echo "Branch atual: ${BRANCH_NAME:-desconhecida}"
+                        echo "Commit atual:"
+                        git log -1 --oneline
+    
+                        echo "Arquivos na raiz do projeto:"
+                        ls -la
+                    '''
+                }
             }
-        }
 
-        stage('Build') {
-            steps {
-                echo 'Compilando o projeto '
+            stage('Build') {
+                steps {
+                    echo 'Compilando o projeto '
 
-                sh '''
-                     java -version
-                     mvn -version
-                     mvn -B -DskipTests clean compile
-                   '''
+                    sh '''
+                         java -version
+                         mvn -version
+                         mvn -B -DskipTests clean compile
+                       '''
+                }
             }
-        }
-        stage('Análise estática') {
-            steps {
-                sh '''
-                    mvn -B \
-                      org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:checkstyle \
-                      com.github.spotbugs:spotbugs-maven-plugin:4.10.5.0:spotbugs \
-                      -Dcheckstyle.config.location=google_checks.xml \
-                      -Dcheckstyle.failOnViolation=false
-                '''
+            stage('Análise estática') {
+                steps {
+                    sh '''
+                        mvn -B \
+                          org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:checkstyle \
+                          com.github.spotbugs:spotbugs-maven-plugin:4.10.5.0:spotbugs \
+                          -Dcheckstyle.config.location=google_checks.xml \
+                          -Dcheckstyle.failOnViolation=false
+                    '''
+                }
             }
-        }
 
-        stage('Test') {
-            steps {
-                sh '''
-                               mvn -B \
-                                 org.jacoco:jacoco-maven-plugin:0.8.14:prepare-agent \
-                                 test-compile \
-                                 org.apache.maven.plugins:maven-surefire-plugin:3.5.4:test \
-                                 org.jacoco:jacoco-maven-plugin:0.8.14:report \
-                                 -DfailIfNoTests=false
-                           '''
+            stage('Test') {
+                steps {
+                    sh '''
+                                   mvn -B \
+                                     org.jacoco:jacoco-maven-plugin:0.8.14:prepare-agent \
+                                     test-compile \
+                                     org.apache.maven.plugins:maven-surefire-plugin:3.5.4:test \
+                                     org.jacoco:jacoco-maven-plugin:0.8.14:report \
+                                     -DfailIfNoTests=false
+                               '''
+                }
+                post {
+                    always {
+                        junit allowEmptyResults: true,
+                                testResults: 'target/surefire-reports/*.xml'
+                        recordCoverage tools: [[parser: 'JACOCO',
+                                                pattern: 'target/site/jacoco/jacoco.xml']]
+                    }
+                }
             }
-            post {
-                always {
-                    junit allowEmptyResults: true,
-                    testResults: 'target/surefire-reports/*.xml'
-                    recordCoverage tools: [[parser: 'JACOCO',
-                            pattern: 'target/site/jacoco/jacoco.xml']]
+            stage('Package') {
+                steps {
+                    echo 'Gerando o artefato da aplicação'
+                    sh '''
+                        mvn -B -DskipTests package
+                        test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
+                    '''
+                }
+            }
+
+            stage('Deploy') {
+                when {
+                    branch 'main'
+                }
+                steps {
+                    withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]) {
+                        sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
+                    }
+                    echo 'Deploy disparado no render'
                 }
             }
         }
-        stage('Package') {
-            steps {
-                echo 'Gerando o artefato da aplicação'
-                sh '''
-                    mvn -B -DskipTests package
-                    test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
-                '''
-            }
-        }
-        stage('Deploy') {
-            when{
-                branch 'main'
-            }
-            steps{
-                withCredentials([string(credentialsId: 'render-deploy-hook', variable: 'DEPLOY_HOOK')]){
-                    sh 'curl -fsS -X POST "$DEPLOY_HOOK"'
-                }
-                echo 'Deploy disparado no render'
-            }
-        }
 
-        }
+        post {
+            always {
+                script {
+                    def autor = "Desconhecido"
 
-                  post {
-                        success {
-                            withCredentials([
-                                string(
-                                    credentialsId: 'discord-webhook',
-                                    variable: 'DISCORD_WEBHOOK'
-                                )
-                            ]) {
-                              sh '''
-                                  curl -fsS \
-                                     -H 'Content-Type: application/json' \
-                                     -X POST \
-                                     --data-binary '{"content":"Sucesso: a pipeline terminou!"}' \
-                                     "$DISCORD_WEBHOOK"
-                                '''
-                            }
-                        }
-
-                        failure {
-                            withCredentials([
-                                string(
-                                    credentialsId: 'discord-webhook',
-                                    variable: 'DISCORD_WEBHOOK'
-                                )
-                            ]) {
-                                 sh '''
-                                    curl -fsS \
-                                       -H 'Content-Type: application/json' \
-                                       -X POST \
-                                       --data-binary '{"content":"Falha: a pipeline precisa ser verificada."}' \
-                                       "$DISCORD_WEBHOOK"
-                                    '''
-                            }
-                        }
+                    try {
+                        autor = sh(
+                                script: "git log -1 --pretty=format:'%an'",
+                                returnStdout: true
+                        ).trim()
+                    } catch (Exception e) {
+                        echo "Não foi possível identificar o autor."
                     }
 
+                    def resultado = currentBuild.currentResult
 
-}
+                    def mensagem = resultado == 'SUCCESS' ?
+                            "Pipeline finalizada com sucesso!" :
+                            "Pipeline finalizada com resultado: ${resultado}"
+
+                    discordSend(
+                            webhookURL: env.DISCORD_WEBHOOK,
+                            title: env.JOB_NAME,
+                            description: """
+                            ${mensagem}
+                            
+                            **Responsável pelo último commit:** ${autor}
+                            """,
+                            link: env.BUILD_URL,
+                            result: resultado
+                    )
+                }
+            }
+        }
+    }
