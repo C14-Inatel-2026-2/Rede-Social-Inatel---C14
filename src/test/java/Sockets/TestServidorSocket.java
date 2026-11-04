@@ -1,116 +1,94 @@
 package Sockets;
 
-import br.inatel.redesocial.servidor.Servidor;
+import br.inatel.redesocial.servidor.Mensagem;
 import br.inatel.redesocial.servidor.ServidorFactory;
-import br.inatel.redesocial.servidor.ServidorHandler;
+import br.inatel.redesocial.servidor.ServidorSocket;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.*;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TestServidorSocket {
+public class TestServidorSocket{
 
     @Mock
-    private ServidorFactory servidorFactory;
-
+    private ServidorFactory factory;
     @Mock
-    private ServerSocket serverSocket;
+    private Socket socket;
 
-    @Mock
-    private ServidorHandler handler;
+    private StringWriter saida;
 
-    @Mock
-    private Socket cliente;
-
-    @Test
-    public void portaMenorInvalida() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Servidor(-1, servidorFactory);
-        });
+    private ServidorSocket criar(String entrada) throws IOException {
+        saida = new StringWriter();
+        when(factory.criarPrintWriter(socket)).thenReturn(new PrintWriter(saida, true));
+        when(factory.criarBufferReader(socket)).thenReturn(new BufferedReader(new StringReader(entrada)));
+        return new ServidorSocket(socket, factory);
     }
 
     @Test
-    public void portaMaiorInvalida() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Servidor(65536, servidorFactory);
-        });
+    public void leituraDevolveUmaLinha() throws IOException {
+        ServidorSocket s = criar("ola\n");
+        assertEquals("ola", s.leitura());
     }
 
     @Test
-    public void portaZeroInvalida() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Servidor(0, servidorFactory);
-        });
+    public void receberConverteJsonEmMensagem() throws IOException {
+        ServidorSocket s = criar("{\"type\":\"mensagem\",\"texto\":\"oi\"}\n");
+        Mensagem m = s.receber();
+        assertEquals("mensagem", m.type);
+        assertEquals("oi", m.texto);
     }
 
     @Test
-    public void fabricaNulaInvalida() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Servidor(5000, null);
-        });
+    public void receberDevolveNullQuandoConexaoFecha() throws IOException {
+        ServidorSocket s = criar("");
+        assertNull(s.receber());
     }
 
     @Test
-    public void portasLimiteValidas() {
-        assertDoesNotThrow(() -> new Servidor(1, servidorFactory));
-        assertDoesNotThrow(() -> new Servidor(65535, servidorFactory));
+    public void receberIgnoraJsonInvalidoEAvisaCliente() throws IOException {
+        ServidorSocket s = criar("{quebrado\n{\"type\":\"mensagem\",\"texto\":\"oi\"}\n");
+        Mensagem m = s.receber();
+        assertEquals("oi", m.texto);
+        assertTrue(saida.toString().contains("erro"));
     }
 
     @Test
-    public void portaCriadaIgualPortaUsada() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenReturn(serverSocket);
-        when(serverSocket.isClosed()).thenReturn(true);
-        new Servidor(5000, servidorFactory).servidorAtivo();
-        verify(servidorFactory).criarServidor(5000);
+    public void receberIgnoraMensagemSemType() throws IOException {
+        ServidorSocket s = criar("{\"texto\":\"oi\"}\n{\"type\":\"mensagem\",\"texto\":\"x\"}\n");
+        assertEquals("x", s.receber().texto);
+        assertTrue(saida.toString().contains("erro"));
     }
 
     @Test
-    public void naoAceitarClienteSeSocketFechado() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenReturn(serverSocket);
-        when(serverSocket.isClosed()).thenReturn(true);
-        new Servidor(5000, servidorFactory).servidorAtivo();
-        verify(serverSocket, never()).accept();
+    public void receberDevolveNullNoComandoSair() throws IOException {
+        ServidorSocket s = criar("{\"type\":\"sair\"}\n");
+        assertNull(s.receber());
     }
 
     @Test
-    public void iniciarHandlerParaClienteAceito() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenReturn(serverSocket);
-        when(serverSocket.isClosed()).thenReturn(false, true);
-        when(serverSocket.accept()).thenReturn(cliente);
-        when(servidorFactory.criarServidorHandler(eq(cliente), any(), eq(servidorFactory))).thenReturn(handler);
-        new Servidor(5000, servidorFactory).servidorAtivo();
-        verify(handler).start();
+    public void enviarEscreveJsonEmUmaLinha() throws IOException {
+        ServidorSocket s = criar("");
+        s.enviar(Mensagem.erro("falhou"));
+        String linha = saida.toString().trim();
+        assertTrue(linha.startsWith("{") && linha.contains("falhou"));
+        assertEquals(1, saida.toString().lines().count());
     }
+
     @Test
-    public void naoExcecaoSeAcceptFalhar() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenReturn(serverSocket);
-        when(serverSocket.isClosed()).thenReturn(false);
-        when(serverSocket.accept()).thenThrow(new IOException("falha"));
-        Servidor servidor = new Servidor(5000, servidorFactory);
-        assertDoesNotThrow(servidor::servidorAtivo);
-    }
-    @Test
-    public void naoExcecaoSeFabricaFalharAoCriarServidor() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenThrow(new IOException("porta em uso"));
-        Servidor servidor = new Servidor(5000, servidorFactory);
-        assertDoesNotThrow(servidor::servidorAtivo);
-    }
-    @Test
-    public void deveFecharServerSocketAoTerminar() throws IOException {
-        when(servidorFactory.criarServidor(5000)).thenReturn(serverSocket);
-        when(serverSocket.isClosed()).thenReturn(true);
-        new Servidor(5000, servidorFactory).servidorAtivo();
-        verify(serverSocket).close();
+    public void enviarParaDestinoEscreveUsuarioETexto() throws IOException {
+        ServidorSocket s = criar("");
+        StringWriter outro = new StringWriter();
+        Mensagem m = new Mensagem();
+        m.usuario = "thiago";
+        m.texto = "oi";
+        s.enviar(m, new PrintWriter(outro, true));
+        assertEquals("thiago: oi", outro.toString().trim());
     }
 }
