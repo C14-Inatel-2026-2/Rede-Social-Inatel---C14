@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Set;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 
 public class ServidorSocket {
     private PrintWriter escritor;
     private BufferedReader leitor;
+    private static final Gson GSON = new Gson();
 
     public ServidorSocket(Socket socket, ServidorFactory servidorFactory) {
         try {
@@ -23,24 +27,41 @@ public class ServidorSocket {
         return leitor.readLine();
     }
 
-    public void enviar(String usuario, String mensagem, Set<PrintWriter> escritores, String salaEnvio) {
-        escritores.forEach(escritor ->
-        {
-            if(usuario.split("\u0001")[1].equals(salaEnvio)){
-                escritor.println(usuario.split("\u0001")[0] + " : " + mensagem);
-            }
-        });
+    public void enviar(Mensagem msg) {
+        synchronized (escritor){
+            escritor.println(GSON.toJson(msg));
+        }
     }
 
-    public void receber(String usuario, Set<PrintWriter> escritores, String salaRecebida) throws IOException {
-        String mensagem;
-        while ((mensagem = leitura()) != null) {
-            if (usuario.split("\u0001")[1].equals(salaRecebida)){
-                if (mensagem.equals("saiu")) break;
-                enviar(usuario, mensagem, escritores, salaRecebida);
+    public void enviar(Mensagem msg, PrintWriter escritorDestino){
+        synchronized(escritorDestino){
+            escritorDestino.println(msg.usuario + ": " + msg.texto);
+        }
+    }
+
+    public Mensagem receber() throws IOException {
+        String lido;
+        while ((lido=leitura()) != null) {
+            Mensagem msg;
+            try {
+                msg = GSON.fromJson(lido, Mensagem.class);
+            }
+            catch (JsonSyntaxException e){
+                enviar(Mensagem.erro("JSON inválido"));
+                continue;
+            }
+            if(msg == null || msg.type == null){
+                enviar(Mensagem.erro("Mensagem vazia! "));
+                continue;
+            }
+            else if("sair".equals(msg.type)){
+                break;
+            }
+            else {
+                return msg;
             }
         }
-
+        return null;
     }
 
     public PrintWriter getEscritor() {return escritor;}
