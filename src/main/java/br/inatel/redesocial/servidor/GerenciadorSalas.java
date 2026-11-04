@@ -13,6 +13,4 @@ public class GerenciadorSalas {
     public static Sala getSala(String nome){
         return salas.get(nome);
     }
-
-
 }
