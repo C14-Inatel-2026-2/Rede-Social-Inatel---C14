@@ -1,10 +1,7 @@
 package br.inatel.redesocial.autenticacao;
 
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
-import br.inatel.redesocial.exceptions.CampoObrigatorioException;
-import br.inatel.redesocial.exceptions.EmailInvalidoException;
-import br.inatel.redesocial.exceptions.FalhaNoCadastroException;
-import br.inatel.redesocial.exceptions.SenhaInvalidaException;
+import br.inatel.redesocial.exceptions.*;
 
 public class Cadastro {
 
@@ -18,11 +15,13 @@ public class Cadastro {
 
         verificacaoCampoObrigatorio(email, senha, nome);
 
-        if(verificacoesParaCriacao(email, senha, login)) {
+        if(verificacoesParaCriacao(email, senha, nome, login)) {
             cadastrarNoBanco(email, senha, nome);
         }
 
-        return new Usuario(email, senha, nome);
+        Usuario usuario = new Usuario(email, senha);
+        usuario.setNome(nome);
+        return usuario;
     }
 
     private void verificacaoCampoObrigatorio(String email, String senha, String nome) {
@@ -31,7 +30,13 @@ public class Cadastro {
             throw new CampoObrigatorioException("E-mail, senha e nome são obrigatórios");
     }
 
-    private boolean verificacoesParaCriacao(String email, String senha, Login login){
+    private boolean verificacoesParaCriacao(String email, String senha, String nome, Login login){
+
+        if(!login.verificarNome(nome)) {
+            throw new NomeInvalidoException(
+                    "Formato de nome inválido. " +
+                            "O nome deve ter de 3 a 16 caracteres: letras, números ou _");
+        }
 
         if(!login.verificarEmail(email)) {
             throw new EmailInvalidoException(
@@ -40,7 +45,10 @@ public class Cadastro {
 
         if (!login.verificarSenha(senha)) {
             throw new SenhaInvalidaException(
-                    "Formato de senha inválida");
+                    "Formato de senha inválida. " +
+                            "A senha deve ter no mínimo 8 caracteres: " +
+                            "letras (maiusculas e minusculas), números " +
+                            "e caracteres especiais ($*&@#!)");
         }
 
         return true;
