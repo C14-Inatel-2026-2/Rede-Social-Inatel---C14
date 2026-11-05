@@ -99,4 +99,11 @@ public class LoginTest {
 
         assertTrue(nomeTeste);
     }
+
+    @Test
+    public void testeVerificarNomeInvalido(){
+        boolean nomeTeste = Login.verificarNome("Chris de Souza");
+
+        assertFalse(nomeTeste);
+    }
 }
