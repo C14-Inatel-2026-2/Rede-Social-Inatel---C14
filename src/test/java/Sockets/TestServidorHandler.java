@@ -171,7 +171,7 @@ public class TestServidorHandler {
         when(servidorSocket.receber()).thenReturn(texto("oi"), (Mensagem) null);
         handler.run();
         verificaErroEnviado();
-        verify(servidorSocket, never()).enviar(any(Mensagem.class), any(PrintWriter.class));
+        verify(servidorSocket, never()).enviarTexto(any(Mensagem.class), any(PrintWriter.class));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class TestServidorHandler {
         when(servidorSocket.receber())
                 .thenReturn(entrar("thiago", "geral"), texto("oi"), (Mensagem) null);
         handler.run();
-        verify(servidorSocket).enviar(
+        verify(servidorSocket).enviarTexto(
                 argThat((Mensagem m) -> "thiago".equals(m.usuario) && "oi".equals(m.texto)),
                 eq(escritor));
     }
