@@ -3,6 +3,8 @@ package CRUDTestes;
 import br.inatel.redesocial.autenticacao.Login;
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,25 +30,26 @@ public class LoginTest {
     }
 
     @Test
-    public void testeAutentificar(){
-        Usuario usuario = new Usuario(email, senha, nome);
-        Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(true);
+    public void testeAutenticar(){
+        Usuario usuario = new Usuario(email, senha);
+        Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(nome);
 
         boolean autenticado = login.autenticarUsuario(usuario, senha);
 
         assertTrue(autenticado);
         assertTrue(usuario.getLogado());
+        assertEquals(nome, usuario.getNome());
     }
 
     @Test
     public void testeAutenticarInvalido(){
         String senhaInvalida = "senha123";
-        Usuario usuario = new Usuario(email, senha, nome);
-        Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(false);
+        Usuario usuario = new Usuario(email, senha);
 
-        boolean autenticado = login.autenticarUsuario(usuario, senhaInvalida);
+        Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(null);
 
-        assertFalse(autenticado);
+        assertThrows(FalhaNoLoginException.class,
+                () -> login.autenticarUsuario(usuario, senhaInvalida));
         assertFalse(usuario.getLogado());
     }
 
@@ -58,7 +61,7 @@ public class LoginTest {
 
     @Test
     public void testeAutenticarUsuarioFalhaEMandaException(){
-        Usuario usuario = new Usuario(email, senha, nome);
+        Usuario usuario = new Usuario(email, senha);
 
         Mockito.when(loginDAO.auteticaUser(email, senha)).thenThrow(RuntimeException.class);
 
@@ -105,5 +108,15 @@ public class LoginTest {
         boolean nomeTeste = Login.verificarNome("Chris de Souza");
 
         assertFalse(nomeTeste);
+    }
+
+    @Test
+    public void testeAutenticarComSenhaVazia() {
+        Usuario usuario = new Usuario(email, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, ""));
+
+        Mockito.verifyNoInteractions(loginDAO);
     }
 }
