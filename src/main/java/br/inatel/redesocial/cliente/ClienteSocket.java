@@ -1,6 +1,6 @@
 package br.inatel.redesocial.cliente;
 
-import br.inatel.redesocial.servidor.Mensagem;
+import br.inatel.redesocial.cliente.dto.Mensagem;
 import java.net.Socket;
 import java.io.*;
 import com.google.gson.Gson;
