@@ -8,14 +8,19 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 public class CadastroDAO extends ConnectionDAO {
 
-    public boolean insertUsuario(String email, String senha) {
+    public boolean insertUsuario(String email, String senha, String nome) {
         connectToDb();
-        String sql = "INSERT INTO usuario(email, senha) VALUES(?, ?)";
+        if (connection == null) {
+            return false;
+        }
+
+        String sql = "INSERT INTO usuario(email, senha, nome) VALUES(?, ?, ?)";
 
         try {
             pst = connection.prepareStatement(sql);
             pst.setString(1, email);
             pst.setString(2, senha);
+            pst.setString(3, nome);
             pst.execute();
 
             return true;
