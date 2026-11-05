@@ -1,8 +1,10 @@
 package br.inatel.redesocial.autenticacao;
 
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 
-public class Login {
+public class Login{
     LoginDAO loginDAO;
 
     public Login(LoginDAO loginDAO) {
@@ -10,11 +12,16 @@ public class Login {
     }
 
     public boolean autenticarUsuario(Usuario usuario, String senhaDigitada) {
-        boolean autenticado = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
+        verificacaoCampoObrigatorio(usuario.getEmail(), senhaDigitada);
 
-        usuario.setLogado(autenticado);
+        String nome = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
 
-        return autenticado;
+        verificaSucessoNoLogin(nome);
+
+        usuario.setNome(nome);
+        usuario.setLogado(true);
+
+        return true;
     }
 
     public static boolean verificarEmail(String email) {
@@ -27,5 +34,16 @@ public class Login {
 
     public static boolean verificarNome(String nome) {
         return nome.matches("^[A-Za-z0-9_]{3,16}$");
+    }
+
+    private void verificaSucessoNoLogin(String nome){
+        if(nome == null) {
+            throw new FalhaNoLoginException("Falha no login.");
+        }
+    }
+
+    private void verificacaoCampoObrigatorio(String email, String senha) {
+        if (email == null || email.isBlank() || senha == null || senha.isBlank())
+            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
     }
 }
