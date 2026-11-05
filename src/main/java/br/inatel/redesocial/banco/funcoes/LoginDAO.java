@@ -6,33 +6,37 @@ import java.sql.SQLException;
 
 public class LoginDAO extends ConnectionDAO {
 
-    public boolean auteticaUser(String nome, String password){
-        boolean autenticado = false;
+    public String auteticaUser(String email, String password){
+        String nome = null;
         connectToDb();
-        String sql = "SELECT email FROM usuario WHERE senha=? AND email=?";
+        if (connection == null) {
+            return null;
+        }
+
+        String sql = "SELECT nome FROM usuario WHERE senha=? AND email=?";
 
         try {
             pst = connection.prepareStatement(sql);
             pst.setString(1, password);
-            pst.setString(2, nome);
+            pst.setString(2, email);
             rs = pst.executeQuery();
 
             if(rs.next()){
-                autenticado = true;
+                nome = rs.getString("nome");
             }
         } catch(SQLException e){
-            System.out.println("Falha de Login" + e.getMessage());
+            System.out.println("Falha de Login: " + e.getMessage());
         } finally {
             try {
                 if(rs != null) rs.close();
                 if(pst != null) pst.close();
                 if(connection != null) connection.close();
             } catch (SQLException e) {
-                System.out.println("Erro ao fechar recursos:" + e.getMessage());
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
             }
         }
 
-        return autenticado;
+        return nome;
     }
 
 }
