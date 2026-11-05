@@ -14,20 +14,21 @@ public class Cadastro {
         this.cadastroDAO = cadastroDAO;
     }
 
-    public Usuario criarUsuario(String email, String senha, Login login){
+    public Usuario criarUsuario(String email, String senha, String nome, Login login){
 
-        verificacaoCampoObrigatorio(email, senha);
+        verificacaoCampoObrigatorio(email, senha, nome);
 
         if(verificacoesParaCriacao(email, senha, login)) {
-            cadastrarNoBanco(email, senha);
+            cadastrarNoBanco(email, senha, nome);
         }
 
-        return new Usuario(email, senha);
+        return new Usuario(email, senha, nome);
     }
 
-    private void verificacaoCampoObrigatorio(String email, String senha) {
-        if (email == null || email.isBlank() || senha == null || senha.isBlank())
-            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
+    private void verificacaoCampoObrigatorio(String email, String senha, String nome) {
+        if (email == null || email.isBlank() || senha == null || senha.isBlank()
+                || nome == null || nome.isBlank())
+            throw new CampoObrigatorioException("E-mail, senha e nome são obrigatórios");
     }
 
     private boolean verificacoesParaCriacao(String email, String senha, Login login){
@@ -45,10 +46,10 @@ public class Cadastro {
         return true;
     }
 
-    private boolean cadastrarNoBanco(String email, String senha){
+    private boolean cadastrarNoBanco(String email, String senha, String nome){
         boolean sucesso;
 
-        sucesso = cadastroDAO.insertUsuario(email, senha);
+        sucesso = cadastroDAO.insertUsuario(email, senha, nome);
 
         if(sucesso) {
             return true;
