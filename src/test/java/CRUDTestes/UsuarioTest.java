@@ -12,7 +12,8 @@ public class UsuarioTest {
     @BeforeEach
     public void setup(){
         String email = "christopher@inatel.br";
-        this.usuario = new Usuario(email, senha);
+        String nome = "Christopher";
+        this.usuario = new Usuario(email, senha, nome);
     }
 
     @Test
