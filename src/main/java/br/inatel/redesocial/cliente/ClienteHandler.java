@@ -19,15 +19,20 @@ public class ClienteHandler {
         this.clienteFactory=clienteFactory;
     }
 
-    public void gerenciarChat()
+    public void gerenciarChat(String email,String usuario)
     {
         try (Socket socket = this.clienteFactory.criarSocket(this.host, this.porta);
              ClienteSocket clienteSocket = this.clienteFactory.criarClienteSocket(socket))
         {
             Cliente cliente = this.clienteFactory.criarCliente(clienteSocket);
+            cliente.setEmail(email);
+            cliente.setUsuario(usuario);
+
             Thread threadReceber = this.clienteFactory.criarThread(cliente);
             threadReceber.start();
+
             cliente.enviarMensagem(clienteFactory.criarScanner());
+
         } catch (IOException e) {
             System.out.println("Nao foi possivel conectar ao servidor"+e.getMessage());
         } catch (Exception e) {
