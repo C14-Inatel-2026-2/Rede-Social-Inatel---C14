@@ -5,7 +5,7 @@ import br.inatel.redesocial.banco.funcoes.LoginDAO;
 public class Login {
     LoginDAO loginDAO;
 
-    public Login(LoginDAO loginDAO){
+    public Login(LoginDAO loginDAO) {
         this.loginDAO = loginDAO;
     }
 
@@ -28,3 +28,4 @@ public class Login {
     public static boolean verificarNome(String nome) {
         return nome.matches("^[A-Za-z0-9_]{3,16}$");
     }
+}

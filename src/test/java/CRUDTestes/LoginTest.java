@@ -17,7 +17,7 @@ public class LoginTest {
     private Login login;
     private final String email = "christopher@inatel.br";
     private final String senha = "Chizinho67!";
-
+    private final String nome = "Chris_67";
 
     @Mock
     private LoginDAO loginDAO;
@@ -29,7 +29,7 @@ public class LoginTest {
 
     @Test
     public void testeAutentificar(){
-        Usuario usuario = new Usuario(email, senha);
+        Usuario usuario = new Usuario(email, senha, nome);
         Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(true);
 
         boolean autenticado = login.autenticarUsuario(usuario, senha);
@@ -41,7 +41,7 @@ public class LoginTest {
     @Test
     public void testeAutenticarInvalido(){
         String senhaInvalida = "senha123";
-        Usuario usuario = new Usuario(email, senha);
+        Usuario usuario = new Usuario(email, senha, nome);
         Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(false);
 
         boolean autenticado = login.autenticarUsuario(usuario, senhaInvalida);
@@ -58,7 +58,7 @@ public class LoginTest {
 
     @Test
     public void testeAutenticarUsuarioFalhaEMandaException(){
-        Usuario usuario = new Usuario(email, senha);
+        Usuario usuario = new Usuario(email, senha, nome);
 
         Mockito.when(loginDAO.auteticaUser(email, senha)).thenThrow(RuntimeException.class);
 
@@ -91,5 +91,12 @@ public class LoginTest {
         boolean senhaTeste = Login.verificarSenha("1234");
 
         assertFalse(senhaTeste);
+    }
+
+    @Test
+    public void testeVerificarNome(){
+        boolean nomeTeste = Login.verificarNome(nome);
+
+        assertTrue(nomeTeste);
     }
 }
