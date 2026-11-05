@@ -39,7 +39,7 @@ public class ServidorSocket {
         }
     }
 
-    public void enviar(Mensagem msg, PrintWriter escritorDestino){
+    public void enviarTexto(Mensagem msg, PrintWriter escritorDestino){
         synchronized(escritorDestino){
             escritorDestino.println(msg.usuario + ": " + msg.texto);
         }

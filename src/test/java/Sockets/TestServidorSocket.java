@@ -88,7 +88,7 @@ public class TestServidorSocket{
         Mensagem m = new Mensagem();
         m.usuario = "thiago";
         m.texto = "oi";
-        s.enviar(m, new PrintWriter(outro, true));
+        s.enviarTexto(m, new PrintWriter(outro, true));
         assertEquals("thiago: oi", outro.toString().trim());
     }
 }

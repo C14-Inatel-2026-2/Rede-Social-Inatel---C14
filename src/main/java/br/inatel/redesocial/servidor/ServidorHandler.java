@@ -83,7 +83,7 @@ public class ServidorHandler extends Thread {
                 if (instanciaSala!=null){
                     msg.usuario = emailUsuario;
                     for (PrintWriter escritorDestino : instanciaSala.getEscritores()) {
-                        servidorSocket.enviar(msg, escritorDestino);
+                        servidorSocket.enviarTexto(msg, escritorDestino);
                     }
                 }
                 else{
