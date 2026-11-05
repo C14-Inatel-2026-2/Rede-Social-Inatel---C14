@@ -25,6 +25,7 @@ public class CadastroTest {
     private String nomeValido = "Christopher";
     private String emailInvalido = "@inatel.br";
     private String senhaInvalida = "senha123";
+    private String nomeInvalido = "Chris de Souza";
     private String emailVazio = "";
     private String senhaVazia = "";
     private String nomeVazio = "";
@@ -80,6 +81,12 @@ public class CadastroTest {
     public void testeFalhaNoCadastroPorNomeNaoInformado() {
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaValida, nomeVazio, login));
+    }
+
+    @Test
+    public void testeFalhaNoCadastroPorNomeInvalido(){
+        assertThrows(NomeInvalidoException.class,
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeInvalido, login));
     }
 
     @Test
