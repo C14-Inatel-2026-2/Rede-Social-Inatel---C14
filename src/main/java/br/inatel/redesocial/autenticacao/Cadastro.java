@@ -16,14 +16,18 @@ public class Cadastro {
 
     public Usuario criarUsuario(String email, String senha, Login login){
 
-        if (email == null || email.isBlank() || senha == null || senha.isBlank())
-            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
+        verificacaoCampoObrigatorio(email, senha);
 
         if(verificacoesParaCriacao(email, senha, login)) {
             cadastrarNoBanco(email, senha);
         }
 
         return new Usuario(email, senha);
+    }
+
+    private void verificacaoCampoObrigatorio(String email, String senha) {
+        if (email == null || email.isBlank() || senha == null || senha.isBlank())
+            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
     }
 
     private boolean verificacoesParaCriacao(String email, String senha, Login login){
