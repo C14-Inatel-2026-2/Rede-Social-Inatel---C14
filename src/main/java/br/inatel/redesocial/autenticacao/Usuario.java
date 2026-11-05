@@ -10,17 +10,9 @@ public class Usuario {
     private boolean logado;
 
     public Usuario(String email, String senha) {
-        if (email == null || email.isBlank() || senha == null || senha.isBlank()) {
-            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
-        }
 
-        if(!Login.verificarEmail(email)){
-            throw new EmailInvalidoException("Formato de email inválido");
-        }
-
-        if(!Login.verificarSenha(senha)) {
-            throw new SenhaInvalidaException("Formato de senha inválida");
-        }
+        verificacaoCampoObrigatorio(email, senha);
+        verificacaoEmailESenha(email, senha);
 
         this.email = email;
         this.senhaUsuario = senha;
@@ -54,5 +46,21 @@ public class Usuario {
 
     public boolean getLogado() {
         return logado;
+    }
+
+    private void verificacaoCampoObrigatorio(String email, String senha){
+        if (email == null || email.isBlank() || senha == null || senha.isBlank()) {
+            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
+        }
+    }
+
+    private void verificacaoEmailESenha(String email, String senha){
+        if(!Login.verificarEmail(email)){
+            throw new EmailInvalidoException("Formato de email inválido");
+        }
+
+        if(!Login.verificarSenha(senha)) {
+            throw new SenhaInvalidaException("Formato de senha inválida");
+        }
     }
 }
