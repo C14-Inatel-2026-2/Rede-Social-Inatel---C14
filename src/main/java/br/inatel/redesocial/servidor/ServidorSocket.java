@@ -33,6 +33,12 @@ public class ServidorSocket {
         }
     }
 
+    public void enviarTexto(Mensagem msg){
+        synchronized(escritor){
+            escritor.println(msg.usuario + ": " + msg.texto);
+        }
+    }
+
     public void enviar(Mensagem msg, PrintWriter escritorDestino){
         synchronized(escritorDestino){
             escritorDestino.println(msg.usuario + ": " + msg.texto);
