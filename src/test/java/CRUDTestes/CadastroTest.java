@@ -22,10 +22,12 @@ public class CadastroTest {
 
     private String emailValido = "christopher@inatel.br";
     private String senhaValida = "Chizinho67!";
+    private String nomeValido = "Christopher";
     private String emailInvalido = "@inatel.br";
     private String senhaInvalida = "senha123";
-    private String emailNulo = "";
-    private String senhaNula = "";
+    private String emailVazio = "";
+    private String senhaVazia = "";
+    private String nomeVazio = "";
 
     @Mock
     Login login;
@@ -41,54 +43,60 @@ public class CadastroTest {
     public void testeSucessoNoCadastro(){
         Usuario usuarioCadastrado;
 
-        when(cadastroDAO.insertUsuario(emailValido, senhaValida)).thenReturn(true);
+        when(cadastroDAO.insertUsuario(emailValido, senhaValida, nomeValido)).thenReturn(true);
 
-        usuarioCadastrado = cadastro.criarUsuario(emailValido, senhaValida, login);
+        usuarioCadastrado = cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login);
 
         assertNotNull(usuarioCadastrado);
         assertEquals(emailValido, usuarioCadastrado.getEmail());
-        verify(cadastroDAO).insertUsuario(emailValido, senhaValida);
+        verify(cadastroDAO).insertUsuario(emailValido, senhaValida, nomeValido);
     }
 
     @Test
     public void testeFalhaNoCadastroPorEmailInvalido(){
         assertThrows(EmailInvalidoException.class,
-                () -> cadastro.criarUsuario(emailInvalido, senhaValida, login));
+                () -> cadastro.criarUsuario(emailInvalido, senhaValida, nomeValido, login));
     }
 
     @Test
     public void testeFalhaNoCadastroPorSenhaInvalida() {
         assertThrows(SenhaInvalidaException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaInvalida, login));
+                () -> cadastro.criarUsuario(emailValido, senhaInvalida, nomeValido, login));
     }
 
     @Test
     public void testeFalhaNoCadastroPorEmailNaoInformado(){
         assertThrows(CampoObrigatorioException.class,
-                () -> cadastro.criarUsuario(emailNulo, senhaValida, login));
+                () -> cadastro.criarUsuario(emailVazio, senhaValida, nomeValido, login));
     }
 
     @Test
     public void testeFalhaNoCadastroPorSenhaNaoInformada() {
         assertThrows(CampoObrigatorioException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaNula, login));
+                () -> cadastro.criarUsuario(emailValido, senhaVazia, nomeValido, login));
+    }
+
+    @Test
+    public void testeFalhaNoCadastroPorNomeNaoInformado() {
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeVazio, login));
     }
 
     @Test
     public void testeEmailDuplicado(){
-        when(cadastroDAO.insertUsuario(emailValido, senhaValida)).thenThrow(
+        when(cadastroDAO.insertUsuario(emailValido, senhaValida, nomeValido)).thenThrow(
                 new EmailJaCadastradoException("E-mail já está em uso"));
 
         assertThrows(EmailJaCadastradoException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login));
 
     }
 
     @Test
     public void testeFalhaNoBanco(){
-        when(cadastroDAO.insertUsuario(emailValido, senhaValida)).thenReturn(false);
+        when(cadastroDAO.insertUsuario(emailValido, senhaValida, nomeValido)).thenReturn(false);
 
         assertThrows(FalhaNoCadastroException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login));
     }
 }
