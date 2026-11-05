@@ -13,7 +13,8 @@ public class UsuarioTest {
     public void setup(){
         String email = "christopher@inatel.br";
         String nome = "Christopher";
-        this.usuario = new Usuario(email, senha, nome);
+        this.usuario = new Usuario(email, senha);
+        usuario.setNome(nome);
     }
 
     @Test
