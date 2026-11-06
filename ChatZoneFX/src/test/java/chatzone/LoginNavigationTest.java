@@ -2,9 +2,12 @@ package chatzone;
 
 import br.inatel.redesocial.autenticacao.Cadastro;
 import br.inatel.redesocial.autenticacao.Login;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -49,8 +52,10 @@ class LoginNavigationTest {
 
     @Test
     void loginRecusadoPeloBanco_naoNavega() throws Exception {
-        when(login.autenticarUsuario(any(), any())).thenReturn(false);
-        controller.login("user@email.com", "Senha@123");
+        when(login.autenticarUsuario(any(), any()))
+                .thenThrow(new FalhaNoLoginException("Credenciais incorretas"));
+
+        assertFalse(controller.login("user@email.com", "Senha@123"));
         verify(navigator, never()).showLobby(any());
     }
 }
