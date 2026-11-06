@@ -29,37 +29,37 @@ class RegisterNavigationTest {
 
     @Test
     void registroValido_cadastraENavegaParaLobby() throws Exception {
-        controller.register("user@email.com", "Senha@123");
-        verify(cadastro).criarUsuario("user@email.com", "Senha@123", login);
+        controller.register("user@email.com", "Senha@123","teste");
+        verify(cadastro).criarUsuario("user@email.com", "Senha@123", "teste",login);
         verify(navigator).showLobby("user@email.com");
     }
 
     @Test
     void registroEmailInvalido_naoNavega() throws Exception {
-        controller.register("invalido", "Senha@123");
-        verify(cadastro, never()).criarUsuario(any(), any(), any());
+        controller.register("invalido", "Senha@123","teste");
+        verify(cadastro, never()).criarUsuario(any(), any(),any(), any());
         verify(navigator, never()).showLobby(any());
     }
 
     @Test
     void registroSenhaInvalida_naoNavega() throws Exception {
-        controller.register("user@email.com", "fraca");
-        verify(cadastro, never()).criarUsuario(any(), any(), any());
+        controller.register("user@email.com", "fraca","teste");
+        verify(cadastro, never()).criarUsuario(any(), any(),any(), any());
         verify(navigator, never()).showLobby(any());
     }
 
     @Test
     void registroEmailESenhaInvalidos_naoNavega() throws Exception {
-        controller.register("invalido", "fraca");
+        controller.register("invalido", "fraca","teste");
         verify(navigator, never()).showLobby(any());
     }
 
     @Test
     void registroComEmailJaCadastrado_naoNavega() throws Exception {
         doThrow(new EmailJaCadastradoException("E-mail já está em uso"))
-                .when(cadastro).criarUsuario(any(), any(), any());
+                .when(cadastro).criarUsuario(any(), any(), any(),any());
 
-        controller.register("user@email.com", "Senha@123");
+        controller.register("user@email.com", "Senha@123","teste");
 
         verify(navigator, never()).showLobby(any());
     }
