@@ -1,6 +1,9 @@
 package chatzone;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
+import br.inatel.redesocial.cliente.dto.Mensagem;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -11,6 +14,13 @@ import javafx.scene.layout.*;
 import java.net.Socket;
 
 public class ChatController {
+
+    private static final String TIPO_ENTRAR   = "entrar_sala";
+    private static final String TIPO_MENSAGEM = "mensagem";
+    private static final String TIPO_SAIR     = "sair";
+    private static final String TIPO_ERRO     = "erro";
+
+    private static final Gson GSON = new Gson();
 
     @FXML private Label      roomNameLabel;
     @FXML private Label      usersCountLabel;
@@ -54,8 +64,12 @@ public class ChatController {
                 socket        = new Socket("localhost", port);
                 clienteSocket = new ClienteSocket(socket);
 
-                clienteSocket.EnviarMensagem(currentEmail);
-                clienteSocket.EnviarMensagem(roomName);
+                Mensagem entrar = new Mensagem();
+                entrar.type    = TIPO_ENTRAR;
+                entrar.texto   = roomName;
+                entrar.usuario = currentEmail;
+                entrar.email   = currentEmail;
+                clienteSocket.EnviarMensagem(entrar);
 
                 Platform.runLater(() -> {
                     usersCountLabel.setText("online");
@@ -91,17 +105,27 @@ public class ChatController {
     }
 
     private void tratarLinha(String linha) {
-        if (!linha.contains(" : ")) {
+        if (linha.startsWith("{")) {
+            try {
+                Mensagem m = GSON.fromJson(linha, Mensagem.class);
+                if (m != null && TIPO_ERRO.equals(m.type)) {
+                    appendSystem("Erro: " + m.texto);
+                    return;
+                }
+            } catch (JsonSyntaxException ignored) {
+            }
             appendSystem(linha);
             return;
         }
 
-        String[] partes = linha.split(" : ", 2);
-        String autor = partes[0].trim();
-        String texto = partes[1].trim();
+        int sep = linha.indexOf(": ");
+        if (sep < 0) {
+            appendSystem(linha);
+            return;
+        }
 
-        if (texto.equals("novo usuario :")) { appendSystem(autor + " entrou"); return; }
-        if (texto.equals("saiu :"))         { appendSystem(autor + " saiu");   return; }
+        String autor = linha.substring(0, sep).trim();
+        String texto = linha.substring(sep + 2).trim();
 
         if (autor.equals(currentEmail)) appendSent(autor, texto);
         else                            appendReceived(autor, texto);
@@ -112,7 +136,10 @@ public class ChatController {
         String text = msgInput.getText().trim().replace("\r", "").replace("\n", " ");
         if (text.isEmpty() || clienteSocket == null) return;
         try {
-            clienteSocket.EnviarMensagem(text);
+            Mensagem mensagem = new Mensagem();
+            mensagem.type  = TIPO_MENSAGEM;
+            mensagem.texto = text;
+            clienteSocket.EnviarMensagem(mensagem);
         } catch (Exception e) {
             appendSystem("Erro ao enviar: " + e.getMessage());
         }
@@ -123,8 +150,12 @@ public class ChatController {
     void onBack() {
         saindo = true;
         try {
-            if (clienteSocket != null) clienteSocket.EnviarMensagem("saiu");
-            if (socket != null)        socket.close();
+            if (clienteSocket != null) {
+                Mensagem sair = new Mensagem();
+                sair.type = TIPO_SAIR;
+                clienteSocket.EnviarMensagem(sair);
+            }
+            if (socket != null) socket.close();
         } catch (Exception ignored) {}
         try { Main.showLobby(currentEmail); } catch (Exception ignored) {}
     }
