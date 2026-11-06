@@ -11,11 +11,11 @@ public class Cadastro {
         this.cadastroDAO = cadastroDAO;
     }
 
-    public Usuario criarUsuario(String email, String senha, String nome, Login login){
+    public Usuario criarUsuario(String email, String senha, String nome){
 
         verificacaoCampoObrigatorio(email, senha, nome);
 
-        if(verificacoesParaCriacao(email, senha, nome, login)) {
+        if(verificacoesParaCriacao(email, senha, nome)) {
             cadastrarNoBanco(email, senha, nome);
         }
 
@@ -30,20 +30,20 @@ public class Cadastro {
             throw new CampoObrigatorioException("E-mail, senha e nome são obrigatórios");
     }
 
-    private boolean verificacoesParaCriacao(String email, String senha, String nome, Login login){
+    private boolean verificacoesParaCriacao(String email, String senha, String nome){
 
-        if(!login.verificarNome(nome)) {
+        if(!Login.verificarNome(nome)) {
             throw new NomeInvalidoException(
                     "Formato de nome inválido. " +
                             "O nome deve ter de 3 a 16 caracteres: letras, números ou _");
         }
 
-        if(!login.verificarEmail(email)) {
+        if(!Login.verificarEmail(email)) {
             throw new EmailInvalidoException(
                     "Formato de email inválido");
         }
 
-        if (!login.verificarSenha(senha)) {
+        if (!Login.verificarSenha(senha)) {
             throw new SenhaInvalidaException(
                     "Formato de senha inválida. " +
                             "A senha deve ter no mínimo 8 caracteres: " +
