@@ -12,7 +12,9 @@ public class UsuarioTest {
     @BeforeEach
     public void setup(){
         String email = "christopher@inatel.br";
+        String nome = "Christopher";
         this.usuario = new Usuario(email, senha);
+        usuario.setNome(nome);
     }
 
     @Test

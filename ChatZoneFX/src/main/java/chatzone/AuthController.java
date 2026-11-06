@@ -57,8 +57,8 @@ public class AuthController {
     }
 
     public boolean login(String email, String senha) {
-        if (!Login.verificarEmail(email).equals(email)
-                || !Login.verificarSenha(senha).equals(senha)) return false;
+        if (!Login.verificarEmail(email)
+                || !Login.verificarSenha(senha)) return false;
 
         Usuario usuario = new Usuario(email, senha);
         if (!login.autenticarUsuario(usuario, senha)) return false;
@@ -71,8 +71,8 @@ public class AuthController {
     }
 
     public void register(String email, String senha) {
-        if (!Login.verificarEmail(email).equals(email)) return;
-        if (!Login.verificarSenha(senha).equals(senha)) return;
+        if (!Login.verificarEmail(email)) return;
+        if (!Login.verificarSenha(senha)) return;
         try {
             cadastro.criarUsuario(email, senha, login);
             navigator.showLobby(email);
@@ -88,7 +88,7 @@ public class AuthController {
         String email = loginEmail.getText().trim();
         String senha = loginSenha.getText();
 
-        if (!Login.verificarEmail(email).equals(email)) {
+        if (!Login.verificarEmail(email)) {
             loginEmailErr.setText("Email inválido");
             loginEmailErr.setVisible(true);
             return;
@@ -107,7 +107,7 @@ public class AuthController {
         String senha = regSenha.getText();
         boolean ok = true;
 
-        if (!Login.verificarEmail(email).equals(email)) {
+        if (!Login.verificarEmail(email)) {
             regEmailErr.setText("Email inválido");
             regEmailErr.setVisible(true);
             ok = false;
@@ -115,7 +115,7 @@ public class AuthController {
             regEmailErr.setVisible(false);
         }
 
-        if (!Login.verificarSenha(senha).equals(senha)) {
+        if (!Login.verificarSenha(senha)) {
             regSenhaErr.setText("Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&@#!)");
             regSenhaErr.setVisible(true);
             ok = false;

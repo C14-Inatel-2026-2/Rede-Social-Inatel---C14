@@ -3,6 +3,8 @@ package CRUDTestes;
 import br.inatel.redesocial.autenticacao.Login;
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +19,7 @@ public class LoginTest {
     private Login login;
     private final String email = "christopher@inatel.br";
     private final String senha = "Chizinho67!";
-
+    private final String nome = "Chris_67";
 
     @Mock
     private LoginDAO loginDAO;
@@ -28,25 +30,26 @@ public class LoginTest {
     }
 
     @Test
-    public void testeAutentificar(){
+    public void testeAutenticar(){
         Usuario usuario = new Usuario(email, senha);
-        Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(true);
+        Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(nome);
 
         boolean autenticado = login.autenticarUsuario(usuario, senha);
 
         assertTrue(autenticado);
         assertTrue(usuario.getLogado());
+        assertEquals(nome, usuario.getNome());
     }
 
     @Test
     public void testeAutenticarInvalido(){
         String senhaInvalida = "senha123";
         Usuario usuario = new Usuario(email, senha);
-        Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(false);
 
-        boolean autenticado = login.autenticarUsuario(usuario, senhaInvalida);
+        Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(null);
 
-        assertFalse(autenticado);
+        assertThrows(FalhaNoLoginException.class,
+                () -> login.autenticarUsuario(usuario, senhaInvalida));
         assertFalse(usuario.getLogado());
     }
 
@@ -67,29 +70,53 @@ public class LoginTest {
 
     @Test
     public void testeVerificarEmail(){
-        String emailTeste = Login.verificarEmail(email);
+        boolean emailTeste = Login.verificarEmail(email);
 
-        assertEquals(email, emailTeste);
+        assertTrue(emailTeste);
     }
 
     @Test
     public void testeVerificarEmailInvalido(){
-        String emailTeste = Login.verificarEmail("@inatel.br");
+        boolean emailTeste = Login.verificarEmail("@inatel.br");
 
-        assertEquals("Email inválido", emailTeste);
+        assertFalse(emailTeste);
     }
 
     @Test
     public void testeVerificarSenha(){
-        String senhaTeste = Login.verificarSenha(senha);
+        boolean senhaTeste = Login.verificarSenha(senha);
 
-        assertEquals(senha, senhaTeste);
+        assertTrue(senhaTeste);
     }
 
     @Test
     public void testeVerificarSenhaInvalida(){
-        String senhaTeste = Login.verificarSenha("1234");
+        boolean senhaTeste = Login.verificarSenha("1234");
 
-        assertEquals("Senha inválida", senhaTeste);
+        assertFalse(senhaTeste);
+    }
+
+    @Test
+    public void testeVerificarNome(){
+        boolean nomeTeste = Login.verificarNome(nome);
+
+        assertTrue(nomeTeste);
+    }
+
+    @Test
+    public void testeVerificarNomeInvalido(){
+        boolean nomeTeste = Login.verificarNome("Chris de Souza");
+
+        assertFalse(nomeTeste);
+    }
+
+    @Test
+    public void testeAutenticarComSenhaVazia() {
+        Usuario usuario = new Usuario(email, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, ""));
+
+        Mockito.verifyNoInteractions(loginDAO);
     }
 }

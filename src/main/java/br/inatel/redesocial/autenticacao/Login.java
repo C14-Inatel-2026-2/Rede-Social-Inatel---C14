@@ -1,35 +1,49 @@
 package br.inatel.redesocial.autenticacao;
 
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 
-public class Login {
+public class Login{
     LoginDAO loginDAO;
 
-    public Login(LoginDAO loginDAO){
+    public Login(LoginDAO loginDAO) {
         this.loginDAO = loginDAO;
     }
 
     public boolean autenticarUsuario(Usuario usuario, String senhaDigitada) {
-        boolean autenticado = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
+        verificacaoCampoObrigatorio(usuario.getEmail(), senhaDigitada);
 
-        usuario.setLogado(autenticado);
+        String nome = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
 
-        return autenticado;
+        verificaSucessoNoLogin(nome);
+
+        usuario.setNome(nome);
+        usuario.setLogado(true);
+
+        return true;
     }
 
-    public static String verificarEmail(String emailVerificado){
-        if (emailVerificado.matches("^[a-z0-9.]+@[a-z0-9]+\\.[a-z]+(\\.[a-z]+)?$")){
-            return emailVerificado;
-        }
-
-        return "Email inválido";
+    public static boolean verificarEmail(String email) {
+        return email.matches("^[a-z0-9.]+@[a-z0-9]+\\.[a-z]+(\\.[a-z]+)?$");
     }
 
-    public static String verificarSenha(String senhaVerificada){
-        if (senhaVerificada.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!]).{8,}$")){
-            return senhaVerificada;
-        }
+    public static boolean verificarSenha(String senha) {
+        return senha.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!]).{8,}$");
+    }
 
-        return "Senha inválida";
+    public static boolean verificarNome(String nome) {
+        return nome.matches("^[A-Za-z0-9_]{3,16}$");
+    }
+
+    private void verificaSucessoNoLogin(String nome){
+        if(nome == null) {
+            throw new FalhaNoLoginException("Falha no login.");
+        }
+    }
+
+    private void verificacaoCampoObrigatorio(String email, String senha) {
+        if (email == null || email.isBlank() || senha == null || senha.isBlank())
+            throw new CampoObrigatorioException("E-mail e senha são obrigatórios");
     }
 }

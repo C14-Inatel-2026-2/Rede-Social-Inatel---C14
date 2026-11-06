@@ -4,14 +4,18 @@ public class Usuario {
     private final String email;
     private String senhaUsuario;
     private boolean logado;
+    private String nome;
 
-    public Usuario(String email, String senha){
-        this.email = Login.verificarEmail(email);
-        this.senhaUsuario = Login.verificarSenha(senha);
+
+
+    public Usuario(String email, String senha) {
+        this.email = email;
+        this.senhaUsuario = senha;
+        this.logado = false;
     }
 
-    public boolean alterarSenha(String senhaVerificadora, String senhaNova){
-        if (!senhaVerificadora.equals(senhaUsuario)){
+    public boolean alterarSenha(String senhaAtual, String senhaNova){
+        if (!senhaAtual.equals(senhaUsuario)){
             return false;
         }
 
@@ -19,7 +23,7 @@ public class Usuario {
             return false;
         }
 
-        if (!senhaNova.equals(Login.verificarSenha(senhaNova))){
+        if (!Login.verificarSenha(senhaNova)){
             return false;
         }
 
@@ -37,5 +41,13 @@ public class Usuario {
 
     public boolean getLogado() {
         return logado;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 }
