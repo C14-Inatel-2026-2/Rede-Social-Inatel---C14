@@ -31,7 +31,7 @@ public class ClienteHandler {
             Thread threadReceber = this.clienteFactory.criarThread(cliente);
             threadReceber.start();
 
-            cliente.enviarMensagem(clienteFactory.criarScanner());
+            cliente.enviarMensagem(clienteFactory.criarScanner(),cliente);
 
         } catch (IOException e) {
             System.out.println("Nao foi possivel conectar ao servidor"+e.getMessage());
