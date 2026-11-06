@@ -1,13 +1,13 @@
 package br.inatel.redesocial.cliente.comandos;
 
 import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.Cliente;
 
-public final class  IdentificarComandoChat
+public final class IdentificarComandoChat
 {
-
     private IdentificarComandoChat() {}
 
-    public static Mensagem identificarComando(String msg, String usuario, String email, String sala)
+    public static Mensagem identificarComando(String msg, Cliente cliente)
     {
         String comando = "";
         String texto = "";
@@ -17,7 +17,6 @@ public final class  IdentificarComandoChat
 
             comando = partes[0].trim();
             texto = partes[1].trim();
-            sala = texto ;
         }
         else {
             comando = "mensagem";
@@ -27,18 +26,30 @@ public final class  IdentificarComandoChat
         Mensagem mensagem = new Mensagem();
 
         switch (comando) {
-            case "*entrar_sala" -> {
-                mensagem.type = "entrar_sala";
-                mensagem.texto = texto;
+            case "*entrar_sala" ->
+            {
+                cliente.addSala(texto);
+                cliente.setSalaAtiva(texto);
             }
-            default -> {
-                mensagem.type = comando;
-                mensagem.texto = texto;
+            case "*mudar_sala" ->
+            {
+                if (cliente.getSala().contains(texto)) {
+                    cliente.setSalaAtiva(texto);
+                } else {
+                        System.out.println("Você não está cadastrado nesta sala!");
+                }
+            }
+            default ->
+            {
+
             }
         }
 
-        mensagem.usuario=usuario;
-        mensagem.email=email;
+        mensagem.type = comando;
+        mensagem.texto = texto;
+        mensagem.sala = cliente.getSalaAtiva();
+        mensagem.usuario = cliente.getUsuario();
+        mensagem.email = cliente.getEmail();
 
         return mensagem;
     }
