@@ -45,7 +45,7 @@ public final class IdentificarComandoChat
             }
         }
 
-        mensagem.type = comando;
+        mensagem.type = comando.startsWith("*") ? comando.substring(1) : comando;
         mensagem.texto = texto;
         mensagem.sala = cliente.getSalaAtiva();
         mensagem.usuario = cliente.getUsuario();
