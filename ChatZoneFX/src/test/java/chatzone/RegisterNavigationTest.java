@@ -30,21 +30,21 @@ class RegisterNavigationTest {
     @Test
     void registroValido_cadastraENavegaParaLobby() throws Exception {
         controller.register("user@email.com", "Senha@123","teste");
-        verify(cadastro).criarUsuario("user@email.com", "Senha@123", "teste",login);
+        verify(cadastro).criarUsuario("user@email.com", "Senha@123", "teste");
         verify(navigator).showLobby("user@email.com");
     }
 
     @Test
     void registroEmailInvalido_naoNavega() throws Exception {
         controller.register("invalido", "Senha@123","teste");
-        verify(cadastro, never()).criarUsuario(any(), any(),any(), any());
+        verify(cadastro, never()).criarUsuario(any(), any(),any());
         verify(navigator, never()).showLobby(any());
     }
 
     @Test
     void registroSenhaInvalida_naoNavega() throws Exception {
         controller.register("user@email.com", "fraca","teste");
-        verify(cadastro, never()).criarUsuario(any(), any(),any(), any());
+        verify(cadastro, never()).criarUsuario(any(), any(),any());
         verify(navigator, never()).showLobby(any());
     }
 
@@ -57,7 +57,7 @@ class RegisterNavigationTest {
     @Test
     void registroComEmailJaCadastrado_naoNavega() throws Exception {
         doThrow(new EmailJaCadastradoException("E-mail já está em uso"))
-                .when(cadastro).criarUsuario(any(), any(), any(),any());
+                .when(cadastro).criarUsuario(any(), any(), any());
 
         controller.register("user@email.com", "Senha@123","teste");
 

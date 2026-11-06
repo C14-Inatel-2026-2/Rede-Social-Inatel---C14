@@ -82,7 +82,7 @@ public class AuthController {
     public boolean register(String email, String senha, String nome) {
 
         try {
-            cadastro.criarUsuario(email, senha, nome, login);
+            cadastro.criarUsuario(email, senha, nome);
         } catch (EmailJaCadastradoException | EmailInvalidoException e) {
             regEmailErr.setText(e.getMessage());
             regEmailErr.setVisible(true);

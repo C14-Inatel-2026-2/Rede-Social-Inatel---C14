@@ -78,7 +78,7 @@ class AuthServiceFlowTest {
         boolean ok = controller.register(EMAIL, SENHA, NOME);
 
         assertTrue(ok);
-        verify(cadastro).criarUsuario(EMAIL, SENHA, NOME, login);
+        verify(cadastro).criarUsuario(EMAIL, SENHA, NOME);
         verify(navigator).showLobby(EMAIL);
     }
 
