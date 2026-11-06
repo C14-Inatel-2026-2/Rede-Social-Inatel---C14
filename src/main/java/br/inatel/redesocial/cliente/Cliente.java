@@ -5,6 +5,8 @@ import br.inatel.redesocial.cliente.dto.Mensagem;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 public class Cliente implements Runnable {
 
@@ -14,6 +16,8 @@ public class Cliente implements Runnable {
     private Mensagem mensagem;
     private String usuario;
     private String email;
+    private final Set<String> sala = new LinkedHashSet<>();
+    private String salaAtiva ="";
 
     public Cliente(ClienteSocket clienteSocket)
     {
@@ -39,11 +43,11 @@ public class Cliente implements Runnable {
         }
     }
 
-    public void enviarMensagem(Scanner sc) throws IOException {
+    public void enviarMensagem(Scanner sc ,Cliente cliente) throws IOException {
         do {
             System.out.println("Escreva uma mensagem: ");
             mensagemEnviada = sc.nextLine();
-            mensagem = IdentificarComandoChat.identificarComando(mensagemEnviada,usuario, email,null);
+            mensagem = IdentificarComandoChat.identificarComando(mensagemEnviada,cliente);
             this.clienteSocket.EnviarMensagem(mensagem);
         } while (!mensagemEnviada.equals("saida"));
     }
@@ -56,11 +60,29 @@ public class Cliente implements Runnable {
         this.usuario = usuario;
     }
 
+    public void setSalaAtiva(String salaAtiva){this.salaAtiva=salaAtiva;}
+
+    public String getSalaAtiva(){return this.salaAtiva;}
+
     public ClienteSocket getClienteSocket() {
         return clienteSocket;
     }
     
     public String getUsuario() {
         return usuario;
+    }
+
+    public String getEmail(){return email;}
+
+    public Set<String> getSala() {return sala;}
+
+    public  void addSala(String sala)
+    {
+        this.sala.add(sala);
+    }
+
+    public  void removeSala(String sala)
+    {
+        this.sala.remove(sala);
     }
 }
