@@ -41,6 +41,12 @@
         <VBox fx:id="panelRegister" styleClass="tab-panel" spacing="14" visible="false" managed="false">
             <VBox.margin><Insets top="20"/></VBox.margin>
             <VBox styleClass="form-group" spacing="6">
+                <Label text="Nome de usuário" styleClass="form-label"/>
+                <TextField fx:id="regNome" promptText="seu_nome" styleClass="form-input"/>
+                <Label text="3 a 16 caracteres · letras, números ou _" styleClass="hint"/>
+                <Label fx:id="regNomeErr" styleClass="error-msg" visible="false" managed="false"/>
+            </VBox>
+            <VBox styleClass="form-group" spacing="6">
                 <Label text="Email" styleClass="form-label"/>
                 <TextField fx:id="regEmail" promptText="seu@email.com" styleClass="form-input"/>
                 <Label fx:id="regEmailErr" styleClass="error-msg" visible="false" managed="false"/>

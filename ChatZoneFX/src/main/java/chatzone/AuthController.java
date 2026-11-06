@@ -7,6 +7,7 @@ import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import br.inatel.redesocial.exceptions.*;
 import javafx.scene.layout.VBox;
 
 public class AuthController {
@@ -18,8 +19,10 @@ public class AuthController {
     @FXML private PasswordField loginSenha;
     @FXML private Label         loginEmailErr;
 
+    @FXML private TextField     regNome;
     @FXML private TextField     regEmail;
     @FXML private PasswordField regSenha;
+    @FXML private Label         regNomeErr;
     @FXML private Label         regEmailErr, regSenhaErr;
 
     private final Login login;
@@ -61,7 +64,13 @@ public class AuthController {
                 || !Login.verificarSenha(senha)) return false;
 
         Usuario usuario = new Usuario(email, senha);
-        if (!login.autenticarUsuario(usuario, senha)) return false;
+
+        try {
+            login.autenticarUsuario(usuario, senha);
+        } catch (FalhaNoLoginException | CampoObrigatorioException e) {
+            return false;
+        }
+
         try {
             navigator.showLobby(email);
         } catch (Exception e) {
@@ -70,17 +79,36 @@ public class AuthController {
         return true;
     }
 
-    public void register(String email, String senha) {
-        if (!Login.verificarEmail(email)) return;
-        if (!Login.verificarSenha(senha)) return;
+    public boolean register(String email, String senha, String nome) {
+
         try {
-            cadastro.criarUsuario(email, senha, login);
+            cadastro.criarUsuario(email, senha, nome, login);
+        } catch (EmailJaCadastradoException | EmailInvalidoException e) {
+            regEmailErr.setText(e.getMessage());
+            regEmailErr.setVisible(true);
+            return false;
+        } catch (NomeInvalidoException e) {
+            regNomeErr.setText(e.getMessage());
+            regNomeErr.setVisible(true);
+            return false;
+        } catch (SenhaInvalidaException e) {
+            regSenhaErr.setText(e.getMessage());
+            regSenhaErr.setVisible(true);
+            return false;
+        } catch (RuntimeException e) {
+            regEmailErr.setText(e.getMessage());
+            regEmailErr.setVisible(true);
+            return false;
+        }
+
+        try {
             navigator.showLobby(email);
         } catch (RuntimeException e) {
             showToast(e.getMessage());
         } catch (Exception e) {
             showToast("Erro ao navegar: " + e.getMessage());
         }
+        return true;
     }
 
     @FXML
@@ -105,7 +133,15 @@ public class AuthController {
     void onRegister() {
         String email = regEmail.getText().trim();
         String senha = regSenha.getText();
+        String nome = regNome.getText().trim();
         boolean ok = true;
+
+        if (!Login.verificarNome(nome)) {
+            regEmailErr.setText("Nome: 3 a 16 caracteres (letras, números ou _)");
+            ok = false;
+        } else {
+            regNomeErr.setVisible(false);
+        }
 
         if (!Login.verificarEmail(email)) {
             regEmailErr.setText("Email inválido");
@@ -124,7 +160,7 @@ public class AuthController {
         }
 
         if (!ok) return;
-        register(email, senha);
+        register(email, senha,nome);
     }
 
     private void showToast(String msg) {
