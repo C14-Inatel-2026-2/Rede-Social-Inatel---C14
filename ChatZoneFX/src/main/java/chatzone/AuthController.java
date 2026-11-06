@@ -22,8 +22,8 @@ public class AuthController {
     @FXML private TextField     regNome;
     @FXML private TextField     regEmail;
     @FXML private PasswordField regSenha;
-    @FXML private Label         regNomeErr;
-    @FXML private Label         regEmailErr, regSenhaErr;
+    @FXML Label         regNomeErr;
+    @FXML Label         regEmailErr, regSenhaErr;
 
     private final Login login;
     private final Cadastro cadastro;
