@@ -45,7 +45,7 @@ public class TestCliente
         Cliente cliente = new Cliente(clienteSocket);
         String mensagemEnviada= "oi\nhello\nsaida\n";
 
-        cliente.enviarMensagem (new Scanner(mensagemEnviada));
+        cliente.enviarMensagem (new Scanner(mensagemEnviada),cliente);
         verify(clienteSocket,times(3)).EnviarMensagem(any(Mensagem.class));
     }
 
