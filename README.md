@@ -39,13 +39,13 @@ A aplicação segue o modelo cliente-servidor: um servidor central gerencia as c
 
 O projeto usa Jenkins, executado por Docker Compose, para automatizar o fluxo:
 
-`Source` → `Build` → `Test` → `Package` → `Deploy`
+`Checkout SCM` → `Source` → `Build` → `Análise estática` → `Test` → `Package` → `Deploy` → `Post Actions`
 
 O deploy é executado somente para a branch `main` e dispara o Deploy Hook do Render.
 
 ### Configuração local
 
-1. Copie `.env` para `.env`.
+1. Copie `.env.example` para `.env`.
 2. Preencha as credenciais do Jenkins, do GitHub e o `RENDER_DEPLOY_HOOK`.
 3. Inicie o Jenkins:
 
@@ -57,13 +57,16 @@ O Jenkins ficará disponível em `http://localhost:8080`. O job multibranch é c
 
 ### Estágios
 
+- `Checkout SCM`: baixa o código-fonte do GitHub para execução da pipeline.
 - `Source`: exibe a branch e o commit que serão processados.
 - `Build`: compila o projeto sem executar os testes.
+- `Análise estática`: identifica possíveis erros e problemas no código.
 - `Test`: executa os testes, publica os relatórios JUnit e gera a cobertura JaCoCo.
 - `Package`: gera o JAR e verifica se o artefato foi criado.
 - `Deploy`: dispara o deploy no Render somente na `main`.
+- `Post Actions`: envia no discord o resultado da pipeline, qual a branch onde foi feita e quem deu o último commit.
 
-Nunca versione o arquivo `.env`; use `.env` como modelo.
+Nunca versione o arquivo `.env`; use `.env.example` como modelo.
 
 ## Requisitos do Sistema
 
