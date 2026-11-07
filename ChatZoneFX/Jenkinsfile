@@ -45,7 +45,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('ChatZoneFX') {
-                    sh 'mvn -B test -DfailIfNoTests=false'
+                    sh 'mvn -B test -Pheadless -DfailIfNoTests=false'
                 }
             }
             post {
