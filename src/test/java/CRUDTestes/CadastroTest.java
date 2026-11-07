@@ -1,7 +1,6 @@
 package CRUDTestes;
 
 import br.inatel.redesocial.autenticacao.Cadastro;
-import br.inatel.redesocial.autenticacao.Login;
 import br.inatel.redesocial.autenticacao.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.exceptions.*;
@@ -20,18 +19,16 @@ public class CadastroTest {
 
     Cadastro cadastro;
 
-    private String emailValido = "christopher@inatel.br";
-    private String senhaValida = "Chizinho67!";
-    private String nomeValido = "Christopher";
-    private String emailInvalido = "@inatel.br";
-    private String senhaInvalida = "senha123";
-    private String nomeInvalido = "Chris de Souza";
-    private String emailVazio = "";
-    private String senhaVazia = "";
-    private String nomeVazio = "";
+    private final String emailValido = "christopher@inatel.br";
+    private final String senhaValida = "Chizinho67!";
+    private final String nomeValido = "Christopher";
+    private final String emailInvalido = "@inatel.br";
+    private final String senhaInvalida = "senha123";
+    private final String nomeInvalido = "Chris de Souza";
+    private final String emailVazio = "";
+    private final String senhaVazia = "";
+    private final String nomeVazio = "";
 
-    @Mock
-    Login login;
     @Mock
     CadastroDAO cadastroDAO;
 
@@ -46,7 +43,7 @@ public class CadastroTest {
 
         when(cadastroDAO.insertUsuario(emailValido, senhaValida, nomeValido)).thenReturn(true);
 
-        usuarioCadastrado = cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login);
+        usuarioCadastrado = cadastro.criarUsuario(emailValido, senhaValida, nomeValido);
 
         assertNotNull(usuarioCadastrado);
         assertEquals(emailValido, usuarioCadastrado.getEmail());
@@ -56,37 +53,37 @@ public class CadastroTest {
     @Test
     public void testeFalhaNoCadastroPorEmailInvalido(){
         assertThrows(EmailInvalidoException.class,
-                () -> cadastro.criarUsuario(emailInvalido, senhaValida, nomeValido, login));
+                () -> cadastro.criarUsuario(emailInvalido, senhaValida, nomeValido));
     }
 
     @Test
     public void testeFalhaNoCadastroPorSenhaInvalida() {
         assertThrows(SenhaInvalidaException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaInvalida, nomeValido, login));
+                () -> cadastro.criarUsuario(emailValido, senhaInvalida, nomeValido));
     }
 
     @Test
     public void testeFalhaNoCadastroPorEmailNaoInformado(){
         assertThrows(CampoObrigatorioException.class,
-                () -> cadastro.criarUsuario(emailVazio, senhaValida, nomeValido, login));
+                () -> cadastro.criarUsuario(emailVazio, senhaValida, nomeValido));
     }
 
     @Test
     public void testeFalhaNoCadastroPorSenhaNaoInformada() {
         assertThrows(CampoObrigatorioException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaVazia, nomeValido, login));
+                () -> cadastro.criarUsuario(emailValido, senhaVazia, nomeValido));
     }
 
     @Test
     public void testeFalhaNoCadastroPorNomeNaoInformado() {
         assertThrows(CampoObrigatorioException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeVazio, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeVazio));
     }
 
     @Test
     public void testeFalhaNoCadastroPorNomeInvalido(){
         assertThrows(NomeInvalidoException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeInvalido, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeInvalido));
     }
 
     @Test
@@ -95,7 +92,7 @@ public class CadastroTest {
                 new EmailJaCadastradoException("E-mail já está em uso"));
 
         assertThrows(EmailJaCadastradoException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido));
 
     }
 
@@ -104,6 +101,6 @@ public class CadastroTest {
         when(cadastroDAO.insertUsuario(emailValido, senhaValida, nomeValido)).thenReturn(false);
 
         assertThrows(FalhaNoCadastroException.class,
-                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido, login));
+                () -> cadastro.criarUsuario(emailValido, senhaValida, nomeValido));
     }
 }
