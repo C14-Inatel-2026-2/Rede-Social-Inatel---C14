@@ -2,55 +2,31 @@ package br.inatel.redesocial.cliente.comandos;
 
 import br.inatel.redesocial.cliente.dto.Mensagem;
 import br.inatel.redesocial.cliente.Cliente;
+import br.inatel.redesocial.cliente.dto.MensagemFactory;
 
-public final class IdentificarComandoChat
-{
+public final class IdentificarComandoChat {
+
     private IdentificarComandoChat() {}
 
-    public static Mensagem identificarComando(String msg, Cliente cliente)
-    {
-        String comando = "";
-        String texto = "";
+    public static Mensagem identificarComando(
+            String msg,
+            Cliente cliente) {
 
-        if (msg != null && msg.contains("->")) {
-            String[] partes = msg.split("->", -1);
+        String[] partes = InterpretarComando.interpretar(msg);
 
-            comando = partes[0].trim();
-            texto = partes[1].trim();
-        }
-        else {
-            comando = "mensagem";
-            texto = (msg != null) ? msg.trim() : "";
-        }
+        String comando = partes[0];
+        String texto = partes[1];
 
-        Mensagem mensagem = new Mensagem();
+        ExecutarComandoSala.executar(
+                comando,
+                texto,
+                cliente
+        );
 
-        switch (comando) {
-            case "*entrar_sala" ->
-            {
-                cliente.addSala(texto);
-                cliente.setSalaAtiva(texto);
-            }
-            case "*mudar_sala" ->
-            {
-                if (cliente.getSala().contains(texto)) {
-                    cliente.setSalaAtiva(texto);
-                } else {
-                        System.out.println("Você não está cadastrado nesta sala!");
-                }
-            }
-            default ->
-            {
-
-            }
-        }
-
-        mensagem.type = comando.startsWith("*") ? comando.substring(1) : comando;
-        mensagem.texto = texto;
-        mensagem.sala = cliente.getSalaAtiva();
-        mensagem.usuario = cliente.getUsuario();
-        mensagem.email = cliente.getEmail();
-
-        return mensagem;
+        return MensagemFactory.criar(
+                comando,
+                texto,
+                cliente
+        );
     }
 }
