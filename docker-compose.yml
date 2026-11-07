@@ -1,0 +1,35 @@
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+
+      CASC_JENKINS_CONFIG: /var/jenkins_config/casc.yaml
+
+      DB_URL: "jdbc:mysql://mysql:3306/${DB_NAME}"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./jenkins/casc.yaml:/var/jenkins_config/casc.yaml:ro
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: redesocial-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
+  mysql_data:

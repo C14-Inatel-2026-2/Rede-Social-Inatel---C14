@@ -1,31 +1,43 @@
 package chatzone;
 
+import br.inatel.redesocial.autenticacao.Cadastro;
+import br.inatel.redesocial.autenticacao.Login;
+import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.banco.funcoes.CadastroDAO;
+import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import br.inatel.redesocial.exceptions.*;
 import javafx.scene.layout.VBox;
 
 public class AuthController {
 
-    private Navigator navigator = Main::showLobby;
-
-    public AuthController() {}
-
-    public AuthController(Navigator navigator) {
-        this.navigator = navigator;
-    }
-
     @FXML private Button tabLogin, tabRegister;
     @FXML private VBox   panelLogin, panelRegister;
 
-    // Login
     @FXML private TextField     loginEmail;
     @FXML private PasswordField loginSenha;
     @FXML private Label         loginEmailErr;
 
-    // Registro
+    @FXML private TextField     regNome;
     @FXML private TextField     regEmail;
     @FXML private PasswordField regSenha;
-    @FXML private Label         regEmailErr, regSenhaErr;
+    @FXML Label         regNomeErr;
+    @FXML Label         regEmailErr, regSenhaErr;
+
+    private final Login login;
+    private final Cadastro cadastro;
+    private final Navigator navigator;
+
+    public AuthController() {
+        this(new Login(new LoginDAO()), new Cadastro(new CadastroDAO()), Main::showLobby);
+    }
+
+    public AuthController(Login login, Cadastro cadastro, Navigator navigator) {
+        this.login = login;
+        this.cadastro = cadastro;
+        this.navigator = navigator;
+    }
 
     @FXML
     void onTabLogin() {
@@ -47,71 +59,111 @@ public class AuthController {
         panelLogin.setManaged(false);
     }
 
+    public boolean login(String email, String senha) {
+        if (!Login.verificarEmail(email)
+                || !Login.verificarSenha(senha)) return false;
+
+        Usuario usuario = new Usuario(email, senha);
+
+        try {
+            login.autenticarUsuario(usuario, senha);
+        } catch (FalhaNoLoginException | CampoObrigatorioException e) {
+            return false;
+        }
+
+        try {
+            navigator.showLobby(email);
+        } catch (Exception e) {
+            showToast("Erro ao navegar: " + e.getMessage());
+        }
+        return true;
+    }
+
+    public boolean register(String email, String senha, String nome) {
+
+        try {
+            cadastro.criarUsuario(email, senha, nome);
+        } catch (EmailJaCadastradoException | EmailInvalidoException e) {
+            regEmailErr.setText(e.getMessage());
+            regEmailErr.setVisible(true);
+            return false;
+        } catch (NomeInvalidoException e) {
+            regNomeErr.setText(e.getMessage());
+            regNomeErr.setVisible(true);
+            return false;
+        } catch (SenhaInvalidaException e) {
+            regSenhaErr.setText(e.getMessage());
+            regSenhaErr.setVisible(true);
+            return false;
+        } catch (RuntimeException e) {
+            regEmailErr.setText(e.getMessage());
+            regEmailErr.setVisible(true);
+            return false;
+        }
+
+        try {
+            navigator.showLobby(email);
+        } catch (RuntimeException e) {
+            showToast(e.getMessage());
+        } catch (Exception e) {
+            showToast("Erro ao navegar: " + e.getMessage());
+        }
+        return true;
+    }
+
     @FXML
     void onLogin() {
-        login(loginEmail.getText().trim(), loginSenha.getText());
+        String email = loginEmail.getText().trim();
+        String senha = loginSenha.getText();
+
+        if (!Login.verificarEmail(email)) {
+            loginEmailErr.setText("Email inválido");
+            loginEmailErr.setVisible(true);
+            return;
+        }
+        loginEmailErr.setVisible(false);
+
+        if (!login(email, senha)) {
+            loginEmailErr.setText("Email ou senha incorretos");
+            loginEmailErr.setVisible(true);
+        }
     }
 
     @FXML
     void onRegister() {
-        register(regEmail.getText().trim(), regSenha.getText());
-    }
-
-    void login(String email, String senha) {
-        if (!isValidEmail(email)) {
-            if (loginEmailErr != null) { loginEmailErr.setText("Email inválido"); loginEmailErr.setVisible(true); }
-            return;
-        }
-        if (loginEmailErr != null) loginEmailErr.setVisible(false);
-
-        if (!isValidSenha(senha)) {
-            showToast("Senha inválida");
-            return;
-        }
-
-        try {
-            navigator.showLobby(email);
-        } catch (Exception e) {
-            showToast("Erro ao navegar: " + e.getMessage());
-        }
-    }
-    void register(String email, String senha) {
+        String email = regEmail.getText().trim();
+        String senha = regSenha.getText();
+        String nome = regNome.getText().trim();
         boolean ok = true;
 
-        if (!isValidEmail(email)) {
-            if (regEmailErr != null) { regEmailErr.setText("Email inválido"); regEmailErr.setVisible(true); }
+        if (!Login.verificarNome(nome)) {
+            regEmailErr.setText("Nome: 3 a 16 caracteres (letras, números ou _)");
             ok = false;
         } else {
-            if (regEmailErr != null) regEmailErr.setVisible(false);
+            regNomeErr.setVisible(false);
         }
 
-        if (!isValidSenha(senha)) {
-            if (regSenhaErr != null) { regSenhaErr.setText("Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&@#!)"); regSenhaErr.setVisible(true); }
+        if (!Login.verificarEmail(email)) {
+            regEmailErr.setText("Email inválido");
+            regEmailErr.setVisible(true);
             ok = false;
         } else {
-            if (regSenhaErr != null) regSenhaErr.setVisible(false);
+            regEmailErr.setVisible(false);
+        }
+
+        if (!Login.verificarSenha(senha)) {
+            regSenhaErr.setText("Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&@#!)");
+            regSenhaErr.setVisible(true);
+            ok = false;
+        } else {
+            regSenhaErr.setVisible(false);
         }
 
         if (!ok) return;
-
-        // TODO: chamar API de registro via HTTP
-        try {
-            navigator.showLobby(email);
-        } catch (Exception e) {
-            showToast("Erro ao navegar: " + e.getMessage());
-        }
-    }
-
-    private boolean isValidEmail(String email) {
-        return email.matches("^[a-z0-9.]+@[a-z0-9]+\\.[a-z]+(\\.[a-z]+)?$");
-    }
-
-    private boolean isValidSenha(String senha) {
-        return senha.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!]).{8,}$");
+        register(email, senha,nome);
     }
 
     private void showToast(String msg) {
-        // TODO: implementar toast overlay
         System.out.println("[TOAST] " + msg);
     }
 }

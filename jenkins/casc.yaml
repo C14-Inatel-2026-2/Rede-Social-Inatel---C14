@@ -1,0 +1,98 @@
+jenkins:
+  systemMessage: "..."
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github"
+              description: "Token do GitHub para baixar o repositorio"
+              username: "${GITHUB_USER}"
+              password: "${GITHUB_TOKEN}"
+          - string:
+              scope: GLOBAL
+              id: "render-deploy-hook"
+              description: "Deploy Hook do Render"
+              secret: "${RENDER_DEPLOY_HOOK}"
+          - string:
+              scope: GLOBAL
+              id: "discord-webhook"
+              description: "Webhook de notificacoes do Discord"
+              secret: "${DISCORD_WEBHOOK}"
+jobs:
+  - script: >
+      multibranchPipelineJob('projeto') {
+        displayName('projeto')
+        description('Pipeline Build -> Test -> Deploy')
+        branchSources {
+          branchSource {
+            source {
+              git {
+                id('projeto')
+                remote('${GITHUB_REPO_URL}')
+                credentialsId('github')
+                traits {
+                  gitBranchDiscovery()
+                }
+              }
+            }
+          }
+        }
+        triggers {
+          periodicFolderTrigger {
+            interval('1m')
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(5)
+          }
+        }
+      }
+
+  - script: >
+      multibranchPipelineJob('projeto-front') {
+        displayName('projeto-front')
+        description('Pipeline Front: Build -> Test -> Package')
+        branchSources {
+          branchSource {
+            source {
+              git {
+                id('projeto-front')
+                remote('${GITHUB_REPO_URL}')
+                credentialsId('github')
+                traits {
+                  gitBranchDiscovery()
+                }
+              }
+            }
+          }
+        }
+        factory {
+          workflowBranchProjectFactory {
+            scriptPath('ChatZoneFX/Jenkinsfile')
+          }
+        }
+        triggers {
+          periodicFolderTrigger {
+            interval('1m')
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(5)
+          }
+        }
+      }
