@@ -3,6 +3,7 @@ package Sockets;
 import br.inatel.redesocial.servidor.Mensagem;
 import br.inatel.redesocial.servidor.ServidorFactory;
 import br.inatel.redesocial.servidor.ServidorSocket;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -12,7 +13,9 @@ import java.io.*;
 import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class TestServidorSocket{
@@ -82,13 +85,16 @@ public class TestServidorSocket{
     }
 
     @Test
-    public void enviarParaDestinoEscreveUsuarioETexto() throws IOException {
+    public void enviarParaDestinoEscreveMensagemEmJson() throws IOException {
         ServidorSocket s = criar("");
-        StringWriter outro = new StringWriter();
+        PrintWriter destino = mock(PrintWriter.class);
         Mensagem m = new Mensagem();
+        m.type = "mensagem";
         m.usuario = "thiago";
         m.texto = "oi";
-        s.enviarTexto(m, new PrintWriter(outro, true));
-        assertEquals("thiago: oi", outro.toString().trim());
+
+        s.enviar(m, destino);
+
+        verify(destino).println(new Gson().toJson(m));
     }
 }
