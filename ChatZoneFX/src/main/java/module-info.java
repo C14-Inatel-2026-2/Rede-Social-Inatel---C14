@@ -6,5 +6,7 @@ module chatzone {
     requires com.google.gson;
 
     opens chatzone to javafx.fxml, org.mockito;
+    opens br.inatel.redesocial.cliente.dto to com.google.gson;
+    opens br.inatel.redesocial.servidor to com.google.gson;
     exports chatzone;
 }

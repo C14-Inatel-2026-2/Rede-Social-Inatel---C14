@@ -2,8 +2,6 @@ package chatzone;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
 import br.inatel.redesocial.cliente.dto.Mensagem;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -19,8 +17,6 @@ public class ChatController {
     private static final String TIPO_MENSAGEM = "mensagem";
     private static final String TIPO_SAIR     = "sair";
     private static final String TIPO_ERRO     = "erro";
-
-    private static final Gson GSON = new Gson();
 
     @FXML private Label      roomNameLabel;
     @FXML private Label      usersCountLabel;
@@ -77,10 +73,10 @@ public class ChatController {
                     appendSystem("Você entrou em " + roomName);
                 });
 
-                String msg;
+                Mensagem msg;
                 while ((msg = clienteSocket.ReceberMensagem()) != null) {
-                    final String linha = msg;
-                    Platform.runLater(() -> tratarLinha(linha));
+                    final Mensagem mensagem = msg;
+                    Platform.runLater(() -> tratarMensagem(mensagem));
                 }
 
                 if (!saindo) {
@@ -104,28 +100,21 @@ public class ChatController {
         t.start();
     }
 
-    private void tratarLinha(String linha) {
-        if (linha.startsWith("{")) {
-            try {
-                Mensagem m = GSON.fromJson(linha, Mensagem.class);
-                if (m != null && TIPO_ERRO.equals(m.type)) {
-                    appendSystem("Erro: " + m.texto);
-                    return;
-                }
-            } catch (JsonSyntaxException ignored) {
-            }
-            appendSystem(linha);
+    private void tratarMensagem(Mensagem mensagem) {
+        if (mensagem == null) return;
+
+        if (TIPO_ERRO.equals(mensagem.type)) {
+            appendSystem("Erro: " + mensagem.texto);
             return;
         }
 
-        int sep = linha.indexOf(": ");
-        if (sep < 0) {
-            appendSystem(linha);
+        if (!TIPO_MENSAGEM.equals(mensagem.type)) {
+            appendSystem(mensagem.texto == null ? mensagem.type : mensagem.texto);
             return;
         }
 
-        String autor = linha.substring(0, sep).trim();
-        String texto = linha.substring(sep + 2).trim();
+        String autor = mensagem.usuario == null ? "desconhecido" : mensagem.usuario;
+        String texto = mensagem.texto == null ? "" : mensagem.texto;
 
         if (autor.equals(currentEmail)) appendSent(autor, texto);
         else                            appendReceived(autor, texto);
