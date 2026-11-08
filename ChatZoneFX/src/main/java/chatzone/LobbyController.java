@@ -87,7 +87,7 @@ public class LobbyController {
     private void enterRoom(Room room) {
         // TODO: chamar API para entrar na sala e obter porta real
         try {
-            Main.showChat(room.name, room.id, room.port, currentEmail);
+            Main.showChat(room.name, room.id, ChatConfig.portForRoom(room.id), currentEmail);
         } catch (Exception e) {
             System.out.println("[TOAST] Erro ao entrar na sala: " + e.getMessage());
         }
