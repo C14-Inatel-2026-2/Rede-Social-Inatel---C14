@@ -61,7 +61,7 @@ public class ChatController {
     private void conectar() {
         Thread t = new Thread(() -> {
             try {
-                socket        = new Socket(ChatConfig.host(), port);
+                socket        = new Socket("localhost", port);
                 clienteSocket = new ClienteSocket(socket);
 
                 Mensagem entrar = new Mensagem();
