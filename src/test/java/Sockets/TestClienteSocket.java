@@ -58,7 +58,7 @@ public class TestClienteSocket {
 
         when(socket.getInputStream()).thenReturn(
                 new ByteArrayInputStream(
-                        "Ola\n".getBytes(StandardCharsets.UTF_8)
+                        "{\"texto\":\"Ola\"}\n".getBytes(StandardCharsets.UTF_8)
                 )
         );
 
@@ -68,7 +68,7 @@ public class TestClienteSocket {
 
         ClienteSocket clienteSocket = new ClienteSocket(socket);
 
-        assertEquals("Ola", clienteSocket.ReceberMensagem());
+        assertEquals("Ola", clienteSocket.ReceberMensagem().texto);
     }
 
     @Test
