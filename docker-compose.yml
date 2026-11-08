@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: redesocial-db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -28,6 +28,24 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: redesocial-app
+    env_file: .env
+    environment:
+      PORT: 8080
+      DB_URL: "jdbc:mysql://mysql:3306/${DB_NAME}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      CHAT_SERVER_PORT_BASE: 3000
+      CHAT_ROOM_CAPACITY: 50
+    depends_on:
+      - mysql
+    ports:
+      - "8089:8080"
+      - "3000-3005:3000-3005"
     restart: unless-stopped
 
 volumes:
