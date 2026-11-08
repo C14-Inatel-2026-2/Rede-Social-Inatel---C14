@@ -59,6 +59,10 @@ public class Sala {
         return capacidadeMaxima;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public int getQuantidadeUsuarios() {
         return quantidadeUsuarios;
     }

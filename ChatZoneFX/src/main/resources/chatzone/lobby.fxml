@@ -21,6 +21,8 @@
             <Button text="👤" styleClass="user-btn" onAction="#onUserBtn"/>
         </HBox>
 
+        <Button text="Criar sala" onAction="#onCreateRoom" maxWidth="180" />
+
         <!-- Rooms grid -->
         <ScrollPane fitToWidth="true" styleClass="rooms-scroll" VBox.vgrow="ALWAYS">
             <FlowPane fx:id="roomsGrid" hgap="16" vgap="16" styleClass="rooms-grid">

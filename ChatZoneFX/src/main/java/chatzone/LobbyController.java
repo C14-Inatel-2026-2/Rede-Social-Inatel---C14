@@ -1,11 +1,20 @@
 package chatzone;
 
+import br.inatel.redesocial.cliente.ClienteSocket;
+import br.inatel.redesocial.cliente.dto.Mensagem;
+import com.google.gson.Gson;
 import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.*;
 
-import java.util.List;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.Socket;
 
 public class LobbyController {
 
@@ -15,15 +24,7 @@ public class LobbyController {
 
     private String currentEmail;
 
-    // Dados demo — substituir por chamada HTTP
-    private static final List<Room> DEMO_ROOMS = List.of(
-        new Room(1, "Sala Geral",     5,  12, 3000),
-        new Room(2, "Sala Jogos",    12,  12, 3001),
-        new Room(3, "Sala Música",    3,  12, 3002),
-        new Room(4, "Sala Estudos",   0,  12, 3003),
-        new Room(5, "Sala Filmes",    8,  12, 3004),
-        new Room(6, "Sala Aleatória", 1,  12, 3005)
-    );
+    private static final Gson GSON = new Gson();
 
     @FXML
     public void initialize() {
@@ -33,16 +34,33 @@ public class LobbyController {
 
     public void init(String email) {
         currentEmail = email;
-        profileEmailLabel.setText(email);
+        String nome = Session.nome();
+        profileEmailLabel.setText(nome == null || nome.isBlank() ? email : nome + " (" + email + ")");
         loadRooms();
     }
 
     private void loadRooms() {
         roomsGrid.getChildren().clear();
-        // TODO: buscar salas via HTTP; por enquanto usa demo
-        for (Room room : DEMO_ROOMS) {
-            roomsGrid.getChildren().add(buildRoomCard(room));
-        }
+        Thread loader = new Thread(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder(
+                        URI.create(ChatConfig.httpBaseUrl() + "/rooms")).GET().build();
+                HttpResponse<String> response = HttpClient.newHttpClient()
+                        .send(request, HttpResponse.BodyHandlers.ofString());
+                Room[] rooms = GSON.fromJson(response.body(), Room[].class);
+                Platform.runLater(() -> {
+                    for (int i = 0; i < rooms.length; i++) {
+                        Room room = rooms[i];
+                        roomsGrid.getChildren().add(buildRoomCard(
+                                new Room(i + 1, room.name, room.users, room.capacity, 0)));
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> roomsGrid.getChildren().clear());
+            }
+        }, "rooms-loader");
+        loader.setDaemon(true);
+        loader.start();
     }
 
     private VBox buildRoomCard(Room room) {
@@ -93,10 +111,34 @@ public class LobbyController {
         }
     }
 
+    @FXML
+    void onCreateRoom() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Criar sala");
+        dialog.setHeaderText("Nome da nova sala");
+        dialog.setContentText("Nome:");
+        dialog.showAndWait().ifPresent(nome -> {
+            String sala = nome.trim();
+            if (sala.isBlank()) return;
+            try (Socket socket = new Socket(ChatConfig.host(), ChatConfig.portForRoom(1));
+                 ClienteSocket cliente = new ClienteSocket(socket)) {
+                Mensagem criar = new Mensagem();
+                criar.type = "criar_sala";
+                criar.sala = sala;
+                criar.valorInt = 12;
+                cliente.EnviarMensagem(criar);
+                loadRooms();
+            } catch (Exception e) {
+                System.out.println("[TOAST] Não foi possível criar a sala: " + e.getMessage());
+            }
+        });
+    }
+
     @FXML void onModalInnerClick(javafx.scene.input.MouseEvent e) { e.consume(); }
     @FXML void onUserBtn()    { profileModal.setVisible(true); }
     @FXML void onModalClose() { profileModal.setVisible(false); }
     @FXML void onLogout() {
+        Session.clear();
         profileModal.setVisible(false);
         try { Main.showAuth(); } catch (Exception ignored) {}
     }

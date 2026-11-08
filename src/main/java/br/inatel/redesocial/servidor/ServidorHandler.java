@@ -61,6 +61,7 @@ public class ServidorHandler extends Thread {
     private void limpar() {
         if (instanciaSala != null) {
             instanciaSala.removeUsuario(emailUsuario, servidorSocket.getEscritor());
+            notificarSala(emailUsuario + " saiu da sala.");
         }
         try { socket.close(); } catch (IOException ignored) {}
     }
@@ -68,16 +69,28 @@ public class ServidorHandler extends Thread {
         switch(msg.type){
             case "entrar_sala":
                 if ((instanciaSala = GerenciadorSalas.getSala(msg.texto))==null){
-                    servidorSocket.enviar(Mensagem.erro("Sala vazia!"));
+                    servidorSocket.enviar(Mensagem.erro("Sala inexistente!"));
                 }
                 else{
                     emailUsuario = msg.usuario;
-                    instanciaSala.addUsuario(msg.usuario, servidorSocket.getEscritor());
+                    if (!instanciaSala.addUsuario(msg.usuario, servidorSocket.getEscritor())) {
+                        servidorSocket.enviar(Mensagem.erro("Sala lotada!"));
+                        instanciaSala = null;
+                    } else {
+                        notificarSala(msg.usuario + " entrou na sala.");
+                    }
                 }
 
                 break;
             case "criar_sala":
-                GerenciadorSalas.addSala(msg.valorInt, msg.sala);
+                if (GerenciadorSalas.existeSala(msg.sala)) {
+                    servidorSocket.enviar(Mensagem.erro("Sala já existe!"));
+                } else if (msg.sala == null || msg.sala.isBlank() || msg.valorInt < 1) {
+                    servidorSocket.enviar(Mensagem.erro("Nome e capacidade inválidos!"));
+                } else {
+                    GerenciadorSalas.addSala(msg.valorInt, msg.sala);
+                    servidorSocket.enviar(Mensagem.info("Sala criada!"));
+                }
                 break;
             case "mensagem":
                 if (instanciaSala!=null){
@@ -93,6 +106,14 @@ public class ServidorHandler extends Thread {
             default:
                 servidorSocket.enviar(Mensagem.erro("Opção não existente escolhida!"));
                 break;
+        }
+    }
+
+    private void notificarSala(String texto) {
+        if (instanciaSala == null) return;
+        Mensagem aviso = Mensagem.info(texto);
+        for (PrintWriter destino : instanciaSala.getEscritores()) {
+            servidorSocket.enviar(aviso, destino);
         }
     }
 }

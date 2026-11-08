@@ -17,11 +17,13 @@ public class AuthController {
 
     @FXML private TextField     loginEmail;
     @FXML private PasswordField loginSenha;
+    @FXML private TextField loginSenhaTexto;
     @FXML private Label         loginEmailErr;
 
     @FXML private TextField     regNome;
     @FXML private TextField     regEmail;
     @FXML private PasswordField regSenha;
+    @FXML private TextField regSenhaTexto;
     @FXML Label         regNomeErr;
     @FXML Label         regEmailErr, regSenhaErr;
 
@@ -67,6 +69,7 @@ public class AuthController {
 
         try {
             login.autenticarUsuario(usuario, senha);
+            Session.setUser(usuario.getEmail(), usuario.getNome());
         } catch (FalhaNoLoginException | CampoObrigatorioException e) {
             return false;
         }
@@ -82,7 +85,8 @@ public class AuthController {
     public boolean register(String email, String senha, String nome) {
 
         try {
-            cadastro.criarUsuario(email, senha, nome);
+            Usuario usuario = cadastro.criarUsuario(email, senha, nome);
+            Session.setUser(usuario.getEmail(), usuario.getNome());
         } catch (EmailJaCadastradoException | EmailInvalidoException e) {
             regEmailErr.setText(e.getMessage());
             regEmailErr.setVisible(true);
@@ -114,7 +118,7 @@ public class AuthController {
     @FXML
     void onLogin() {
         String email = loginEmail.getText().trim();
-        String senha = loginSenha.getText();
+        String senha = senhaAtual(loginSenha, loginSenhaTexto);
 
         if (!Login.verificarEmail(email)) {
             loginEmailErr.setText("Email inválido");
@@ -132,7 +136,7 @@ public class AuthController {
     @FXML
     void onRegister() {
         String email = regEmail.getText().trim();
-        String senha = regSenha.getText();
+        String senha = senhaAtual(regSenha, regSenhaTexto);
         String nome = regNome.getText().trim();
         boolean ok = true;
 
@@ -161,6 +165,29 @@ public class AuthController {
 
         if (!ok) return;
         register(email, senha,nome);
+    }
+
+    @FXML
+    void onToggleLoginSenha() {
+        alternarSenha(loginSenha, loginSenhaTexto);
+    }
+
+    @FXML
+    void onToggleRegSenha() {
+        alternarSenha(regSenha, regSenhaTexto);
+    }
+
+    private void alternarSenha(PasswordField senha, TextField texto) {
+        boolean mostrar = !texto.isVisible();
+        texto.setText(senha.getText());
+        senha.setVisible(!mostrar);
+        senha.setManaged(!mostrar);
+        texto.setVisible(mostrar);
+        texto.setManaged(mostrar);
+    }
+
+    private String senhaAtual(PasswordField senha, TextField texto) {
+        return texto.isVisible() ? texto.getText() : senha.getText();
     }
 
     private void showToast(String msg) {

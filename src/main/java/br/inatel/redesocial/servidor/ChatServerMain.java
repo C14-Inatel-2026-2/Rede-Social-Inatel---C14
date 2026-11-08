@@ -16,20 +16,24 @@ public class ChatServerMain {
     private static final int CAPACIDADE_SALA = Integer.parseInt(
             System.getenv().getOrDefault("CHAT_ROOM_CAPACITY", "12"));
 
-    public static void main(String[] args) {
-        ServidorFactory factory = new ServidorFactoryImp();
-
+    public static void start() {
         for (int i = 0; i < NOMES_SALAS.length; i++) {
             String nomeSala = NOMES_SALAS[i];
             int porta = PORTA_INICIAL + i;
-            GerenciadorSalas.addSala(CAPACIDADE_SALA, nomeSala);
+            if (!GerenciadorSalas.existeSala(nomeSala)) {
+                GerenciadorSalas.addSala(CAPACIDADE_SALA, nomeSala);
+            }
 
             Thread servidor = new Thread(
-                    () -> new Servidor(porta, factory).servidorAtivo(),
+                    () -> new Servidor(porta, new ServidorFactoryImp()).servidorAtivo(),
                     "servidor-" + porta
             );
+            servidor.setDaemon(true);
             servidor.start();
-            System.out.printf("Sala %s disponível na porta %d%n", nomeSala, porta);
         }
+    }
+
+    public static void main(String[] args) {
+        start();
     }
 }

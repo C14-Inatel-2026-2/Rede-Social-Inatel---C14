@@ -13,4 +13,11 @@ public class Mensagem {
         m.texto = texto;
         return m;
     }
+
+    public static Mensagem info(String texto) {
+        Mensagem m = new Mensagem();
+        m.type = "sistema";
+        m.texto = texto;
+        return m;
+    }
 }

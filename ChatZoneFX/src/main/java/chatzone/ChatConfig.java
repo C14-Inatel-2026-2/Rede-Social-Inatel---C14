@@ -14,6 +14,11 @@ public final class ChatConfig {
         return value == null || value.isBlank() ? DEFAULT_HOST : value;
     }
 
+    public static String httpBaseUrl() {
+        String value = System.getenv("CHAT_SERVER_HTTP_URL");
+        return value == null || value.isBlank() ? "http://localhost:8089" : value;
+    }
+
     public static int portForRoom(int roomId) {
         String configured = System.getenv("CHAT_SERVER_PORT_BASE");
         int basePort = DEFAULT_PORT_BASE;
