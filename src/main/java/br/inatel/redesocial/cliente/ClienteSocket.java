@@ -24,8 +24,8 @@ public class ClienteSocket implements AutoCloseable {
         escritor = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public String ReceberMensagem() throws IOException {
-        return leitor.readLine();
+    public Mensagem ReceberMensagem() throws IOException {
+        return GSON.fromJson(leitor.readLine(), br.inatel.redesocial.cliente.dto.Mensagem.class);
     }
 
     public void EnviarMensagem(Mensagem msg) throws IOException {
