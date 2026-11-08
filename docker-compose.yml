@@ -22,11 +22,13 @@ services:
     container_name: redesocial-db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_DATABASE: db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data_smoke:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
 
@@ -36,7 +38,7 @@ services:
     env_file: .env
     environment:
       PORT: 8080
-      DB_URL: "jdbc:mysql://mysql:3306/${DB_NAME}"
+      DB_URL: "jdbc:mysql://mysql:3306/db"
       DB_USER: "${DB_USER}"
       DB_PASSWORD: "${DB_PASSWORD}"
       CHAT_SERVER_PORT_BASE: 3000
@@ -51,3 +53,4 @@ services:
 volumes:
   jenkins_home:
   mysql_data:
+  mysql_data_smoke:
