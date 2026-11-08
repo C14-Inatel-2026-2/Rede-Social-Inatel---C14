@@ -1,5 +1,4 @@
 # Rede-Social-Inatel-C14
-
 # 💬 Mesão Chat
 
 O **Mesão Chat** é uma rede social baseada em salas de bate-papo, desenvolvida em **Java** com comunicação em tempo real via **Sockets**. Os usuários criam uma conta, fazem login e escolhem em quais chats querem entrar para conversar com outras pessoas conectadas ao mesmo tempo.
@@ -34,6 +33,21 @@ A aplicação segue o modelo cliente-servidor: um servidor central gerencia as c
 ### Pré-requisitos
 * JDK instalado
 * SQL configurado e em execução
+
+## Render e o front JavaFX
+
+O diretório `ChatZoneFX` é um cliente desktop JavaFX. Ele não é um front-end web
+e não pode ser publicado como Render Web Service. A pipeline `projeto-front`
+compila, testa e arquiva o JAR do cliente no Jenkins.
+
+O arquivo `render.yaml` configura o serviço HTTP Docker da raiz (`Main`), que é
+o componente compatível com um Web Service do Render. Cadastre `DB_URL`,
+`DB_USER` e `DB_PASSWORD` no painel do Render. O chat TCP atual ainda exige uma
+arquitetura diferente (backend HTTP/WebSocket e cliente usando hostname público),
+pois o Render não fornece seis portas TCP públicas para o modelo atual.
+
+As variáveis necessárias estão documentadas em `.env.render.exemplo`. O Render
+injeta `PORT` automaticamente; não é necessário cadastrá-la manualmente.
 
 ## Pipeline de CI/CD
 
