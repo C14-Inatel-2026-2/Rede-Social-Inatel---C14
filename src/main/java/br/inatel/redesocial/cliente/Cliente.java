@@ -10,7 +10,7 @@ import java.util.LinkedHashSet;
 
 public class Cliente implements Runnable {
 
-    private  String mensagemRecebida;
+    private Mensagem mensagemRecebida;
     private ClienteSocket clienteSocket;
     private String mensagemEnviada;
     private Mensagem mensagem;
@@ -39,7 +39,7 @@ public class Cliente implements Runnable {
     public void receberMensagem() throws IOException {
         while((mensagemRecebida = this.clienteSocket.ReceberMensagem() )!=null )
         {
-            System.out.println(mensagemRecebida);
+            System.out.println(mensagemRecebida.texto);
         }
     }
 
