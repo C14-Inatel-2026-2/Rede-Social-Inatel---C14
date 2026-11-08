@@ -94,6 +94,19 @@
     -fx-font-size: 11px;
 }
 
+.feedback-msg {
+    -fx-background-color: rgba(184, 92, 74, 0.16);
+    -fx-background-radius: 6;
+    -fx-padding: 8 10 8 10;
+    -fx-text-fill: #efb3a5;
+    -fx-font-size: 12px;
+}
+
+.feedback-msg.success {
+    -fx-background-color: rgba(91, 145, 93, 0.18);
+    -fx-text-fill: #b9ddb9;
+}
+
 /* ── Buttons ── */
 .btn-primary {
     -fx-background-color: #b85c4a;

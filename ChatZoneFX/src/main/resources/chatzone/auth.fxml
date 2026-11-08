@@ -25,6 +25,7 @@
         <!-- Panel Login -->
         <VBox fx:id="panelLogin" styleClass="tab-panel" spacing="14">
             <VBox.margin><Insets top="20"/></VBox.margin>
+            <Label fx:id="loginFeedback" styleClass="feedback-msg" visible="false" managed="false" wrapText="true"/>
             <VBox styleClass="form-group" spacing="6">
                 <Label text="Email" styleClass="form-label"/>
                 <TextField fx:id="loginEmail" promptText="seu@email.com" styleClass="form-input"/>
@@ -44,6 +45,7 @@
         <!-- Panel Registro -->
         <VBox fx:id="panelRegister" styleClass="tab-panel" spacing="14" visible="false" managed="false">
             <VBox.margin><Insets top="20"/></VBox.margin>
+            <Label fx:id="regFeedback" styleClass="feedback-msg" visible="false" managed="false" wrapText="true"/>
             <VBox styleClass="form-group" spacing="6">
                 <Label text="Nome de usuário" styleClass="form-label"/>
                 <TextField fx:id="regNome" promptText="seu_nome" styleClass="form-input"/>
