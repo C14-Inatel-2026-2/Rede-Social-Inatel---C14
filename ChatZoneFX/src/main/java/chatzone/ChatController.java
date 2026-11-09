@@ -12,8 +12,13 @@ import javafx.scene.layout.*;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class ChatController {
+    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm")
+            .withZone(ZoneId.systemDefault());
     private static final String TIPO_ENTRAR = "entrar_sala";
     private static final String TIPO_MENSAGEM = "mensagem";
     private static final String TIPO_SAIR = "sair";
@@ -101,8 +106,9 @@ public class ChatController {
         }
         String autor = mensagem.usuario == null ? "desconhecido" : mensagem.usuario;
         String texto = mensagem.texto == null ? "" : mensagem.texto;
-        if (autor.equals(currentEmail)) appendSent(autor, texto);
-        else appendReceived(autor, texto);
+        String hora = mensagem.timestamp > 0 ? HORA.format(Instant.ofEpochMilli(mensagem.timestamp)) : "";
+        if (autor.equals(currentEmail)) appendSent(autor, texto, hora);
+        else appendReceived(autor, texto, hora);
     }
 
     private void atualizarPresenca(Mensagem mensagem) {
@@ -156,28 +162,30 @@ public class ChatController {
         scrollToBottom();
     }
 
-    void appendReceived(String author, String text) {
-        HBox row = new HBox(buildBubble(author, text, false));
+    void appendReceived(String author, String text, String hora) {
+        HBox row = new HBox(buildBubble(author, text, hora, false));
         row.setAlignment(Pos.CENTER_LEFT);
         messagesBox.getChildren().add(row);
         scrollToBottom();
     }
 
-    void appendSent(String author, String text) {
-        HBox row = new HBox(buildBubble(author, text, true));
+    void appendSent(String author, String text, String hora) {
+        HBox row = new HBox(buildBubble(author, text, hora, true));
         row.setAlignment(Pos.CENTER_RIGHT);
         messagesBox.getChildren().add(row);
         scrollToBottom();
     }
 
-    private VBox buildBubble(String author, String text, boolean sent) {
+    private VBox buildBubble(String author, String text, String hora, boolean sent) {
         Label authorLabel = new Label(author);
         authorLabel.getStyleClass().add(sent ? "msg-author-sent" : "msg-author");
         Label textLabel = new Label(text);
         textLabel.setWrapText(true);
         textLabel.setMaxWidth(480);
         textLabel.getStyleClass().add("msg-text");
-        VBox bubble = new VBox(3, authorLabel, textLabel);
+        Label timeLabel = new Label(hora);
+        timeLabel.getStyleClass().add("msg-time");
+        VBox bubble = new VBox(3, authorLabel, textLabel, timeLabel);
         bubble.getStyleClass().add(sent ? "msg-sent" : "msg-received");
         bubble.setMaxWidth(520);
         return bubble;

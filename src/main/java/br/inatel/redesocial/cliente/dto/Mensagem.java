@@ -10,6 +10,7 @@ public class Mensagem {
     public String texto;
     public int valorInt;
     public List<String> usuariosOnline;
+    public long timestamp;
     public static br.inatel.redesocial.servidor.Mensagem erro(String texto) {
         br.inatel.redesocial.servidor.Mensagem m = new br.inatel.redesocial.servidor.Mensagem();
         m.type = "erro";

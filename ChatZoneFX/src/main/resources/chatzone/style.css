@@ -379,6 +379,11 @@
     -fx-font-size: 13px;
 }
 
+.msg-time {
+    -fx-text-fill: rgba(245, 237, 224, 0.55);
+    -fx-font-size: 10px;
+}
+
 /* ── Chat input ── */
 .chat-input-area {
     -fx-background-color: #3b2a1a;

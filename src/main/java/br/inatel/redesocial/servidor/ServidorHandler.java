@@ -103,6 +103,7 @@ public class ServidorHandler extends Thread {
             case "mensagem":
                 if (instanciaSala!=null){
                     msg.usuario = emailUsuario;
+                    msg.timestamp = System.currentTimeMillis();
                     for (PrintWriter escritorDestino : instanciaSala.getEscritores()) {
                         servidorSocket.enviar(msg, escritorDestino);
                     }

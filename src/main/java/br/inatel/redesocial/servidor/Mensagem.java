@@ -10,6 +10,7 @@ public class Mensagem {
     public String texto;
     public int valorInt;
     public List<String> usuariosOnline;
+    public long timestamp;
     public static Mensagem erro(String texto) {
         Mensagem m = new Mensagem();
         m.type = "erro";
