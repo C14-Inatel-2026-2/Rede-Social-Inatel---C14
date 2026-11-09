@@ -26,6 +26,13 @@ public class Main {
             exchange.getResponseBody().write(corpo);
             exchange.close();
         });
+        server.createContext("/health", exchange -> {
+            byte[] corpo = "{\"status\":\"ok\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+            exchange.sendResponseHeaders(200, corpo.length);
+            exchange.getResponseBody().write(corpo);
+            exchange.close();
+        });
         server.start();
     }
 }
