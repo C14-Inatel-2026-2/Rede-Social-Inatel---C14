@@ -33,13 +33,13 @@ public class TrocarSenhaTest {
 
     @Test
     public void testeAlterarSenha(){
-        boolean senhaAlterada;
+        boolean sucessoAlteracao;
 
         Mockito.when(usuarioDAO.alterarSenha(emailValido, senhaValida, senhaNovaValida)).thenReturn(true);
 
-        senhaAlterada = trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaValida);
+        sucessoAlteracao = trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaValida);
 
-        assertTrue(senhaAlterada);
+        assertTrue(sucessoAlteracao);
     }
 
     @Test
@@ -52,5 +52,11 @@ public class TrocarSenhaTest {
     public void testeAlterarSenhaInvalida(){
         assertThrows(SenhaInvalidaException.class,
                 () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaInvalida));
+    }
+
+    @Test
+    public void testeAlterarSenhasIguais(){
+        assertThrows(SenhaInvalidaException.class,
+                () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaValida));
     }
 }
