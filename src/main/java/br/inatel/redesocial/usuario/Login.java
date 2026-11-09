@@ -1,4 +1,4 @@
-package br.inatel.redesocial.autenticacao;
+package br.inatel.redesocial.usuario;
 
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import br.inatel.redesocial.exceptions.CampoObrigatorioException;
