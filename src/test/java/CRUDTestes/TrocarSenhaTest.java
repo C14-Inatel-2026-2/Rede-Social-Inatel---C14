@@ -18,7 +18,6 @@ public class TrocarSenhaTest {
 
     private final String senhaValida = "Chizinho67!";
     private final String emailValido = "christopher@inatel.br";
-    private final String senhaNovaValida = "Theofficetop1!";
     private final String senhaNovaInvalida = "senha";
 
     private final String senhaNovaVazia = "";
@@ -34,12 +33,25 @@ public class TrocarSenhaTest {
     @Test
     public void testeAlterarSenha(){
         boolean sucessoAlteracao;
+        String senhaNovaValida = "Theofficetop1!";
 
         Mockito.when(usuarioDAO.alterarSenha(emailValido, senhaValida, senhaNovaValida)).thenReturn(true);
 
         sucessoAlteracao = trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaValida);
 
         assertTrue(sucessoAlteracao);
+    }
+
+    @Test
+    public void testeAlterarSenhaIncorreta(){
+        boolean sucessoAlteracao;
+        String senhaIncorreta = "espirito666";
+
+        Mockito.when(trocaSenha.alterarSenha(emailValido, senhaIncorreta, senhaValida)).thenReturn(false);
+
+        sucessoAlteracao = trocaSenha.alterarSenha(emailValido, senhaIncorreta, senhaValida);
+
+        assertFalse(sucessoAlteracao);
     }
 
     @Test
