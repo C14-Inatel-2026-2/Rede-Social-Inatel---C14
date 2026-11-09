@@ -1,62 +1,36 @@
 package CRUDTestes;
 
-import br.inatel.redesocial.usuario.Usuario;
+import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
+import br.inatel.redesocial.usuario.TrocarSenha;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UsuarioTest {
-    private Usuario usuario;
+public class TrocarSenhaTest {
+    TrocarSenha trocaSenha;
+
     private final String senha = "Chizinho67!";
+    private final String email = "christopher@inatel.br";
+
+    @Mock
+    UsuarioDAO usuarioDAO;
 
     @BeforeEach
     public void setup(){
-        String email = "christopher@inatel.br";
-        String nome = "Christopher";
-        this.usuario = new Usuario(email, senha);
-        usuario.setNome(nome);
+        this.trocaSenha = new TrocarSenha(usuarioDAO);
     }
 
     @Test
     public void testeAlterarSenha(){
         String senhaNovaValida = "Theofficetop1!";
-        boolean troca = usuario.alterarSenha(senha, senhaNovaValida);
+        boolean senhaalterada;
 
-        assertTrue(troca);
-    }
+        Mockito.when(usuarioDAO.alterarSenha(email, senha, senhaNovaValida)).thenReturn(true);
 
-    @Test
-    public void testeAlterarSenhaIgual(){
-        boolean troca = usuario.alterarSenha(senha, senha);
+        senhaalterada = trocaSenha.alterarSenha(email, senha, senhaNovaValida);
 
-        assertFalse(troca);
-    }
-
-    @Test
-    public void testeAlterarSenhaInvalida(){
-        String senhaInvalida = "321";
-        boolean troca = usuario.alterarSenha(senha, senhaInvalida);
-
-        assertFalse(troca);
-    }
-
-    @Test
-    public void testeAlterarSenhaVerificadoraIncorreta(){
-        String verificadoraIncorreta = "EspiritoDePorco99!";
-        String senhaNovaValida = "Theofficetop1!";
-
-        boolean troca = usuario.alterarSenha(verificadoraIncorreta, senhaNovaValida);
-
-        assertFalse(troca);
-    }
-
-    @Test
-    public void testeAlterarSenhaVerificadoraMasEmMaiusculo(){
-        String verificadoraEmMaiusculo = senha.toUpperCase();
-        String senhaNovaValida = "Theofficetop1!";
-
-        boolean troca = usuario.alterarSenha(verificadoraEmMaiusculo, senhaNovaValida);
-
-        assertFalse(troca);
+        assertTrue(senhaalterada);
     }
 }

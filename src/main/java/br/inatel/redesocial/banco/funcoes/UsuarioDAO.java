@@ -1,6 +1,5 @@
 package br.inatel.redesocial.banco.funcoes;
 
-import br.inatel.redesocial.usuario.Login;
 import br.inatel.redesocial.usuario.Usuario;
 import br.inatel.redesocial.banco.ConnectionDAO;
 import org.mindrot.jbcrypt.BCrypt;

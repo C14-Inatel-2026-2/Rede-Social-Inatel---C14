@@ -7,11 +7,11 @@ import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 public class TrocarSenha {
     private final UsuarioDAO usuarioDAO;
 
-    public TrocaSenha(UsuarioDAO usuarioDAO) {
+    public TrocarSenha(UsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
     }
 
-    public boolean alterarSenha(Usuario usuario, String senhaAtual, String senhaNova) {
+    public boolean alterarSenha(String email, String senhaAtual, String senhaNova) {
         if (senhaAtual == null || senhaAtual.isBlank() || senhaNova == null || senhaNova.isBlank()) {
             throw new CampoObrigatorioException("Senha atual e nova senha são obrigatórias");
         }
@@ -24,6 +24,6 @@ public class TrocarSenha {
             throw new SenhaInvalidaException("A nova senha deve ser diferente da atual");
         }
 
-        return usuarioDAO.alterarSenha(usuario.getEmail(), senhaAtual, senhaNova);
+        return usuarioDAO.alterarSenha(email, senhaAtual, senhaNova);
     }
 }
