@@ -1,7 +1,7 @@
 package CRUDTestes;
 
-import br.inatel.redesocial.autenticacao.Cadastro;
-import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.usuario.Cadastro;
+import br.inatel.redesocial.usuario.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;

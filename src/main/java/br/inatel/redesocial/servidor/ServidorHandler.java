@@ -1,7 +1,5 @@
 package br.inatel.redesocial.servidor;
 
-import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
-import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
