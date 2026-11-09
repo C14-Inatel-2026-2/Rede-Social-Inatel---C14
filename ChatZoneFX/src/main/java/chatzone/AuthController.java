@@ -67,8 +67,8 @@ public class AuthController {
 
     public boolean register(String email, String senha, String nome) {
         try {
-            Usuario usuario = cadastro.criarUsuario(email, senha, nome);
-            Session.setUser(usuario.getEmail(), usuario.getNome());
+            cadastro.criarUsuario(email, senha, nome);
+            Session.setUser(email, nome);
         } catch (EmailJaCadastradoException | EmailInvalidoException e) {
             showFieldError(regEmailErr, e.getMessage());
             showFeedback(regFeedback, "Nao foi possivel criar a conta. Revise o e-mail informado.");
