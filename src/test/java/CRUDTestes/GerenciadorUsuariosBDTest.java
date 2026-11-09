@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,5 +34,12 @@ public class GerenciadorUsuariosBDTest {
         Mockito.when(usuarioDAO.buscarPorEmail(email)).thenReturn(esperado);
 
         assertSame(esperado, gerenciador.buscaUsuarioPorEmail(email));
+    }
+
+    @Test
+    public void testeBuscaUsuarioInexistente(){
+        Mockito.when(usuarioDAO.buscarPorEmail(email)).thenReturn(null);
+
+        assertNull(gerenciador.buscaUsuarioPorEmail(email));
     }
 }
