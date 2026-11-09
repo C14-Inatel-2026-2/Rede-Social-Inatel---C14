@@ -14,7 +14,7 @@ public class Login{
     public boolean autenticarUsuario(Usuario usuario, String senhaDigitada) {
         verificacaoCampoObrigatorio(usuario.getEmail(), senhaDigitada);
 
-        String nome = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
+        String nome = loginDAO.autenticarUser(usuario.getEmail(), senhaDigitada);
 
         verificaSucessoNoLogin(nome);
 

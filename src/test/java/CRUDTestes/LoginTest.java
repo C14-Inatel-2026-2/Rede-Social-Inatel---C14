@@ -32,7 +32,7 @@ public class LoginTest {
     @Test
     public void testeAutenticar(){
         Usuario usuario = new Usuario(email, senha);
-        Mockito.when(loginDAO.auteticaUser(email, senha)).thenReturn(nome);
+        Mockito.when(loginDAO.autenticarUser(email, senha)).thenReturn(nome);
 
         boolean autenticado = login.autenticarUsuario(usuario, senha);
 
@@ -46,7 +46,7 @@ public class LoginTest {
         String senhaInvalida = "senha123";
         Usuario usuario = new Usuario(email, senha);
 
-        Mockito.when(loginDAO.auteticaUser(email, senhaInvalida)).thenReturn(null);
+        Mockito.when(loginDAO.autenticarUser(email, senhaInvalida)).thenReturn(null);
 
         assertThrows(FalhaNoLoginException.class,
                 () -> login.autenticarUsuario(usuario, senhaInvalida));
@@ -63,7 +63,7 @@ public class LoginTest {
     public void testeAutenticarUsuarioFalhaEMandaException(){
         Usuario usuario = new Usuario(email, senha);
 
-        Mockito.when(loginDAO.auteticaUser(email, senha)).thenThrow(RuntimeException.class);
+        Mockito.when(loginDAO.autenticarUser(email, senha)).thenThrow(RuntimeException.class);
 
         assertThrows(RuntimeException.class, ()-> login.autenticarUsuario(usuario, senha));
     }
