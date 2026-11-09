@@ -1,12 +1,14 @@
 package br.inatel.redesocial.servidor;
 
-import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
-import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
-import br.inatel.redesocial.usuario.Usuario;
+import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
+import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
+import br.inatel.redesocial.autenticacao.Usuario;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
@@ -15,7 +17,7 @@ public class Sala {
     private String nome;
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
-    private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
+    private GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuariosMock();
     private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
 
     public Sala(int capacidadeMaxima, String nome){
@@ -24,8 +26,7 @@ public class Sala {
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
-
-    public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
+    public synchronized boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
             quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
@@ -35,11 +36,11 @@ public class Sala {
         return false;
     }
 
-    public boolean addUsuario(String email, PrintWriter escritor){
-        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(email), escritor);
+    public boolean addUsuario(String nomeUsuario, PrintWriter escritor){
+        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(nomeUsuario), escritor);
     }
 
-    public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
+    public synchronized void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
                 usuariosAtivos.remove(usuarioRemover);
@@ -51,12 +52,17 @@ public class Sala {
         }
     }
 
-    public void removeUsuario(String emailUsuarioRemover, PrintWriter escritorRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuarioRemover), escritorRemover);
+    public void removeUsuario(String usuarioRemover, PrintWriter escritorRemover){
+        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover), escritorRemover);
     }
+
 
     public int getCapacidadeMaxima() {
         return capacidadeMaxima;
+    }
+
+    public String getNome() {
+        return nome;
     }
 
     public int getQuantidadeUsuarios() {
@@ -73,6 +79,12 @@ public class Sala {
 
     public Set<PrintWriter> getEscritores(){
         return escritores;
+    }
+
+    public synchronized List<String> getNomesUsuariosAtivos() {
+        return usuariosAtivos.stream()
+                .map(Usuario::getEmail)
+                .collect(Collectors.toList());
     }
 
     public boolean isLotada(){

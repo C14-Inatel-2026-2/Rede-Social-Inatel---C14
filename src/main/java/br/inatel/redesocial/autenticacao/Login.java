@@ -1,4 +1,4 @@
-package br.inatel.redesocial.usuario;
+package br.inatel.redesocial.autenticacao;
 
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import br.inatel.redesocial.exceptions.CampoObrigatorioException;
@@ -14,7 +14,7 @@ public class Login{
     public boolean autenticarUsuario(Usuario usuario, String senhaDigitada) {
         verificacaoCampoObrigatorio(usuario.getEmail(), senhaDigitada);
 
-        String nome = loginDAO.autenticarUser(usuario.getEmail(), senhaDigitada);
+        String nome = loginDAO.auteticaUser(usuario.getEmail(), senhaDigitada);
 
         verificaSucessoNoLogin(nome);
 

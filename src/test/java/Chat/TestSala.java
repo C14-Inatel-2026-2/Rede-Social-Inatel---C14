@@ -1,6 +1,6 @@
 package Chat;
 
-import br.inatel.redesocial.usuario.Usuario;
+import br.inatel.redesocial.autenticacao.Usuario;
 import br.inatel.redesocial.servidor.Sala;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

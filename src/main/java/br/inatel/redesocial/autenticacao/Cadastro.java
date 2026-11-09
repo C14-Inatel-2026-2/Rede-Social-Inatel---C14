@@ -1,4 +1,4 @@
-package br.inatel.redesocial.usuario;
+package br.inatel.redesocial.autenticacao;
 
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.exceptions.*;
