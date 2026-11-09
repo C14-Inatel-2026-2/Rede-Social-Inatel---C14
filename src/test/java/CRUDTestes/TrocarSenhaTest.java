@@ -2,6 +2,7 @@ package CRUDTestes;
 
 import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 import br.inatel.redesocial.usuario.TrocarSenha;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ public class TrocarSenhaTest {
     private final String senhaValida = "Chizinho67!";
     private final String emailValido = "christopher@inatel.br";
     private final String senhaNovaValida = "Theofficetop1!";
+    private final String senhaNovaInvalida = "senha";
 
     private final String senhaNovaVazia = "";
 
@@ -41,8 +43,14 @@ public class TrocarSenhaTest {
     }
 
     @Test
-    public void testeAlterarSenhaIgual(){
+    public void testeAlterarSenhaNula(){
         assertThrows(CampoObrigatorioException.class,
                 () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaVazia));
+    }
+
+    @Test
+    public void testeAlterarSenhaInvalida(){
+        assertThrows(SenhaInvalidaException.class,
+                () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaInvalida));
     }
 }
