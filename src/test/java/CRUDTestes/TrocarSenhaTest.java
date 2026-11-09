@@ -39,4 +39,10 @@ public class TrocarSenhaTest {
 
         assertTrue(senhaAlterada);
     }
+
+    @Test
+    public void testeAlterarSenhaIgual(){
+        assertThrows(CampoObrigatorioException.class,
+                () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaVazia));
+    }
 }
