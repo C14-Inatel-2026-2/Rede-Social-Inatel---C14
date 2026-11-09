@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import java.io.*;
 import java.net.Socket;
 import java.util.Set;
+import java.util.ArrayList;
 
 public class ServidorHandler extends Thread {
     private static final Gson GSON = new Gson();
@@ -62,6 +63,7 @@ public class ServidorHandler extends Thread {
         if (instanciaSala != null) {
             instanciaSala.removeUsuario(emailUsuario, servidorSocket.getEscritor());
             notificarSala(emailUsuario + " saiu da sala.");
+            notificarPresenca();
         }
         try { socket.close(); } catch (IOException ignored) {}
     }
@@ -77,7 +79,13 @@ public class ServidorHandler extends Thread {
                         servidorSocket.enviar(Mensagem.erro("Sala lotada!"));
                         instanciaSala = null;
                     } else {
+                        Mensagem confirmado = Mensagem.info("Entrada autorizada.");
+                        confirmado.type = "entrada_confirmada";
+                        confirmado.valorInt = instanciaSala.getQuantidadeUsuarios();
+                        confirmado.usuariosOnline = instanciaSala.getNomesUsuariosAtivos();
+                        servidorSocket.enviar(confirmado);
                         notificarSala(msg.usuario + " entrou na sala.");
+                        notificarPresenca();
                     }
                 }
 
@@ -114,6 +122,17 @@ public class ServidorHandler extends Thread {
         Mensagem aviso = Mensagem.info(texto);
         for (PrintWriter destino : instanciaSala.getEscritores()) {
             servidorSocket.enviar(aviso, destino);
+        }
+    }
+
+    private void notificarPresenca() {
+        if (instanciaSala == null) return;
+        Mensagem presenca = new Mensagem();
+        presenca.type = "presenca";
+        presenca.valorInt = instanciaSala.getQuantidadeUsuarios();
+        presenca.usuariosOnline = new ArrayList<>(instanciaSala.getNomesUsuariosAtivos());
+        for (PrintWriter destino : instanciaSala.getEscritores()) {
+            servidorSocket.enviar(presenca, destino);
         }
     }
 }

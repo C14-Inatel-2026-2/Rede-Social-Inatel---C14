@@ -10,90 +10,68 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
 import java.net.Socket;
+import java.util.Collections;
+import java.util.List;
 
 public class ChatController {
-
-    private static final String TIPO_ENTRAR   = "entrar_sala";
+    private static final String TIPO_ENTRAR = "entrar_sala";
     private static final String TIPO_MENSAGEM = "mensagem";
-    private static final String TIPO_SAIR     = "sair";
-    private static final String TIPO_ERRO     = "erro";
+    private static final String TIPO_SAIR = "sair";
+    private static final String TIPO_ERRO = "erro";
+    private static final String TIPO_PRESENCA = "presenca";
+    private static final String TIPO_ENTRADA_CONFIRMADA = "entrada_confirmada";
 
-    @FXML private Label      roomNameLabel;
-    @FXML private Label      usersCountLabel;
-    @FXML private VBox       messagesBox;
+    @FXML private Label roomNameLabel, usersCountLabel;
+    @FXML private VBox messagesBox;
     @FXML private ScrollPane messagesScroll;
-    @FXML private TextArea   msgInput;
-    @FXML private Button     sendBtn;
+    @FXML private TextArea msgInput;
+    @FXML private Button sendBtn;
 
     private String currentEmail;
     private String roomName;
-    private int    roomId;
-    private int    port;
-
+    private int roomId;
+    private int port;
     private ClienteSocket clienteSocket;
-    private Socket        socket;
+    private Socket socket;
     private volatile boolean saindo = false;
 
     public void init(String roomName, int roomId, int port, String email) {
-        this.roomName     = roomName;
-        this.roomId       = roomId;
-        this.port         = port;
+        this.roomName = roomName;
+        this.roomId = roomId;
+        this.port = port;
         this.currentEmail = email;
-
         roomNameLabel.setText(roomName);
-        usersCountLabel.setText("conectando…");
+        usersCountLabel.setText("conectando...");
         sendBtn.setDisable(true);
-
         msgInput.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER && !e.isShiftDown()) {
                 e.consume();
                 onSend();
             }
         });
-
         conectar();
     }
 
     private void conectar() {
         Thread t = new Thread(() -> {
             try {
-                socket        = new Socket(ChatConfig.host(), port);
+                socket = new Socket(ChatConfig.host(), port);
                 clienteSocket = new ClienteSocket(socket);
-
                 Mensagem entrar = new Mensagem();
-                entrar.type    = TIPO_ENTRAR;
-                entrar.texto   = roomName;
+                entrar.type = TIPO_ENTRAR;
+                entrar.texto = roomName;
                 entrar.usuario = currentEmail;
-                entrar.email   = currentEmail;
+                entrar.email = currentEmail;
                 clienteSocket.EnviarMensagem(entrar);
-
-                Platform.runLater(() -> {
-                    usersCountLabel.setText("online");
-                    sendBtn.setDisable(false);
-                    appendSystem("Você entrou em " + roomName);
-                });
 
                 Mensagem msg;
                 while ((msg = clienteSocket.ReceberMensagem()) != null) {
-                    final Mensagem mensagem = msg;
+                    Mensagem mensagem = msg;
                     Platform.runLater(() -> tratarMensagem(mensagem));
                 }
-
-                if (!saindo) {
-                    Platform.runLater(() -> {
-                        appendSystem("Conexão encerrada (sala lotada ou servidor fora do ar).");
-                        sendBtn.setDisable(true);
-                        usersCountLabel.setText("desconectado");
-                    });
-                }
+                if (!saindo) mostrarDesconexao("Conexao encerrada pelo servidor.");
             } catch (Exception e) {
-                if (!saindo) {
-                    Platform.runLater(() -> {
-                        appendSystem("Erro de conexão: " + e.getMessage());
-                        sendBtn.setDisable(true);
-                        usersCountLabel.setText("desconectado");
-                    });
-                }
+                if (!saindo) mostrarDesconexao("Erro de conexao: " + e.getMessage());
             }
         }, "chat-receiver");
         t.setDaemon(true);
@@ -102,41 +80,61 @@ public class ChatController {
 
     private void tratarMensagem(Mensagem mensagem) {
         if (mensagem == null) return;
-
         if (TIPO_ERRO.equals(mensagem.type)) {
             appendSystem("Erro: " + mensagem.texto);
+            sendBtn.setDisable(true);
             return;
         }
-
+        if (TIPO_ENTRADA_CONFIRMADA.equals(mensagem.type)) {
+            sendBtn.setDisable(false);
+            atualizarPresenca(mensagem);
+            appendSystem("Entrada autorizada em " + roomName + ".");
+            return;
+        }
+        if (TIPO_PRESENCA.equals(mensagem.type)) {
+            atualizarPresenca(mensagem);
+            return;
+        }
         if (!TIPO_MENSAGEM.equals(mensagem.type)) {
             appendSystem(mensagem.texto == null ? mensagem.type : mensagem.texto);
             return;
         }
-
         String autor = mensagem.usuario == null ? "desconhecido" : mensagem.usuario;
         String texto = mensagem.texto == null ? "" : mensagem.texto;
-
         if (autor.equals(currentEmail)) appendSent(autor, texto);
-        else                            appendReceived(autor, texto);
+        else appendReceived(autor, texto);
     }
 
-    @FXML
-    void onSend() {
+    private void atualizarPresenca(Mensagem mensagem) {
+        List<String> usuarios = mensagem.usuariosOnline == null
+                ? Collections.emptyList() : mensagem.usuariosOnline;
+        String nomes = usuarios.isEmpty() ? "nenhum" : String.join(", ", usuarios);
+        usersCountLabel.setText(mensagem.valorInt + " online: " + nomes);
+    }
+
+    private void mostrarDesconexao(String texto) {
+        Platform.runLater(() -> {
+            appendSystem(texto);
+            sendBtn.setDisable(true);
+            usersCountLabel.setText("desconectado");
+        });
+    }
+
+    @FXML void onSend() {
         String text = msgInput.getText().trim().replace("\r", "").replace("\n", " ");
         if (text.isEmpty() || clienteSocket == null) return;
         try {
             Mensagem mensagem = new Mensagem();
-            mensagem.type  = TIPO_MENSAGEM;
+            mensagem.type = TIPO_MENSAGEM;
             mensagem.texto = text;
             clienteSocket.EnviarMensagem(mensagem);
+            msgInput.clear();
         } catch (Exception e) {
-            appendSystem("Erro ao enviar: " + e.getMessage());
+            appendSystem("Nao foi possivel enviar a mensagem. Verifique a conexao.");
         }
-        msgInput.clear();
     }
 
-    @FXML
-    void onBack() {
+    @FXML void onBack() {
         saindo = true;
         try {
             if (clienteSocket != null) {
@@ -145,16 +143,16 @@ public class ChatController {
                 clienteSocket.EnviarMensagem(sair);
             }
             if (socket != null) socket.close();
-        } catch (Exception ignored) {}
-        try { Main.showLobby(currentEmail); } catch (Exception ignored) {}
+        } catch (Exception ignored) { }
+        try { Main.showLobby(currentEmail); } catch (Exception ignored) { }
     }
 
     void appendSystem(String text) {
-        Label lbl = new Label(text);
-        lbl.getStyleClass().add("msg-system");
-        lbl.setMaxWidth(Double.MAX_VALUE);
-        lbl.setAlignment(Pos.CENTER);
-        messagesBox.getChildren().add(lbl);
+        Label label = new Label(text);
+        label.getStyleClass().add("msg-system");
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
+        messagesBox.getChildren().add(label);
         scrollToBottom();
     }
 
@@ -173,15 +171,13 @@ public class ChatController {
     }
 
     private VBox buildBubble(String author, String text, boolean sent) {
-        Label authorLbl = new Label(author);
-        authorLbl.getStyleClass().add(sent ? "msg-author-sent" : "msg-author");
-
-        Label textLbl = new Label(text);
-        textLbl.setWrapText(true);
-        textLbl.setMaxWidth(480);
-        textLbl.getStyleClass().add("msg-text");
-
-        VBox bubble = new VBox(3, authorLbl, textLbl);
+        Label authorLabel = new Label(author);
+        authorLabel.getStyleClass().add(sent ? "msg-author-sent" : "msg-author");
+        Label textLabel = new Label(text);
+        textLabel.setWrapText(true);
+        textLabel.setMaxWidth(480);
+        textLabel.getStyleClass().add("msg-text");
+        VBox bubble = new VBox(3, authorLabel, textLabel);
         bubble.getStyleClass().add(sent ? "msg-sent" : "msg-received");
         bubble.setMaxWidth(520);
         return bubble;

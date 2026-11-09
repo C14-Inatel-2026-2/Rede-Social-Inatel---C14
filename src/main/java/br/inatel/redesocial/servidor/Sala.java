@@ -7,6 +7,8 @@ import br.inatel.redesocial.autenticacao.Usuario;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
@@ -24,7 +26,7 @@ public class Sala {
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
-    public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
+    public synchronized boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
             quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
@@ -38,7 +40,7 @@ public class Sala {
         return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(nomeUsuario), escritor);
     }
 
-    public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
+    public synchronized void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
                 usuariosAtivos.remove(usuarioRemover);
@@ -77,6 +79,12 @@ public class Sala {
 
     public Set<PrintWriter> getEscritores(){
         return escritores;
+    }
+
+    public synchronized List<String> getNomesUsuariosAtivos() {
+        return usuariosAtivos.stream()
+                .map(Usuario::getEmail)
+                .collect(Collectors.toList());
     }
 
     public boolean isLotada(){

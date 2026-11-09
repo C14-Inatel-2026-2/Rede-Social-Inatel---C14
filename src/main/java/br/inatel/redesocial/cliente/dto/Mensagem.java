@@ -1,5 +1,7 @@
 package br.inatel.redesocial.cliente.dto;
 
+import java.util.List;
+
 public class Mensagem {
     public String type;
     public String email;
@@ -7,6 +9,7 @@ public class Mensagem {
     public String usuario;
     public String texto;
     public int valorInt;
+    public List<String> usuariosOnline;
     public static br.inatel.redesocial.servidor.Mensagem erro(String texto) {
         br.inatel.redesocial.servidor.Mensagem m = new br.inatel.redesocial.servidor.Mensagem();
         m.type = "erro";
