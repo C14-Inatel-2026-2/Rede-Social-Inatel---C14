@@ -27,8 +27,8 @@ public class Sala {
     }
     public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
-            quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
+            quantidadeUsuarios = usuariosAtivos.size();
             escritores.put(usuarioNovo.getEmail(), escritor);
             return true;
         }
@@ -39,7 +39,7 @@ public class Sala {
         return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(nomeUsuario), escritor);
     }
 
-    public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
+    public void removeUsuario(Usuario usuarioRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
                 var escritor = getEscritor(usuarioRemover);
@@ -53,8 +53,8 @@ public class Sala {
         }
     }
 
-    public void removeUsuario(String usuarioRemover, PrintWriter escritorRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover), escritorRemover);
+    public void removeUsuario(String usuarioRemover){
+        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover));
     }
 
 
