@@ -1,8 +1,8 @@
 package br.inatel.redesocial.servidor;
 
-import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
-import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
-import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
+import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
+import br.inatel.redesocial.usuario.Usuario;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class Sala {
     private String nome;
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
-    private GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuariosMock();
+    private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
     private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
 
     public Sala(int capacidadeMaxima, String nome){
@@ -24,6 +24,7 @@ public class Sala {
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
+
     public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
             quantidadeUsuarios += 1;
@@ -34,8 +35,8 @@ public class Sala {
         return false;
     }
 
-    public boolean addUsuario(String nomeUsuario, PrintWriter escritor){
-        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(nomeUsuario), escritor);
+    public boolean addUsuario(String email, PrintWriter escritor){
+        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(email), escritor);
     }
 
     public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
@@ -50,10 +51,9 @@ public class Sala {
         }
     }
 
-    public void removeUsuario(String usuarioRemover, PrintWriter escritorRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover), escritorRemover);
+    public void removeUsuario(String emailUsuarioRemover, PrintWriter escritorRemover){
+        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuarioRemover), escritorRemover);
     }
-
 
     public int getCapacidadeMaxima() {
         return capacidadeMaxima;
