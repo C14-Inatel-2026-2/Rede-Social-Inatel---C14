@@ -4,9 +4,9 @@ import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
 import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
 import br.inatel.redesocial.autenticacao.Usuario;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
@@ -16,7 +16,8 @@ public class Sala {
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
     private GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuariosMock();
-    private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
+    // Implementação antiga: private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
+    Map<String, PrintWriter> escritores = new HashMap<>();
 
     public Sala(int capacidadeMaxima, String nome){
         this.nome = nome;
@@ -28,7 +29,7 @@ public class Sala {
         if(quantidadeUsuarios<capacidadeMaxima) {
             quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
-            escritores.add(escritor);
+            escritores.put(usuarioNovo.getEmail(), escritor);
             return true;
         }
         return false;
@@ -41,12 +42,14 @@ public class Sala {
     public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
+                var escritor = getEscritor(usuarioRemover);
+                if (escritor != null) {
+                    escritor.close();
+                }
+                escritores.put(usuarioRemover.getEmail(), null);
                 usuariosAtivos.remove(usuarioRemover);
                 quantidadeUsuarios-=1;
             }
-        }
-        if(escritores.size()>0){
-            escritores.remove(escritorRemover);
         }
     }
 
@@ -71,8 +74,16 @@ public class Sala {
         return usuariosAtivos;
     }
 
-    public Set<PrintWriter> getEscritores(){
-        return escritores;
+    public PrintWriter getEscritor(String nomeUsuario){
+        return escritores.get(nomeUsuario);
+    }
+
+    public PrintWriter getEscritor(Usuario usuarioGet){
+        return escritores.get(usuarioGet.getEmail());
+    }
+
+    public Collection<PrintWriter> getEscritores(){
+        return escritores.values();
     }
 
     public boolean isLotada(){
