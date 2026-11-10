@@ -60,7 +60,7 @@ public class ServidorHandler extends Thread {
 
     private void limpar() {
         if (instanciaSala != null) {
-            instanciaSala.removeUsuario(emailUsuario, servidorSocket.getEscritor());
+            instanciaSala.removeUsuario(emailUsuario);
         }
         try { socket.close(); } catch (IOException ignored) {}
     }
@@ -79,6 +79,8 @@ public class ServidorHandler extends Thread {
             case "criar_sala":
                 GerenciadorSalas.addSala(msg.valorInt, msg.sala);
                 break;
+            case "remover_usuario":
+                GerenciadorSalas.getSala(msg.usuario).removeUsuario(msg.usuario);
             case "mensagem":
                 if (instanciaSala!=null){
                     msg.usuario = emailUsuario;
