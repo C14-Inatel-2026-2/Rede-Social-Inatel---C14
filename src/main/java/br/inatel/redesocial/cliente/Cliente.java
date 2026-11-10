@@ -1,7 +1,7 @@
 package br.inatel.redesocial.cliente;
 
 import br.inatel.redesocial.cliente.comandos.IdentificarComandoChat;
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -10,10 +10,10 @@ import java.util.LinkedHashSet;
 
 public class Cliente implements Runnable {
 
-    private Mensagem mensagemRecebida;
+    private MensagemCliente mensagemClienteRecebida;
     private ClienteSocket clienteSocket;
     private String mensagemEnviada;
-    private Mensagem mensagem;
+    private MensagemCliente mensagemCliente;
     private String usuario;
     private String email;
     private final Set<String> sala = new LinkedHashSet<>();
@@ -37,9 +37,9 @@ public class Cliente implements Runnable {
     }
 
     public void receberMensagem() throws IOException {
-        while((mensagemRecebida = this.clienteSocket.ReceberMensagem() )!=null )
+        while((mensagemClienteRecebida = this.clienteSocket.ReceberMensagem() )!=null )
         {
-            System.out.println(mensagemRecebida.texto);
+            System.out.println(mensagemClienteRecebida.texto);
         }
     }
 
@@ -47,8 +47,8 @@ public class Cliente implements Runnable {
         do {
             System.out.println("Escreva uma mensagem: ");
             mensagemEnviada = sc.nextLine();
-            mensagem = IdentificarComandoChat.identificarComando(mensagemEnviada,cliente);
-            this.clienteSocket.EnviarMensagem(mensagem);
+            mensagemCliente = IdentificarComandoChat.identificarComando(mensagemEnviada,cliente);
+            this.clienteSocket.EnviarMensagem(mensagemCliente);
         } while (!mensagemEnviada.equals("saida"));
     }
 

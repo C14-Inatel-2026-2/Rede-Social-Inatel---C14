@@ -1,6 +1,6 @@
 package br.inatel.redesocial.cliente.dto;
 
-public class Mensagem {
+public class MensagemCliente {
     public String type;
     public String email;
     public String sala;

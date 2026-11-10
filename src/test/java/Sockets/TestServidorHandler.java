@@ -146,14 +146,14 @@ public class TestServidorHandler {
         salaExiste("geral");
         when(servidorSocket.receber()).thenReturn(entrar("thiago", "geral"), (Mensagem) null);
         handler.run();
-        verify(sala).removeUsuario("thiago", escritor);
+        verify(sala).removeUsuario("thiago");
     }
 
     @Test
     public void semEntrarEmSalaNaoRemoveNada() throws Exception {
         when(servidorSocket.receber()).thenReturn((Mensagem) null);
         handler.run();
-        verify(sala, never()).removeUsuario(any(String.class), any(PrintWriter.class));
+        verify(sala, never()).removeUsuario(any(String.class));
     }
 
     @Test

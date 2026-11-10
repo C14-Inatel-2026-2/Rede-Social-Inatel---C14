@@ -4,9 +4,9 @@ import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
 import br.inatel.redesocial.usuario.Usuario;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
@@ -15,8 +15,11 @@ public class Sala {
     private String nome;
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
+    private GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuariosMock();
+    // Implementação antiga: private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
+    Map<String, PrintWriter> escritores = new HashMap<>();
+
     private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
-    private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
 
     public Sala(int capacidadeMaxima, String nome){
         this.nome = nome;
@@ -27,9 +30,9 @@ public class Sala {
 
     public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
-            quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
-            escritores.add(escritor);
+            quantidadeUsuarios = usuariosAtivos.size();
+            escritores.put(usuarioNovo.getEmail(), escritor);
             return true;
         }
         return false;
@@ -39,20 +42,22 @@ public class Sala {
         return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(email), escritor);
     }
 
-    public void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
+    public void removeUsuario(Usuario usuarioRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
+                var escritor = getEscritor(usuarioRemover);
+                if (escritor != null) {
+                    escritor.close();
+                }
+                escritores.put(usuarioRemover.getEmail(), null);
                 usuariosAtivos.remove(usuarioRemover);
                 quantidadeUsuarios-=1;
             }
         }
-        if(escritores.size()>0){
-            escritores.remove(escritorRemover);
-        }
     }
 
-    public void removeUsuario(String emailUsuarioRemover, PrintWriter escritorRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuarioRemover), escritorRemover);
+    public void removeUsuario(String usuarioRemover){
+        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover));
     }
 
     public int getCapacidadeMaxima() {
@@ -71,8 +76,16 @@ public class Sala {
         return usuariosAtivos;
     }
 
-    public Set<PrintWriter> getEscritores(){
-        return escritores;
+    public PrintWriter getEscritor(String nomeUsuario){
+        return escritores.get(nomeUsuario);
+    }
+
+    public PrintWriter getEscritor(Usuario usuarioGet){
+        return escritores.get(usuarioGet.getEmail());
+    }
+
+    public Collection<PrintWriter> getEscritores(){
+        return escritores.values();
     }
 
     public boolean isLotada(){
