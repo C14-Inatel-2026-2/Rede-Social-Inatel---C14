@@ -56,7 +56,7 @@ public class Sala {
     }
 
     public void removeUsuario(String usuarioRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover));
+        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(usuarioRemover));
     }
 
     public int getCapacidadeMaxima() {
