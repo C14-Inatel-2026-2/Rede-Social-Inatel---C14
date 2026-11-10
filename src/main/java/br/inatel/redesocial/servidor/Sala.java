@@ -15,7 +15,6 @@ public class Sala {
     private String nome;
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
-    private GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuariosMock();
     // Implementação antiga: private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
     Map<String, PrintWriter> escritores = new HashMap<>();
 
