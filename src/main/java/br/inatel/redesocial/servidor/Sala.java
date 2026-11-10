@@ -1,8 +1,8 @@
 package br.inatel.redesocial.servidor;
 
-import br.inatel.redesocial.autenticacao.GerenciadorUsuarios;
-import br.inatel.redesocial.autenticacao.GerenciadorUsuariosMock;
-import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
+import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
+import br.inatel.redesocial.usuario.Usuario;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,12 +19,15 @@ public class Sala {
     // Implementação antiga: private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
     Map<String, PrintWriter> escritores = new HashMap<>();
 
+    private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
+
     public Sala(int capacidadeMaxima, String nome){
         this.nome = nome;
         quantidadeUsuarios=0;
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
+
     public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
         if(quantidadeUsuarios<capacidadeMaxima) {
             usuariosAtivos.add(usuarioNovo);
@@ -35,8 +38,8 @@ public class Sala {
         return false;
     }
 
-    public boolean addUsuario(String nomeUsuario, PrintWriter escritor){
-        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(nomeUsuario), escritor);
+    public boolean addUsuario(String email, PrintWriter escritor){
+        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(email), escritor);
     }
 
     public void removeUsuario(Usuario usuarioRemover){
@@ -56,7 +59,6 @@ public class Sala {
     public void removeUsuario(String usuarioRemover){
         removeUsuario(gerenciadorUsuarios.buscaUsuarioPorNome(usuarioRemover));
     }
-
 
     public int getCapacidadeMaxima() {
         return capacidadeMaxima;

@@ -1,8 +1,8 @@
 package chatzone;
 
-import br.inatel.redesocial.autenticacao.Cadastro;
-import br.inatel.redesocial.autenticacao.Login;
-import br.inatel.redesocial.autenticacao.Usuario;
+import br.inatel.redesocial.usuario.Cadastro;
+import br.inatel.redesocial.usuario.Login;
+import br.inatel.redesocial.usuario.Usuario;
 import br.inatel.redesocial.banco.funcoes.CadastroDAO;
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
 import javafx.fxml.FXML;
