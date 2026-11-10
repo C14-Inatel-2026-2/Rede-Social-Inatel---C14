@@ -1,7 +1,7 @@
 package Cliente;
 import br.inatel.redesocial.cliente.Cliente;
 import br.inatel.redesocial.cliente.ClienteSocket;
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,7 +46,7 @@ public class TestCliente
         String mensagemEnviada= "oi\nhello\nsaida\n";
 
         cliente.enviarMensagem (new Scanner(mensagemEnviada),cliente);
-        verify(clienteSocket,times(3)).EnviarMensagem(any(Mensagem.class));
+        verify(clienteSocket,times(3)).EnviarMensagem(any(MensagemCliente.class));
     }
 
 }

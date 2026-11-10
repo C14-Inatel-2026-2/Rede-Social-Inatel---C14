@@ -1,7 +1,7 @@
 package Sockets;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,17 +86,17 @@ public class TestClienteSocket {
 
         ClienteSocket clienteSocket = new ClienteSocket(socket);
 
-        Mensagem mensagem = new Mensagem();
-        mensagem.type = "chat";
-        mensagem.email = "teste@email.com";
-        mensagem.sala = "sala1";
-        mensagem.usuario = "usuario1";
-        mensagem.texto = "Ola";
-        mensagem.valorInt = 0;
+        MensagemCliente mensagemCliente = new MensagemCliente();
+        mensagemCliente.type = "chat";
+        mensagemCliente.email = "teste@email.com";
+        mensagemCliente.sala = "sala1";
+        mensagemCliente.usuario = "usuario1";
+        mensagemCliente.texto = "Ola";
+        mensagemCliente.valorInt = 0;
 
-        clienteSocket.EnviarMensagem(mensagem);
+        clienteSocket.EnviarMensagem(mensagemCliente);
 
-        String esperado = new Gson().toJson(mensagem)
+        String esperado = new Gson().toJson(mensagemCliente)
                 + System.lineSeparator();
 
         assertEquals(

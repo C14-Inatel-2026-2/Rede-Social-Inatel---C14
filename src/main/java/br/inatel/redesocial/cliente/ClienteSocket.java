@@ -1,8 +1,9 @@
 package br.inatel.redesocial.cliente;
 
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import java.net.Socket;
 import java.io.*;
+
 import com.google.gson.Gson;
 
 public class ClienteSocket implements AutoCloseable {
@@ -24,11 +25,11 @@ public class ClienteSocket implements AutoCloseable {
         escritor = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public Mensagem ReceberMensagem() throws IOException {
-        return GSON.fromJson(leitor.readLine(), br.inatel.redesocial.cliente.dto.Mensagem.class);
+    public MensagemCliente ReceberMensagem() throws IOException {
+        return GSON.fromJson(leitor.readLine(), MensagemCliente.class);
     }
 
-    public void EnviarMensagem(Mensagem msg) throws IOException {
+    public void EnviarMensagem(MensagemCliente msg) throws IOException {
         escritor.println(GSON.toJson(msg));
     }
 
