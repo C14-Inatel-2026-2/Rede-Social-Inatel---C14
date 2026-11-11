@@ -52,4 +52,15 @@ public class GerenciadorUsuariosBDTest {
 
         Mockito.verify(usuarioDAO).buscarPorEmail(null);
     }
+
+    @Test
+    public void testeBuscaComEmailVazio(){
+        String emailVazio = "";
+
+        Mockito.when(usuarioDAO.buscarPorEmail(emailVazio)).thenReturn(null);
+
+        assertNull(gerenciador.buscaUsuarioPorEmail(emailVazio));
+
+        Mockito.verify(usuarioDAO).buscarPorEmail(emailVazio);
+    }
 }
