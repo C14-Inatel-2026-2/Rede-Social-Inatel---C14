@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(JavaFxExtension.class)
 public class ChatControllerTest {
 
+    private static final String EMAIL = "user@email.com";
+    private static final String OUTRO = "outro@email.com";
+
     private ChatController controller;
     private Label roomNameLabel;
     private Label usersCountLabel;
@@ -76,9 +79,6 @@ public class ChatControllerTest {
 
     @Test
     public void testeConversaMantemOrdemDasMensagens() {
-        String EMAIL = "user@email.com";
-        String OUTRO = "outro@email.com";
-
         controller.appendSystem("Você entrou em Sala Geral");
         controller.appendReceived(OUTRO, "Oi", "");
         controller.appendSent(EMAIL, "Olá", "");
@@ -89,4 +89,12 @@ public class ChatControllerTest {
         assertEquals(Pos.CENTER_RIGHT, ultima.getAlignment());
     }
 
+    @Test
+    public void testeMensagemRecebidaAlinhadaAEsquerda() {
+        controller.appendReceived(OUTRO, "Oi", "");
+
+        HBox linha = (HBox) messagesBox.getChildren().get(0);
+
+        assertEquals(Pos.CENTER_LEFT, linha.getAlignment());
+    }
 }
