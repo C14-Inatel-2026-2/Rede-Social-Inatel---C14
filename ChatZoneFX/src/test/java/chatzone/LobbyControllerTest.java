@@ -113,4 +113,16 @@ public class LobbyControllerTest {
 
         assertEquals(3, roomsGrid.getChildren().size());
     }
+
+    @Test
+    public void testeSalaLotadaMarcadaComoCheia() throws Exception {
+        controller.init(EMAIL);
+        assertTrue(salasCarregadas.await(5, TimeUnit.SECONDS));
+
+        VBox salaJogos = (VBox) roomsGrid.getChildren().get(1);
+
+        assertTrue(salaJogos.getStyleClass().contains("room-card-full"));
+    }
+
+
 }
