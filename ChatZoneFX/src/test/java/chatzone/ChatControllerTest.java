@@ -97,4 +97,18 @@ public class ChatControllerTest {
 
         assertEquals(Pos.CENTER_LEFT, linha.getAlignment());
     }
+    @Test
+    public void testeBolhaRecebidaMostraAutorETexto() {
+        controller.appendReceived("outro@email.com", "Oi","14:30");
+
+        HBox linha = (HBox) messagesBox.getChildren().get(0);
+        VBox bolha = (VBox) linha.getChildren().get(0);
+        Label autor = (Label) bolha.getChildren().get(0);
+        Label texto = (Label) bolha.getChildren().get(1);
+        Label hora  = (Label) bolha.getChildren().get(2);
+
+        assertEquals("outro@email.com", autor.getText());
+        assertEquals("Oi", texto.getText());
+        assertEquals("14:30", hora.getText());
+    }
 }
