@@ -26,6 +26,28 @@ public class LobbyController {
 
     private static final Gson GSON = new Gson();
 
+    interface BuscadorDeSalas {
+        Room[] buscar() throws Exception;
+    }
+
+    private final BuscadorDeSalas buscadorDeSalas;
+
+    public LobbyController() {
+        this(LobbyController::buscarSalasNoServidor);
+    }
+
+    LobbyController(BuscadorDeSalas buscadorDeSalas) {
+        this.buscadorDeSalas = buscadorDeSalas;
+    }
+
+    private static Room[] buscarSalasNoServidor() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(
+                URI.create(ChatConfig.httpBaseUrl() + "/rooms")).GET().build();
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+        return GSON.fromJson(response.body(), Room[].class);
+    }
+
     @FXML
     public void initialize() {
         // Impede que clique dentro do modal feche o overlay
@@ -43,11 +65,7 @@ public class LobbyController {
         roomsGrid.getChildren().clear();
         Thread loader = new Thread(() -> {
             try {
-                HttpRequest request = HttpRequest.newBuilder(
-                        URI.create(ChatConfig.httpBaseUrl() + "/rooms")).GET().build();
-                HttpResponse<String> response = HttpClient.newHttpClient()
-                        .send(request, HttpResponse.BodyHandlers.ofString());
-                Room[] rooms = GSON.fromJson(response.body(), Room[].class);
+                Room[] rooms = buscadorDeSalas.buscar();
                 Platform.runLater(() -> {
                     for (int i = 0; i < rooms.length; i++) {
                         Room room = rooms[i];
