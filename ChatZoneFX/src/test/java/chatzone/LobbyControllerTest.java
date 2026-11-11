@@ -3,32 +3,62 @@ package chatzone;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import java.util.concurrent.CountDownLatch;
+import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(JavaFxExtension.class)
 public class LobbyControllerTest {
 
     private static final String EMAIL = "user@email.com";
 
+    @Mock
+    private LobbyController.BuscadorDeSalas buscadorDeSalas;
+
     private LobbyController controller;
     private Label profileEmailLabel;
     private StackPane profileModal;
+    private CountDownLatch salasCarregadas;
     private FlowPane roomsGrid;
 
     @BeforeEach
     public void setup() throws Exception {
+        Session.clear();
+        MockitoAnnotations.openMocks(this);
+        when(buscadorDeSalas.buscar()).thenReturn(new LobbyController.Room[] {
+                new LobbyController.Room(0, "Sala Geral", 5, 12, 0),
+                new LobbyController.Room(0, "Sala Jogos", 12, 12, 0),
+                new LobbyController.Room(0, "Sala Música", 0, 12, 0)
+        });
+
+        controller = new LobbyController(buscadorDeSalas);
+
         FXMLLoader loader = new FXMLLoader(LobbyController.class.getResource("lobby.fxml"));
+        loader.setControllerFactory(tipo -> controller);
         loader.load();
 
-        controller = loader.getController();
         profileEmailLabel = (Label) loader.getNamespace().get("profileEmailLabel");
         profileModal = (StackPane) loader.getNamespace().get("profileModal");
         roomsGrid = (FlowPane) loader.getNamespace().get("roomsGrid");
+
+
+        salasCarregadas = new CountDownLatch(1);
+        roomsGrid.getChildren().addListener((ListChangeListener<Node>) mudanca -> {
+            if (roomsGrid.getChildren().size() == 3) salasCarregadas.countDown();
+        });
     }
 
     @Test
@@ -63,4 +93,5 @@ public class LobbyControllerTest {
 
         assertFalse(profileModal.isVisible());
     }
+
 }
