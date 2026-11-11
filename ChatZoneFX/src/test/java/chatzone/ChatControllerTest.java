@@ -111,4 +111,19 @@ public class ChatControllerTest {
         assertEquals("Oi", texto.getText());
         assertEquals("14:30", hora.getText());
     }
+
+    @Test
+    public void testeConversaEntreDoisUsuariosAlternaOsLados() {
+        controller.appendReceived(OUTRO, "Oi, tudo bem?", "11:16");
+        controller.appendSent(EMAIL, "Tudo sim!", "11:16");
+        controller.appendReceived(OUTRO, "Que bom", "11:17");
+
+        HBox primeira = (HBox) messagesBox.getChildren().get(0);
+        HBox segunda  = (HBox) messagesBox.getChildren().get(1);
+        HBox terceira = (HBox) messagesBox.getChildren().get(2);
+
+        assertEquals(Pos.CENTER_LEFT, primeira.getAlignment());
+        assertEquals(Pos.CENTER_RIGHT, segunda.getAlignment());
+        assertEquals(Pos.CENTER_LEFT, terceira.getAlignment());
+    }
 }
