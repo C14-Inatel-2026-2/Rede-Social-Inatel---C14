@@ -1,5 +1,6 @@
 package chatzone;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -125,5 +129,16 @@ public class ChatControllerTest {
         assertEquals(Pos.CENTER_LEFT, primeira.getAlignment());
         assertEquals(Pos.CENTER_RIGHT, segunda.getAlignment());
         assertEquals(Pos.CENTER_LEFT, terceira.getAlignment());
+    }
+    @Test
+    public void testeConversaRolaParaUltimaMensagem() throws Exception {
+        controller.appendReceived(OUTRO, "Oi","12:30");
+        controller.appendSent(EMAIL, "Olá","12:30");
+        CountDownLatch telaAtualizada = new CountDownLatch(1);
+        Platform.runLater(telaAtualizada::countDown);
+
+        telaAtualizada.await(5, TimeUnit.SECONDS);
+
+        assertEquals(1.0, messagesScroll.getVvalue());
     }
 }
