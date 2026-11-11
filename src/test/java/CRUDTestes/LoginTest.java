@@ -112,10 +112,24 @@ public class LoginTest {
 
     @Test
     public void testeAutenticarComSenhaVazia() {
+        String senhaVazia = "";
+
         Usuario usuario = new Usuario(email, senha);
 
         assertThrows(CampoObrigatorioException.class,
-                () -> login.autenticarUsuario(usuario, ""));
+                () -> login.autenticarUsuario(usuario, senhaVazia));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
+    public void testeAutenticarComEmailVazio(){
+        String emailVazio = "";
+
+        Usuario usuario = new Usuario(emailVazio, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, senha));
 
         Mockito.verifyNoInteractions(loginDAO);
     }
