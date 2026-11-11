@@ -143,4 +143,14 @@ public class LoginTest {
 
         Mockito.verifyNoInteractions(loginDAO);
     }
+
+    @Test
+    public void testeAutenticarComEmailNulo(){
+        Usuario usuario = new Usuario(null, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, senha));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
 }
