@@ -5,7 +5,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,6 +72,21 @@ public class ChatControllerTest {
         Label mensagem = (Label) messagesBox.getChildren().get(0);
 
         assertTrue(mensagem.getStyleClass().contains("msg-system"));
+    }
+
+    @Test
+    public void testeConversaMantemOrdemDasMensagens() {
+        String EMAIL = "user@email.com";
+        String OUTRO = "outro@email.com";
+
+        controller.appendSystem("Você entrou em Sala Geral");
+        controller.appendReceived(OUTRO, "Oi", "");
+        controller.appendSent(EMAIL, "Olá", "");
+
+        HBox ultima = (HBox) messagesBox.getChildren().get(2);
+
+        assertEquals(3, messagesBox.getChildren().size());
+        assertEquals(Pos.CENTER_RIGHT, ultima.getAlignment());
     }
 
 }
