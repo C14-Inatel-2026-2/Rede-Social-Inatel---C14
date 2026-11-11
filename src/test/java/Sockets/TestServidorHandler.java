@@ -144,16 +144,17 @@ public class TestServidorHandler {
     @Test
     public void removeUsuarioEEscritorDaSalaNoFinal() throws Exception {
         salaExiste("geral");
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
         when(servidorSocket.receber()).thenReturn(entrar("thiago", "geral"), (Mensagem) null);
         handler.run();
-        verify(sala).removeUsuario("thiago");
+        verify(sala).removeUsuario("thiago", escritor);
     }
 
     @Test
     public void semEntrarEmSalaNaoRemoveNada() throws Exception {
         when(servidorSocket.receber()).thenReturn((Mensagem) null);
         handler.run();
-        verify(sala, never()).removeUsuario(any(String.class));
+        verify(sala, never()).removeUsuario(any(String.class), any(PrintWriter.class));
     }
 
     @Test
@@ -177,6 +178,7 @@ public class TestServidorHandler {
     @Test
     public void mensagemNaSalaVaiParaOsEscritoresDaSala() throws Exception {
         salaExiste("geral");
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
         when(servidorSocket.receber())
                 .thenReturn(entrar("thiago", "geral"), texto("oi"), (Mensagem) null);
         handler.run();

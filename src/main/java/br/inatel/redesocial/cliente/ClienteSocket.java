@@ -3,7 +3,6 @@ package br.inatel.redesocial.cliente;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import java.net.Socket;
 import java.io.*;
-
 import com.google.gson.Gson;
 
 public class ClienteSocket implements AutoCloseable {

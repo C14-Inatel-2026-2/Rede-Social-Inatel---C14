@@ -8,56 +8,77 @@
            styleClass="root-bg"
            prefWidth="420" prefHeight="520">
 
-    <VBox styleClass="auth-box" maxWidth="380" maxHeight="480" alignment="TOP_CENTER" spacing="0">
-        <StackPane.margin><Insets top="20" bottom="20" left="20" right="20"/></StackPane.margin>
+    <VBox styleClass="auth-box" maxWidth="380" maxHeight="496" alignment="TOP_CENTER" spacing="0">
+        <StackPane.margin><Insets top="12" bottom="12" left="20" right="20"/></StackPane.margin>
 
-        <Label text="💬 ChatZone" styleClass="auth-title"/>
-        <Label text="Chats públicos em tempo real" styleClass="auth-subtitle"/>
+        <HBox styleClass="brand-row" alignment="CENTER" spacing="10">
+            <Label text="💬" styleClass="brand-badge"/>
+            <Label text="ChatZone" styleClass="auth-title"/>
+        </HBox>
+        <Label text="Converse em tempo real com a galera do Inatel" styleClass="auth-subtitle"/>
 
-        <!-- Tabs -->
-        <HBox styleClass="tabs" spacing="0">
+        <HBox styleClass="tabs" spacing="4">
             <Button fx:id="tabLogin" text="Entrar" styleClass="tab-btn,tab-active"
                     maxWidth="Infinity" onAction="#onTabLogin" HBox.hgrow="ALWAYS"/>
             <Button fx:id="tabRegister" text="Criar conta" styleClass="tab-btn"
                     maxWidth="Infinity" onAction="#onTabRegister" HBox.hgrow="ALWAYS"/>
         </HBox>
 
-        <!-- Panel Login -->
-        <VBox fx:id="panelLogin" styleClass="tab-panel" spacing="14">
-            <VBox.margin><Insets top="20"/></VBox.margin>
-            <VBox styleClass="form-group" spacing="6">
-                <Label text="Email" styleClass="form-label"/>
+        <VBox fx:id="panelLogin" styleClass="tab-panel" spacing="12">
+            <VBox.margin><Insets top="16"/></VBox.margin>
+            <Label fx:id="loginFeedback" styleClass="feedback-msg" visible="false" managed="false"
+                   wrapText="true" maxWidth="Infinity"/>
+            <VBox styleClass="form-group" spacing="4">
+                <Label text="EMAIL" styleClass="form-label"/>
                 <TextField fx:id="loginEmail" promptText="seu@email.com" styleClass="form-input"/>
                 <Label fx:id="loginEmailErr" styleClass="error-msg" visible="false" managed="false"/>
             </VBox>
-            <VBox styleClass="form-group" spacing="6">
-                <Label text="Senha" styleClass="form-label"/>
-                <PasswordField fx:id="loginSenha" promptText="••••••••" styleClass="form-input"/>
+            <VBox styleClass="form-group" spacing="4">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="SENHA" styleClass="form-label" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    <CheckBox text="Mostrar senha" styleClass="toggle-senha" onAction="#onToggleLoginSenha"/>
+                </HBox>
+                <StackPane>
+                    <PasswordField fx:id="loginSenha" promptText="••••••••" styleClass="form-input"/>
+                    <TextField fx:id="loginSenhaTexto" promptText="••••••••" styleClass="form-input"
+                               visible="false" managed="false"/>
+                </StackPane>
             </VBox>
-            <Button text="Entrar" styleClass="btn-primary" maxWidth="Infinity" onAction="#onLogin"/>
+            <Button text="Entrar no chat" styleClass="btn-primary" maxWidth="Infinity" onAction="#onLogin">
+                <VBox.margin><Insets top="6"/></VBox.margin>
+            </Button>
         </VBox>
 
-        <!-- Panel Registro -->
-        <VBox fx:id="panelRegister" styleClass="tab-panel" spacing="14" visible="false" managed="false">
-            <VBox.margin><Insets top="20"/></VBox.margin>
-            <VBox styleClass="form-group" spacing="6">
-                <Label text="Nome de usuário" styleClass="form-label"/>
-                <TextField fx:id="regNome" promptText="seu_nome" styleClass="form-input"/>
-                <Label text="3 a 16 caracteres · letras, números ou _" styleClass="hint"/>
-                <Label fx:id="regNomeErr" styleClass="error-msg" visible="false" managed="false"/>
+        <VBox fx:id="panelRegister" styleClass="tab-panel" spacing="9" visible="false" managed="false">
+            <VBox.margin><Insets top="14"/></VBox.margin>
+            <Label fx:id="regFeedback" styleClass="feedback-msg" visible="false" managed="false"
+                   wrapText="true" maxWidth="Infinity"/>
+            <VBox styleClass="form-group" spacing="4">
+                <Label text="NOME DE USUÁRIO" styleClass="form-label"/>
+                <TextField fx:id="regNome" promptText="3 a 16 caracteres: letras, números ou _" styleClass="form-input"/>
+                <Label fx:id="regNomeErr" styleClass="error-msg" visible="false" managed="false" wrapText="true"/>
             </VBox>
-            <VBox styleClass="form-group" spacing="6">
-                <Label text="Email" styleClass="form-label"/>
+            <VBox styleClass="form-group" spacing="4">
+                <Label text="EMAIL" styleClass="form-label"/>
                 <TextField fx:id="regEmail" promptText="seu@email.com" styleClass="form-input"/>
-                <Label fx:id="regEmailErr" styleClass="error-msg" visible="false" managed="false"/>
+                <Label fx:id="regEmailErr" styleClass="error-msg" visible="false" managed="false" wrapText="true"/>
             </VBox>
-            <VBox styleClass="form-group" spacing="6">
-                <Label text="Senha" styleClass="form-label"/>
-                <PasswordField fx:id="regSenha" promptText="••••••••" styleClass="form-input"/>
+            <VBox styleClass="form-group" spacing="4">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="SENHA" styleClass="form-label" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    <CheckBox text="Mostrar senha" styleClass="toggle-senha" onAction="#onToggleRegSenha"/>
+                </HBox>
+                <StackPane>
+                    <PasswordField fx:id="regSenha" promptText="••••••••" styleClass="form-input"/>
+                    <TextField fx:id="regSenhaTexto" promptText="••••••••" styleClass="form-input"
+                               visible="false" managed="false"/>
+                </StackPane>
                 <Label text="Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&amp;@#!)" styleClass="hint"/>
-                <Label fx:id="regSenhaErr" styleClass="error-msg" visible="false" managed="false"/>
+                <Label fx:id="regSenhaErr" styleClass="error-msg" visible="false" managed="false" wrapText="true"/>
             </VBox>
-            <Button text="Criar conta" styleClass="btn-primary" maxWidth="Infinity" onAction="#onRegister"/>
+            <Button text="Criar minha conta" styleClass="btn-primary" maxWidth="Infinity" onAction="#onRegister">
+                <VBox.margin><Insets top="4"/></VBox.margin>
+            </Button>
         </VBox>
 
     </VBox>

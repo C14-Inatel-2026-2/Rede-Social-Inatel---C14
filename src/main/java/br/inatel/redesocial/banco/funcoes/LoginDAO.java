@@ -14,7 +14,7 @@ public class LoginDAO extends ConnectionDAO {
             return null;
         }
 
-        String sql = "SELECT nome FROM usuario WHERE email=?";
+        String sql = "SELECT nome, senha FROM usuario WHERE email=?";;
 
         try {
             pst = connection.prepareStatement(sql);

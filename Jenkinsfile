@@ -100,7 +100,7 @@
 
                     def resultado = currentBuild.currentResult
 
-                    def mensagemCliente = resultado == 'SUCCESS' ?
+                    def mensagem = resultado == 'SUCCESS' ?
                             "Pipeline finalizada com sucesso!" :
                             "Pipeline finalizada com resultado: ${resultado}"
 
@@ -108,7 +108,7 @@
                             webhookURL: env.DISCORD_WEBHOOK,
                             title: env.JOB_NAME,
                             description: """
-                            ${mensagemCliente}
+                            ${mensagem}
                             
                             **Responsável pelo último commit:** ${autor}
                             """,

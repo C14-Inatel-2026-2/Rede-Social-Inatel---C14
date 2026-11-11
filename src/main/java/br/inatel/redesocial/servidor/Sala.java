@@ -1,12 +1,14 @@
 package br.inatel.redesocial.servidor;
 
-import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
 import br.inatel.redesocial.usuario.Usuario;
+import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
@@ -15,10 +17,8 @@ public class Sala {
     private String nome;
     private static int quantidadeSalas;
     private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
-    // Implementação antiga: private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
-    Map<String, PrintWriter> escritores = new HashMap<>();
-
     private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
+    private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
 
     public Sala(int capacidadeMaxima, String nome){
         this.nome = nome;
@@ -26,41 +26,49 @@ public class Sala {
         quantidadeSalas+=1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
-
-    public boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
-        if(quantidadeUsuarios<capacidadeMaxima) {
+    public synchronized boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
+        if(usuarioNovo != null && quantidadeUsuarios<capacidadeMaxima) {
+            quantidadeUsuarios += 1;
             usuariosAtivos.add(usuarioNovo);
-            quantidadeUsuarios = usuariosAtivos.size();
-            escritores.put(usuarioNovo.getEmail(), escritor);
+            escritores.add(escritor);
             return true;
         }
         return false;
     }
 
-    public boolean addUsuario(String email, PrintWriter escritor){
-        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(email), escritor);
+    public boolean addUsuario(String emailUsuario, PrintWriter escritor){
+        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuario), escritor);
     }
 
-    public void removeUsuario(Usuario usuarioRemover){
+    public synchronized void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
         if(quantidadeUsuarios>0){
             if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
-                var escritor = getEscritor(usuarioRemover);
-                if (escritor != null) {
-                    escritor.close();
-                }
-                escritores.put(usuarioRemover.getEmail(), null);
                 usuariosAtivos.remove(usuarioRemover);
                 quantidadeUsuarios-=1;
             }
         }
+        if(escritores.size()>0){
+            escritores.remove(escritorRemover);
+        }
     }
 
-    public void removeUsuario(String usuarioRemover){
-        removeUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(usuarioRemover));
+    public synchronized void removeUsuario(String emailUsuario, PrintWriter escritorRemover){
+        Usuario usuarioRemover = null;
+        for (Usuario ativo : usuariosAtivos) {
+            if (emailUsuario != null && emailUsuario.equals(ativo.getEmail())) {
+                usuarioRemover = ativo;
+                break;
+            }
+        }
+        removeUsuario(usuarioRemover, escritorRemover);
     }
 
     public int getCapacidadeMaxima() {
         return capacidadeMaxima;
+    }
+
+    public String getNome() {
+        return nome;
     }
 
     public int getQuantidadeUsuarios() {
@@ -75,16 +83,14 @@ public class Sala {
         return usuariosAtivos;
     }
 
-    public PrintWriter getEscritor(String nomeUsuario){
-        return escritores.get(nomeUsuario);
+    public Set<PrintWriter> getEscritores(){
+        return escritores;
     }
 
-    public PrintWriter getEscritor(Usuario usuarioGet){
-        return escritores.get(usuarioGet.getEmail());
-    }
-
-    public Collection<PrintWriter> getEscritores(){
-        return escritores.values();
+    public synchronized List<String> getNomesUsuariosAtivos() {
+        return usuariosAtivos.stream()
+                .map(Usuario::getEmail)
+                .collect(Collectors.toList());
     }
 
     public boolean isLotada(){

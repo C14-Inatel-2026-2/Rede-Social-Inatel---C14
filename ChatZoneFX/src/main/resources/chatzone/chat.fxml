@@ -8,30 +8,29 @@
       styleClass="chat-container"
       prefWidth="720" prefHeight="600">
 
-    <!-- Header -->
     <HBox styleClass="chat-header" alignment="CENTER_LEFT" spacing="12">
         <Button text="←" styleClass="back-btn" onAction="#onBack"/>
+        <Label text="#" styleClass="room-avatar"/>
         <VBox spacing="2">
             <Label fx:id="roomNameLabel" text="Sala" styleClass="chat-room-name"/>
             <Label fx:id="usersCountLabel" text="conectando…" styleClass="users-count"/>
         </VBox>
     </HBox>
 
-    <!-- Messages -->
     <ScrollPane fx:id="messagesScroll" styleClass="messages-scroll"
                 fitToWidth="true" VBox.vgrow="ALWAYS">
-        <VBox fx:id="messagesBox" styleClass="chat-messages" spacing="10">
-            <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
+        <VBox fx:id="messagesBox" styleClass="chat-messages" spacing="8">
+            <padding><Insets top="18" right="22" bottom="18" left="22"/></padding>
         </VBox>
     </ScrollPane>
 
-    <!-- Input area -->
-    <HBox styleClass="chat-input-area" alignment="BOTTOM_CENTER" spacing="10">
-        <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
+    <HBox styleClass="chat-input-area" alignment="CENTER" spacing="10">
+        <padding><Insets top="12" right="18" bottom="12" left="18"/></padding>
         <TextArea fx:id="msgInput"
-                  promptText="Digite uma mensagemCliente… (Enter para enviar)"
+                  promptText="Escreva uma mensagem…  (Enter envia · Shift+Enter quebra linha)"
                   styleClass="msg-input"
                   prefRowCount="1"
+                  wrapText="true"
                   HBox.hgrow="ALWAYS"/>
         <Button fx:id="sendBtn" text="➤" styleClass="send-btn" onAction="#onSend" disable="true"/>
     </HBox>

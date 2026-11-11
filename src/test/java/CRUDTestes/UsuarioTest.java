@@ -1,0 +1,62 @@
+package CRUDTestes;
+
+import br.inatel.redesocial.usuario.Usuario;
+import org.junit.jupiter.api.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class UsuarioTest {
+    private Usuario usuario;
+    private final String senha = "Chizinho67!";
+
+    @BeforeEach
+    public void setup(){
+        String email = "christopher@inatel.br";
+        String nome = "Christopher";
+        this.usuario = new Usuario(email, senha);
+        usuario.setNome(nome);
+    }
+
+    @Test
+    public void testeAlterarSenha(){
+        String senhaNovaValida = "Theofficetop1!";
+        boolean troca = usuario.alterarSenha(senha, senhaNovaValida);
+
+        assertTrue(troca);
+    }
+
+    @Test
+    public void testeAlterarSenhaIgual(){
+        boolean troca = usuario.alterarSenha(senha, senha);
+
+        assertFalse(troca);
+    }
+
+    @Test
+    public void testeAlterarSenhaInvalida(){
+        String senhaInvalida = "321";
+        boolean troca = usuario.alterarSenha(senha, senhaInvalida);
+
+        assertFalse(troca);
+    }
+
+    @Test
+    public void testeAlterarSenhaVerificadoraIncorreta(){
+        String verificadoraIncorreta = "EspiritoDePorco99!";
+        String senhaNovaValida = "Theofficetop1!";
+
+        boolean troca = usuario.alterarSenha(verificadoraIncorreta, senhaNovaValida);
+
+        assertFalse(troca);
+    }
+
+    @Test
+    public void testeAlterarSenhaVerificadoraMasEmMaiusculo(){
+        String verificadoraEmMaiusculo = senha.toUpperCase();
+        String senhaNovaValida = "Theofficetop1!";
+
+        boolean troca = usuario.alterarSenha(verificadoraEmMaiusculo, senhaNovaValida);
+
+        assertFalse(troca);
+    }
+}
