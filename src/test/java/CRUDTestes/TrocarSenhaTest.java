@@ -18,9 +18,6 @@ public class TrocarSenhaTest {
 
     private final String senhaValida = "Chizinho67!";
     private final String emailValido = "christopher@inatel.br";
-    private final String senhaNovaInvalida = "senha";
-
-    private final String senhaNovaVazia = "";
 
     @Mock
     UsuarioDAO usuarioDAO;
@@ -55,15 +52,23 @@ public class TrocarSenhaTest {
     }
 
     @Test
-    public void testeAlterarSenhaNula(){
+    public void testeAlterarSenhaVazia(){
+        String senhaNovaVazia = "";
+
         assertThrows(CampoObrigatorioException.class,
                 () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaVazia));
+
+        Mockito.verifyNoInteractions(usuarioDAO);
     }
 
     @Test
     public void testeAlterarSenhaInvalida(){
+        String senhaNovaInvalida = "senha";
+
         assertThrows(SenhaInvalidaException.class,
                 () -> trocaSenha.alterarSenha(emailValido, senhaValida, senhaNovaInvalida));
+
+        Mockito.verifyNoInteractions(usuarioDAO);
     }
 
     @Test
