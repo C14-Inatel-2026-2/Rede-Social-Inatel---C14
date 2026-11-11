@@ -52,7 +52,7 @@ public class TrocarSenhaTest {
     }
 
     @Test
-    public void testeAlterarSenhaVazia(){
+    public void testeAlterarSenhaNovaVazia(){
         String senhaNovaVazia = "";
 
         assertThrows(CampoObrigatorioException.class,
@@ -62,9 +62,20 @@ public class TrocarSenhaTest {
     }
 
     @Test
-    public void testeAlterarSenhaNula(){
+    public void testeAlterarSenhaNovaNula(){
         assertThrows(CampoObrigatorioException.class,
                 () -> trocaSenha.alterarSenha(emailValido, senhaValida, null));
+
+        Mockito.verifyNoInteractions(usuarioDAO);
+    }
+
+    @Test
+    public void testeAlterarSenhaAtualVazia(){
+        String senhaNovaVazia = "";
+        String senhaNovaValida = "Theofficetop1!";
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> trocaSenha.alterarSenha(emailValido, senhaNovaVazia, senhaNovaValida));
 
         Mockito.verifyNoInteractions(usuarioDAO);
     }
