@@ -2,7 +2,7 @@ package br.inatel.redesocial.cliente.dto;
 
 import java.util.List;
 
-public class Mensagem {
+public class MensagemCliente {
     public String type;
     public String email;
     public String sala;

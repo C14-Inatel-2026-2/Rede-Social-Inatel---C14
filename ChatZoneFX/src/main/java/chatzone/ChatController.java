@@ -1,7 +1,7 @@
 package chatzone;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -62,16 +62,16 @@ public class ChatController {
             try {
                 socket = new Socket(ChatConfig.host(), port);
                 clienteSocket = new ClienteSocket(socket);
-                Mensagem entrar = new Mensagem();
+                MensagemCliente entrar = new MensagemCliente();
                 entrar.type = TIPO_ENTRAR;
                 entrar.texto = roomName;
                 entrar.usuario = currentEmail;
                 entrar.email = currentEmail;
                 clienteSocket.EnviarMensagem(entrar);
 
-                Mensagem msg;
+                MensagemCliente msg;
                 while ((msg = clienteSocket.ReceberMensagem()) != null) {
-                    Mensagem mensagem = msg;
+                    MensagemCliente mensagem = msg;
                     Platform.runLater(() -> tratarMensagem(mensagem));
                 }
                 if (!saindo) mostrarDesconexao("Conexao encerrada pelo servidor.");
@@ -83,7 +83,7 @@ public class ChatController {
         t.start();
     }
 
-    private void tratarMensagem(Mensagem mensagem) {
+    private void tratarMensagem(MensagemCliente mensagem) {
         if (mensagem == null) return;
         if (TIPO_ERRO.equals(mensagem.type)) {
             appendSystem("Erro: " + mensagem.texto);
@@ -111,7 +111,7 @@ public class ChatController {
         else appendReceived(autor, texto, hora);
     }
 
-    private void atualizarPresenca(Mensagem mensagem) {
+    private void atualizarPresenca(MensagemCliente mensagem) {
         List<String> usuarios = mensagem.usuariosOnline == null
                 ? Collections.emptyList() : mensagem.usuariosOnline;
         String nomes = usuarios.isEmpty() ? "nenhum" : String.join(", ", usuarios);
@@ -130,7 +130,7 @@ public class ChatController {
         String text = msgInput.getText().trim().replace("\r", "").replace("\n", " ");
         if (text.isEmpty() || clienteSocket == null) return;
         try {
-            Mensagem mensagem = new Mensagem();
+            MensagemCliente mensagem = new MensagemCliente();
             mensagem.type = TIPO_MENSAGEM;
             mensagem.texto = text;
             clienteSocket.EnviarMensagem(mensagem);
@@ -144,7 +144,7 @@ public class ChatController {
         saindo = true;
         try {
             if (clienteSocket != null) {
-                Mensagem sair = new Mensagem();
+                MensagemCliente sair = new MensagemCliente();
                 sair.type = TIPO_SAIR;
                 clienteSocket.EnviarMensagem(sair);
             }

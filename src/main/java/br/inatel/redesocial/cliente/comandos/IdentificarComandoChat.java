@@ -1,13 +1,13 @@
 package br.inatel.redesocial.cliente.comandos;
 
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import br.inatel.redesocial.cliente.Cliente;
 
 public final class IdentificarComandoChat
 {
     private IdentificarComandoChat() {}
 
-    public static Mensagem identificarComando(String msg, Cliente cliente)
+    public static MensagemCliente identificarComando(String msg, Cliente cliente)
     {
         String comando = "";
         String texto = "";
@@ -23,7 +23,7 @@ public final class IdentificarComandoChat
             texto = (msg != null) ? msg.trim() : "";
         }
 
-        Mensagem mensagem = new Mensagem();
+        MensagemCliente mensagemCliente = new MensagemCliente();
 
         switch (comando) {
             case "*entrar_sala" ->
@@ -45,12 +45,12 @@ public final class IdentificarComandoChat
             }
         }
 
-        mensagem.type = comando.startsWith("*") ? comando.substring(1) : comando;
-        mensagem.texto = texto;
-        mensagem.sala = cliente.getSalaAtiva();
-        mensagem.usuario = cliente.getUsuario();
-        mensagem.email = cliente.getEmail();
+        mensagemCliente.type = comando.startsWith("*") ? comando.substring(1) : comando;
+        mensagemCliente.texto = texto;
+        mensagemCliente.sala = cliente.getSalaAtiva();
+        mensagemCliente.usuario = cliente.getUsuario();
+        mensagemCliente.email = cliente.getEmail();
 
-        return mensagem;
+        return mensagemCliente;
     }
 }

@@ -1,7 +1,7 @@
 package chatzone;
 
-import br.inatel.redesocial.autenticacao.Cadastro;
-import br.inatel.redesocial.autenticacao.Login;
+import br.inatel.redesocial.usuario.Cadastro;
+import br.inatel.redesocial.usuario.Login;
 import br.inatel.redesocial.exceptions.FalhaNoLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

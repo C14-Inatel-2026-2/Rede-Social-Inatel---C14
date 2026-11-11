@@ -1,4 +1,4 @@
-package br.inatel.redesocial.autenticacao;
+package br.inatel.redesocial.usuario;
 
 public class Usuario {
     private final String email;

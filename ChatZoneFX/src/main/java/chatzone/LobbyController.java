@@ -1,7 +1,7 @@
 package chatzone;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
-import br.inatel.redesocial.cliente.dto.Mensagem;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.application.Platform;
@@ -122,7 +122,7 @@ public class LobbyController {
             if (sala.isBlank()) return;
             try (Socket socket = new Socket(ChatConfig.host(), ChatConfig.portForRoom(1));
                  ClienteSocket cliente = new ClienteSocket(socket)) {
-                Mensagem criar = new Mensagem();
+                MensagemCliente criar = new MensagemCliente();
                 criar.type = "criar_sala";
                 criar.sala = sala;
                 criar.valorInt = 12;
