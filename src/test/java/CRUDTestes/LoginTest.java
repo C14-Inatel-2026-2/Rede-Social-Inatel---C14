@@ -123,6 +123,16 @@ public class LoginTest {
     }
 
     @Test
+    public void testAutentificarComSenhaNula(){
+        Usuario usuario = new Usuario(email, null);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, null));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
     public void testeAutenticarComEmailVazio(){
         String emailVazio = "";
 
