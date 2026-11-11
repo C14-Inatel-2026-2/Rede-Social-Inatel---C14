@@ -69,6 +69,12 @@ public class CadastroTest {
     }
 
     @Test
+    public void testeFalhaNoCadastroPorEmailNulo(){
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(null, senhaValida, nomeValido));
+    }
+
+    @Test
     public void testeFalhaNoCadastroPorSenhaNaoInformada() {
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaVazia, nomeValido));

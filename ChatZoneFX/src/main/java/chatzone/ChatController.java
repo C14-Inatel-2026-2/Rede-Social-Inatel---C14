@@ -78,7 +78,7 @@ public class ChatController {
                 });
 
                 String msg;
-                while ((msg = clienteSocket.ReceberMensagem()) != null) {
+                while ((msg = clienteSocket.ReceberMensagem().toString()) != null) {
                     final String linha = msg;
                     Platform.runLater(() -> tratarLinha(linha));
                 }
