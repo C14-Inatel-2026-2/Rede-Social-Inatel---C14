@@ -18,6 +18,7 @@ public class GerenciadorUsuariosBDTest {
     GerenciadorUsuariosBD gerenciador;
 
     private final String email = "christopher@inatel.br";
+    private final String senha = "Chizinho67!";
 
     @Mock
     UsuarioDAO usuarioDAO;
@@ -29,7 +30,7 @@ public class GerenciadorUsuariosBDTest {
 
     @Test
     public void testeBuscaUsuarioExistente(){
-        Usuario esperado = new Usuario(email, null);
+        Usuario esperado = new Usuario(email, senha);
 
         Mockito.when(usuarioDAO.buscarPorEmail(email)).thenReturn(esperado);
 
@@ -41,5 +42,14 @@ public class GerenciadorUsuariosBDTest {
         Mockito.when(usuarioDAO.buscarPorEmail(email)).thenReturn(null);
 
         assertNull(gerenciador.buscaUsuarioPorEmail(email));
+    }
+
+    @Test
+    public void testeBuscaComEmailNulo(){
+        Mockito.when(usuarioDAO.buscarPorEmail(null)).thenReturn(null);
+
+        assertNull(gerenciador.buscaUsuarioPorEmail(null));
+
+        Mockito.verify(usuarioDAO).buscarPorEmail(null);
     }
 }
