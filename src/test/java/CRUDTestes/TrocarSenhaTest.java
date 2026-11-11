@@ -81,6 +81,16 @@ public class TrocarSenhaTest {
     }
 
     @Test
+    public void testeAlterarSenhaAtualNula(){
+        String senhaNovaValida = "Theofficetop1!";
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> trocaSenha.alterarSenha(emailValido, null, senhaNovaValida));
+
+        Mockito.verifyNoInteractions(usuarioDAO);
+    }
+
+    @Test
     public void testeAlterarSenhaInvalida(){
         String senhaNovaInvalida = "senha";
 
