@@ -141,4 +141,15 @@ public class ChatControllerTest {
 
         assertEquals(1.0, messagesScroll.getVvalue());
     }
+
+    @Test
+    public void testeAvisoDoSistemaNoMeioDaConversa() {
+        controller.appendReceived(OUTRO, "Tchau","12:00");
+        controller.appendSystem("Conexão encerrada");
+        controller.appendReceived(EMAIL, "Alguém aí?","12:01");
+
+        Label aviso = (Label) messagesBox.getChildren().get(1);
+
+        assertEquals("Conexão encerrada", aviso.getText());
+    }
 }
