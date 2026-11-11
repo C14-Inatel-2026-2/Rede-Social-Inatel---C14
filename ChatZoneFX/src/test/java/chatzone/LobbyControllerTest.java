@@ -94,4 +94,23 @@ public class LobbyControllerTest {
         assertFalse(profileModal.isVisible());
     }
 
+    @Test
+    public void testeCardMostraUsuariosOnline() throws Exception {
+        controller.init(EMAIL);
+        salasCarregadas.await(5, TimeUnit.SECONDS);
+
+        VBox card = (VBox) roomsGrid.getChildren().get(0);
+        HBox meta = (HBox) card.getChildren().get(1);
+        Label contador = (Label) meta.getChildren().get(1);
+
+        assertEquals("5/12 online", contador.getText());
+    }
+
+    @Test
+    public void testeInitCarregaTodasAsSalas() throws Exception {
+        controller.init(EMAIL);
+        salasCarregadas.await(5, TimeUnit.SECONDS);
+
+        assertEquals(3, roomsGrid.getChildren().size());
+    }
 }
