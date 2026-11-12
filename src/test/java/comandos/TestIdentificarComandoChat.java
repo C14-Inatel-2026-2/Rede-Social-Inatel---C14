@@ -87,4 +87,22 @@ class TestIdentificarComandoChat {
         assertEquals("tecnologia", resultado.texto);
     }
 
+    @Test
+    void naoDeveMudarSalaQuandoUsuarioNaoEstaCadastrado() {
+
+        when(cliente.getSala()).thenReturn(
+                Set.of("geral", "tecnologia"));
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "*mudar_sala -> jogos", cliente);
+
+        verify(cliente, never()).setSalaAtiva("jogos");
+        verify(cliente, never()).addSala(anyString());
+
+        assertEquals("mudar_sala", resultado.type);
+        assertEquals("jogos", resultado.texto);
+    }
+
+ 
 }
