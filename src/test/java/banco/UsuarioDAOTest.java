@@ -210,4 +210,15 @@ public class UsuarioDAOTest {
         assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
         verifyNoInteractions(selectStatement, updateStatement);
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaNoSelect() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(selectStatement);
+        SQLException erroSQL = new SQLException("Erro na consulta");
+        when(selectStatement.executeQuery()).thenThrow(erroSQL);
+
+        assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verify(selectStatement).close();
+        verify(connection).close();
+    }
 }
