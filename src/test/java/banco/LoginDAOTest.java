@@ -121,4 +121,11 @@ public class LoginDAOTest {
         verify(preparedStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeSenhaDiferenciaMaiusculasDeMinusculas() throws SQLException {
+        usuarioExisteNoBanco(hashDaSenha);
+
+        assertNull(loginDAO.autenticarUser(email, senha.toUpperCase()));
+    }
 }
