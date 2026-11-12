@@ -115,5 +115,15 @@ class TestIdentificarComandoChat {
         assertEquals("exemplo", resultado.texto);
     }
 
+    @Test
+    void devePreservarComandoSemAsterisco() {
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "comando_teste -> exemplo", cliente);
+
+        assertEquals("comando_teste", resultado.type);
+        assertEquals("exemplo", resultado.texto);
+    }
 
 }
