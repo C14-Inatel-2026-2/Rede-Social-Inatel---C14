@@ -56,5 +56,18 @@ public class TestInterpretarComando {
         );
     }
 
+    @Test
+    void devePreservarTextoVazioAposSeparador() {
 
+        String msg = "*entrar_sala ->";
+
+        String[] resultado = InterpretarComando.interpretar(msg);
+
+        assertArrayEquals(
+                new String[]{"*entrar_sala", ""},
+                resultado
+        );
+    }
+
+ 
 }
