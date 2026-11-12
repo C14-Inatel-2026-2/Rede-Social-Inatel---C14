@@ -202,4 +202,12 @@ public class UsuarioDAOTest {
         verify(connection, never()).prepareStatement(contains("UPDATE"));
         verify(connection).close();
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaSemConexao() {
+        bancoIndisponivel();
+
+        assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verifyNoInteractions(selectStatement, updateStatement);
+    }
 }
