@@ -148,4 +148,17 @@ public class CadastroDAOTest {
 
         assertTrue(inserido);
     }
+
+    @Test
+    public void testeFalhaAoFecharConexaoNaoPropagaExcecao() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar conexao");
+
+        prepararStatement();
+        doThrow(erroSQL).when(connection).close();
+
+        boolean inserido = assertDoesNotThrow(
+                () -> cadastroDAO.insertUsuario(email, senha, nome));
+
+        assertTrue(inserido);
+    }
 }
