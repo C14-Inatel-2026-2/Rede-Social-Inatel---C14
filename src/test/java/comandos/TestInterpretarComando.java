@@ -69,5 +69,16 @@ public class TestInterpretarComando {
         );
     }
 
- 
+    @Test
+    void devePreservarComandoVazioAntesDoSeparador() {
+
+        String msg = "-> geral";
+
+        String[] resultado = InterpretarComando.interpretar(msg);
+
+        assertArrayEquals(
+                new String[]{"", "geral"},
+                resultado
+        );
+    }
 }
