@@ -4,6 +4,12 @@ import br.inatel.redesocial.cliente.ClienteSocket;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
+import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
+import br.inatel.redesocial.exceptions.CampoObrigatorioException;
+import br.inatel.redesocial.exceptions.SenhaInvalidaException;
+import br.inatel.redesocial.usuario.TrocarSenha;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -21,25 +27,32 @@ public class LobbyController {
     @FXML private Label      profileEmailLabel;
     @FXML private StackPane  profileModal;
     @FXML private FlowPane   roomsGrid;
+    @FXML private PasswordField senhaAtualField;
+    @FXML private PasswordField novaSenhaField;
+    @FXML private PasswordField confirmarSenhaField;
+    @FXML private Label         senhaFeedback;
+    @FXML private Button criarSalaBtn;
 
     private String currentEmail;
 
     private static final Gson GSON = new Gson();
+    private static final boolean CRIAR_SALA_HABILITADO = false;
 
     interface BuscadorDeSalas {
         Room[] buscar() throws Exception;
     }
 
     private final BuscadorDeSalas buscadorDeSalas;
+    private final TrocarSenha trocarSenha;
 
     public LobbyController() {
-        this(LobbyController::buscarSalasNoServidor);
+        this(LobbyController::buscarSalasNoServidor, new TrocarSenha(new UsuarioDAO()));
     }
 
-    LobbyController(BuscadorDeSalas buscadorDeSalas) {
+    LobbyController(BuscadorDeSalas buscadorDeSalas, TrocarSenha trocarSenha) {
         this.buscadorDeSalas = buscadorDeSalas;
+        this.trocarSenha = trocarSenha;
     }
-
     private static Room[] buscarSalasNoServidor() throws Exception {
         HttpRequest request = HttpRequest.newBuilder(
                 URI.create(ChatConfig.httpBaseUrl() + "/rooms")).GET().build();
@@ -52,6 +65,10 @@ public class LobbyController {
     public void initialize() {
         // Impede que clique dentro do modal feche o overlay
         profileModal.lookup(".modal");
+        if (!CRIAR_SALA_HABILITADO) {
+            criarSalaBtn.setVisible(false);
+        }
+
     }
 
     public void init(String email) {
@@ -131,6 +148,7 @@ public class LobbyController {
 
     @FXML
     void onCreateRoom() {
+        if (!CRIAR_SALA_HABILITADO) return;
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Criar sala");
         dialog.setHeaderText("Nome da nova sala");
@@ -155,6 +173,41 @@ public class LobbyController {
     @FXML void onModalInnerClick(javafx.scene.input.MouseEvent e) { e.consume(); }
     @FXML void onUserBtn()    { profileModal.setVisible(true); }
     @FXML void onModalClose() { profileModal.setVisible(false); }
+
+    @FXML
+    void onTrocarSenha() {
+        String senhaAtual = senhaAtualField.getText();
+        String novaSenha = novaSenhaField.getText();
+
+        if (!novaSenha.equals(confirmarSenhaField.getText())) {
+            mostrarFeedbackSenha("A confirmação não confere com a nova senha.", false);
+            return;
+        }
+
+        try {
+            if (trocarSenha.alterarSenha(currentEmail, senhaAtual, novaSenha)) {
+                senhaAtualField.clear();
+                novaSenhaField.clear();
+                confirmarSenhaField.clear();
+                mostrarFeedbackSenha("Senha alterada com sucesso!", true);
+            } else {
+                mostrarFeedbackSenha("Senha atual incorreta.", false);
+            }
+        } catch (CampoObrigatorioException | SenhaInvalidaException e) {
+            mostrarFeedbackSenha(e.getMessage(), false);
+        } catch (Exception e) {
+            mostrarFeedbackSenha("Não foi possível alterar a senha agora.", false);
+        }
+    }
+
+    private void mostrarFeedbackSenha(String mensagem, boolean sucesso) {
+        senhaFeedback.setText(mensagem);
+        senhaFeedback.getStyleClass().remove("success");
+        if (sucesso) senhaFeedback.getStyleClass().add("success");
+        senhaFeedback.setVisible(true);
+        senhaFeedback.setManaged(true);
+    }
+
     @FXML void onLogout() {
         Session.clear();
         profileModal.setVisible(false);
