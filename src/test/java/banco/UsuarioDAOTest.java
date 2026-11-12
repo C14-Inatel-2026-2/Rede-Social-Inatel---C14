@@ -161,4 +161,17 @@ public class UsuarioDAOTest {
         verify(selectStatement).setString(1, email);
         verify(updateStatement).setString(2, email);
     }
+
+    @Test
+    public void testeAlterarSenhaFechaRecursosNoSucesso() throws SQLException {
+        prepararSelectEUpdate(hashDaSenhaAtual);
+        when(updateStatement.executeUpdate()).thenReturn(1);
+
+        usuarioDAO.alterarSenha(email, senhaAtual, senhaNova);
+
+        verify(resultSet).close();
+        verify(selectStatement).close();
+        verify(updateStatement).close();
+        verify(connection).close();
+    }
 }
