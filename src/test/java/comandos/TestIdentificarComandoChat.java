@@ -126,4 +126,17 @@ class TestIdentificarComandoChat {
         assertEquals("exemplo", resultado.texto);
     }
 
+    @Test
+    void deveTratarMensagemNula() {
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        null, cliente);
+
+        assertEquals("mensagem", resultado.type);
+        assertEquals("", resultado.texto);
+        assertEquals("geral", resultado.sala);
+    }
+
+ 
 }
