@@ -10,6 +10,10 @@ import java.sql.SQLIntegrityConstraintViolationException;
 public class CadastroDAO extends ConnectionDAO {
 
     public boolean insertUsuario(String email, String senha, String nome) {
+        if (email == null || senha == null || nome == null){
+            return false;
+        }
+
         connectToDb();
 
         if (connection == null) {

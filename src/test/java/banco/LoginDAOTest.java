@@ -29,7 +29,6 @@ public class LoginDAOTest {
     private final String nome = "Christopher";
     private final String senha = "Chizinho67!";
     private final String senhaInvalida = "senha123";
-    private final String hashInvalido = "senhazinha";
     private final String hashDaSenha = BCrypt.hashpw(senha, BCrypt.gensalt(4));
 
     @Mock
