@@ -116,4 +116,15 @@ public class CadastroDAOTest {
 
         assertEquals("E-mail já está em uso", excecao.getMessage());
     }
+
+    @Test
+    public void testeFalhaNoBancoPorErroDeSQL() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro generico");
+        prepararStatement();
+        when(preparedStatement.execute()).thenThrow(erroSQL);
+
+        assertFalse(cadastroDAO.insertUsuario(email, senha, nome));
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
 }
