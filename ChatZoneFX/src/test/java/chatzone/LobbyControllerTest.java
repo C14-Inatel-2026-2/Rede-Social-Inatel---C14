@@ -164,5 +164,16 @@ public class LobbyControllerTest {
 
         verify(trocarSenha).alterarSenha(EMAIL, SENHA, NOVA_SENHA);
     }
+    @Test
+    public void testeTrocarSenhaComSenhaAtualErradaMostraErro() {
+        controller.init(EMAIL);
+        senhaAtualField.setText("Errada@123");
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("Senha atual incorreta.", senhaFeedback.getText());
+    }
 
 }
