@@ -1,4 +1,4 @@
-package CRUDTestes;
+package crud;
 
 import br.inatel.redesocial.usuario.Usuario;
 import org.junit.jupiter.api.*;

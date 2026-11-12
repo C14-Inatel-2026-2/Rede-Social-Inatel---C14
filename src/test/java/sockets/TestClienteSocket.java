@@ -1,4 +1,4 @@
-package Sockets;
+package sockets;
 
 import br.inatel.redesocial.cliente.ClienteSocket;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;

@@ -1,4 +1,4 @@
-package Sockets;
+package sockets;
 
 import br.inatel.redesocial.servidor.Mensagem;
 import br.inatel.redesocial.servidor.ServidorFactory;
