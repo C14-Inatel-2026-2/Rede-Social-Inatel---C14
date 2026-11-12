@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
@@ -86,5 +87,17 @@ public class UsuarioDAOTest {
         when(selectStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("senha")).thenReturn(hashSalvo);
+    }
+
+    @Test
+    public void testeBuscarPorEmailRetornaUsuario() throws SQLException {
+        usuarioEncontrado();
+
+        Usuario usuario = usuarioDAO.buscarPorEmail(email);
+
+        assertEquals(email, usuario.getEmail());
+        assertEquals(nome, usuario.getNome());
+        verify(connection).prepareStatement(contains("SELECT email, nome FROM usuario"));
+        verify(selectStatement).setString(1, email);
     }
 }
