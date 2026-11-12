@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
@@ -111,5 +110,14 @@ public class UsuarioDAOTest {
         verify(resultSet).close();
         verify(selectStatement).close();
         verify(connection).close();
+    }
+
+    @Test
+    public void testeBuscarEmailNaoCadastrado() throws SQLException {
+        prepararConsulta();
+        when(resultSet.next()).thenReturn(false);
+
+        assertNull(usuarioDAO.buscarPorEmail("naoexiste@inatel.br"));
+        verify(resultSet, never()).getString(anyString());
     }
 }
