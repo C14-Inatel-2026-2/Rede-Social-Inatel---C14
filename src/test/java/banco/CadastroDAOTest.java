@@ -86,4 +86,14 @@ public class CadastroDAOTest {
         assertNotEquals(senha, senhaSalva.getValue());
         assertTrue(BCrypt.checkpw(senha, senhaSalva.getValue()));
     }
+
+    @Test
+    public void testeFechaRecursosNoSucesso() throws SQLException {
+        prepararStatement();
+
+        cadastroDAO.insertUsuario(email, senha, nome);
+
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
 }
