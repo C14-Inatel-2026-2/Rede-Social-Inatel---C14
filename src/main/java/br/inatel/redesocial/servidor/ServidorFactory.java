@@ -13,7 +13,7 @@ public interface ServidorFactory {
 
     PrintWriter criarPrintWriter(Socket socket) throws IOException;
 
-    ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory);
+    ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory) throws IOException;
 
     ServerSocket criarServidor(int porta) throws IOException;
 

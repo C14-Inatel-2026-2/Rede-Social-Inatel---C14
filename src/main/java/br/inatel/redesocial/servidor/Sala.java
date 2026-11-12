@@ -6,61 +6,76 @@ import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Sala {
     private int capacidadeMaxima;
     private int quantidadeUsuarios;
     private String nome;
     private static int quantidadeSalas;
-    private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
-    private GerenciadorUsuariosBD gerenciadorUsuarios = new GerenciadorUsuariosBD(new UsuarioDAO());
-    private final Set<PrintWriter> escritores = ConcurrentHashMap.newKeySet();
 
-    public Sala(int capacidadeMaxima, String nome){
+    private ArrayList<Usuario> usuariosAtivos = new ArrayList<>();
+    private GerenciadorUsuariosBD gerenciadorUsuarios =
+            new GerenciadorUsuariosBD(new UsuarioDAO());
+
+    private final Map<String, PrintWriter> escritores = new HashMap<>();
+
+    public Sala(int capacidadeMaxima, String nome) {
         this.nome = nome;
-        quantidadeUsuarios=0;
-        quantidadeSalas+=1;
+        quantidadeUsuarios = 0;
+        quantidadeSalas += 1;
         this.capacidadeMaxima = capacidadeMaxima;
     }
-    public synchronized boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor){
-        if(usuarioNovo != null && quantidadeUsuarios<capacidadeMaxima) {
-            quantidadeUsuarios += 1;
+
+    public synchronized boolean addUsuario(Usuario usuarioNovo, PrintWriter escritor) {
+        if (usuarioNovo != null && quantidadeUsuarios < capacidadeMaxima) {
             usuariosAtivos.add(usuarioNovo);
-            escritores.add(escritor);
+            quantidadeUsuarios = usuariosAtivos.size();
+            escritores.put(usuarioNovo.getEmail(), escritor);
             return true;
         }
         return false;
     }
 
-    public boolean addUsuario(String emailUsuario, PrintWriter escritor){
-        return this.addUsuario(gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuario), escritor);
+    public boolean addUsuario(String emailUsuario, PrintWriter escritor) {
+        return this.addUsuario(
+                gerenciadorUsuarios.buscaUsuarioPorEmail(emailUsuario), escritor
+        );
     }
 
-    public synchronized void removeUsuario(Usuario usuarioRemover, PrintWriter escritorRemover){
-        if(quantidadeUsuarios>0){
-            if(usuariosAtivos.indexOf(usuarioRemover)>-1) {
-                usuariosAtivos.remove(usuarioRemover);
-                quantidadeUsuarios-=1;
+    public synchronized void removeUsuario(Usuario usuarioRemover) {
+        if (usuarioRemover != null && usuariosAtivos.contains(usuarioRemover)) {
+            PrintWriter escritor = getEscritor(usuarioRemover);
+
+            if (escritor != null) {
+                escritor.close();
             }
-        }
-        if(escritores.size()>0){
-            escritores.remove(escritorRemover);
+
+            escritores.remove(usuarioRemover.getEmail());
+            usuariosAtivos.remove(usuarioRemover);
+            quantidadeUsuarios = usuariosAtivos.size();
         }
     }
 
-    public synchronized void removeUsuario(String emailUsuario, PrintWriter escritorRemover){
+    public synchronized void removeUsuario(String emailUsuario) {
+        if (emailUsuario == null) {
+            return;
+        }
+
         Usuario usuarioRemover = null;
+
         for (Usuario ativo : usuariosAtivos) {
-            if (emailUsuario != null && emailUsuario.equals(ativo.getEmail())) {
+            if (emailUsuario.equals(ativo.getEmail())) {
                 usuarioRemover = ativo;
                 break;
             }
         }
-        removeUsuario(usuarioRemover, escritorRemover);
+
+        removeUsuario(usuarioRemover);
     }
 
     public int getCapacidadeMaxima() {
@@ -71,7 +86,7 @@ public class Sala {
         return nome;
     }
 
-    public int getQuantidadeUsuarios() {
+    public synchronized int getQuantidadeUsuarios() {
         return quantidadeUsuarios;
     }
 
@@ -79,12 +94,23 @@ public class Sala {
         return quantidadeSalas;
     }
 
-    public ArrayList<Usuario> getUsuariosAtivos() {
+    public synchronized ArrayList<Usuario> getUsuariosAtivos() {
         return usuariosAtivos;
     }
 
-    public Set<PrintWriter> getEscritores(){
-        return escritores;
+    public synchronized PrintWriter getEscritor(String emailUsuario) {
+        return escritores.get(emailUsuario);
+    }
+
+    public synchronized PrintWriter getEscritor(Usuario usuarioGet) {
+        if (usuarioGet == null) {
+            return null;
+        }
+        return escritores.get(usuarioGet.getEmail());
+    }
+
+    public synchronized Collection<PrintWriter> getEscritores() {
+        return escritores.values();
     }
 
     public synchronized List<String> getNomesUsuariosAtivos() {
@@ -93,7 +119,7 @@ public class Sala {
                 .collect(Collectors.toList());
     }
 
-    public boolean isLotada(){
+    public synchronized boolean isLotada() {
         return this.capacidadeMaxima == this.quantidadeUsuarios;
     }
 }

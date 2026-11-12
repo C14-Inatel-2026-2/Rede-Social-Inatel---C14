@@ -14,7 +14,6 @@ public class ServidorHandler extends Thread {
 
     private ServidorFactory servidorFactory;
     private String emailUsuario;
-    private String nomeSala;
     private Sala instanciaSala;
 
     private PrintWriter saida;
@@ -59,7 +58,7 @@ public class ServidorHandler extends Thread {
 
     private void limpar() {
         if (instanciaSala != null) {
-            instanciaSala.removeUsuario(emailUsuario, servidorSocket.getEscritor());
+            instanciaSala.removeUsuario(emailUsuario);
             notificarSala(emailUsuario + " saiu da sala.");
             notificarPresenca();
         }
@@ -99,7 +98,10 @@ public class ServidorHandler extends Thread {
                 }
                 break;
             case "mensagem":
-                if (instanciaSala!=null){
+                if (msg.texto==null){
+                    servidorSocket.enviar(Mensagem.erro("Texto da mensagem ausente."));
+                }
+                else if (instanciaSala!=null){
                     msg.usuario = emailUsuario;
                     msg.timestamp = System.currentTimeMillis();
                     for (PrintWriter escritorDestino : instanciaSala.getEscritores()) {
