@@ -128,4 +128,13 @@ public class LoginDAOTest {
 
         assertNull(loginDAO.autenticarUser(email, senha.toUpperCase()));
     }
+
+    @Test
+    public void testeFalhaComEmailNaoCadastrado() throws SQLException {
+        prepararConsulta();
+        when(resultSet.next()).thenReturn(false);
+
+        assertNull(loginDAO.autenticarUser("naoexiste@inatel.br", senha));
+        verify(resultSet, never()).getString("senha");
+    }
 }
