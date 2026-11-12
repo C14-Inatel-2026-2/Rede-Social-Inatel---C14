@@ -54,5 +54,21 @@ class TestIdentificarComandoChat {
         assertEquals("Olá pessoal!", resultado.texto);
     }
 
+    @Test
+    void deveIdentificarComandoEntrarSala() {
 
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "*entrar_sala -> tecnologia", cliente);
+
+        verify(cliente).addSala("tecnologia");
+        verify(cliente).setSalaAtiva("tecnologia");
+
+        assertEquals("entrar_sala", resultado.type);
+        assertEquals("tecnologia", resultado.texto);
+        assertEquals("Leonardo", resultado.usuario);
+        assertEquals("leo@email.com", resultado.email);
+    }
+
+  
 }
