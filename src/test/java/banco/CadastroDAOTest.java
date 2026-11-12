@@ -104,4 +104,16 @@ public class CadastroDAOTest {
         assertFalse(cadastroDAO.insertUsuario(email, senha, nome));
         verifyNoInteractions(preparedStatement);
     }
+
+    @Test
+    public void testeEmailDuplicado() throws SQLException {
+        SQLException erroSQL = new SQLIntegrityConstraintViolationException("Duplicate entry");
+        prepararStatement();
+        when(preparedStatement.execute()).thenThrow(erroSQL);
+
+        EmailJaCadastradoException excecao = assertThrows(EmailJaCadastradoException.class,
+                () -> cadastroDAO.insertUsuario(email, senha, nome));
+
+        assertEquals("E-mail já está em uso", excecao.getMessage());
+    }
 }
