@@ -128,4 +128,16 @@ public class UsuarioDAOTest {
         assertNull(usuarioDAO.buscarPorEmail(email));
         verifyNoInteractions(selectStatement);
     }
+
+    @Test
+    public void testeBuscarFalhaNaConsulta() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(selectStatement);
+        SQLException erroSQL = new SQLException("Erro na consulta");
+        when(selectStatement.executeQuery()).thenThrow(erroSQL);
+
+        assertNull(usuarioDAO.buscarPorEmail(email));
+        verify(selectStatement).close();
+        verify(connection).close();
+    }
+
 }
