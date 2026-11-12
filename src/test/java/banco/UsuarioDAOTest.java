@@ -140,4 +140,14 @@ public class UsuarioDAOTest {
         verify(connection).close();
     }
 
+    @Test
+    public void testeBuscarFalhaAoPrepararStatement() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao preparar");
+        when(connection.prepareStatement(anyString())).thenThrow(erroSQL);
+
+        assertNull(usuarioDAO.buscarPorEmail(email));
+        verify(connection).close();
+        verifyNoInteractions(selectStatement);
+    }
+
 }
