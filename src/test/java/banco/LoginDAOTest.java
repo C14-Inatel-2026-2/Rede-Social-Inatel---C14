@@ -137,4 +137,12 @@ public class LoginDAOTest {
         assertNull(loginDAO.autenticarUser("naoexiste@inatel.br", senha));
         verify(resultSet, never()).getString("senha");
     }
+
+    @Test
+    public void testeFalhaSemConexao() {
+        bancoIndisponivel();
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+        verifyNoInteractions(preparedStatement);
+    }
 }
