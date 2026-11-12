@@ -104,5 +104,16 @@ class TestIdentificarComandoChat {
         assertEquals("jogos", resultado.texto);
     }
 
- 
+    @Test
+    void deveRemoverAsteriscoDoTipoDoComando() {
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "*comando_teste -> exemplo", cliente);
+
+        assertEquals("comando_teste", resultado.type);
+        assertEquals("exemplo", resultado.texto);
+    }
+
+
 }
