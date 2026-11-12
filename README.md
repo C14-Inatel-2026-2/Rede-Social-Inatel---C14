@@ -1,7 +1,7 @@
 # Rede-Social-Inatel-C14
-# 💬 Mesão Chat
+# 💬 Mesão chat
 
-O **Mesão Chat** é uma rede social baseada em salas de bate-papo, desenvolvida em **Java** com comunicação em tempo real via **Sockets**. Os usuários criam uma conta, fazem login e escolhem em quais chats querem entrar para conversar com outras pessoas conectadas ao mesmo tempo.
+O **Mesão chat** é uma rede social baseada em salas de bate-papo, desenvolvida em **Java** com comunicação em tempo real via **sockets**. Os usuários criam uma conta, fazem login e escolhem em quais chats querem entrar para conversar com outras pessoas conectadas ao mesmo tempo.
 
 ## 📌 Sobre o projeto
 
@@ -19,7 +19,7 @@ A aplicação segue o modelo cliente-servidor: um servidor central gerencia as c
 ## 🛠️ Tecnologias utilizadas
 
 * Java [21]
-* Java Sockets (comunicação cliente-servidor)
+* Java sockets (comunicação cliente-servidor)
 * Banco de dados: MySQL
 * Interface: JavaFX 
 * Gerenciador de dependências: Maven
@@ -86,7 +86,7 @@ Nunca versione o arquivo `.env`; use `.env.example` como modelo.
 
 ### Requisitos Funcionais
 
-Os requisitos funcionais descrevem as funcionalidades que o Mesão Chat deverá oferecer aos seus usuários.
+Os requisitos funcionais descrevem as funcionalidades que o Mesão chat deverá oferecer aos seus usuários.
 
 | ID | Requisito | Descrição |
 |---|---|---|

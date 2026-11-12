@@ -1,4 +1,4 @@
-package CRUDTestes;
+package crud;
 
 import br.inatel.redesocial.usuario.Cadastro;
 import br.inatel.redesocial.usuario.Usuario;
