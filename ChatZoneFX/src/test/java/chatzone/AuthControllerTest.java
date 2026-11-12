@@ -1,0 +1,186 @@
+package chatzone;
+
+import br.inatel.redesocial.exceptions.EmailInvalidoException;
+import br.inatel.redesocial.exceptions.EmailJaCadastradoException;
+import br.inatel.redesocial.exceptions.FalhaNoLoginException;
+import br.inatel.redesocial.exceptions.SenhaInvalidaException;
+import br.inatel.redesocial.usuario.Cadastro;
+import br.inatel.redesocial.usuario.Login;
+import br.inatel.redesocial.usuario.Usuario;
+import javafx.scene.control.Label;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(JavaFxExtension.class)
+public class AuthControllerTest {
+
+    private static final String EMAIL = "user@email.com";
+    private static final String EMAIL_INVALIDO = "invalido";
+    private static final String SENHA = "Senha@123";
+    private static final String SENHA_ERRADA = "Errada@123";
+    private static final String SENHA_FRACA = "fraca";
+    private static final String NOME = "user_01";
+
+    private Navigator navigator;
+    private Login login;
+    private Cadastro cadastro;
+    private AuthController controller;
+    private Label regEmailErr;
+    private Label regSenhaErr;
+
+    @BeforeEach
+    public void setup() {
+        navigator = mock(Navigator.class);
+        login = mock(Login.class);
+        cadastro = mock(Cadastro.class);
+        when(login.autenticarUsuario(any(Usuario.class), eq(SENHA))).thenReturn(true);
+        controller = new AuthController(login, cadastro, navigator);
+
+        regEmailErr = mock(Label.class);
+        regSenhaErr = mock(Label.class);
+        controller.regEmailErr = regEmailErr;
+        controller.regSenhaErr = regSenhaErr;
+        controller.regNomeErr = mock(Label.class);
+    }
+
+    @Test
+    public void testeLoginValidoRetornaTrue() {
+        boolean resultado = controller.login(EMAIL, SENHA);
+        assertTrue(resultado);
+    }
+
+    @Test
+    public void testeLoginValidoAutenticaComASenhaDigitada() {
+        controller.login(EMAIL, SENHA);
+        verify(login).autenticarUsuario(any(Usuario.class), eq(SENHA));
+    }
+
+    @Test
+    public void testeLoginValidoNavegaParaLobby() throws Exception {
+        controller.login(EMAIL, SENHA);
+        verify(navigator).showLobby(EMAIL);
+    }
+
+    @Test
+    public void testeLoginComEmailInvalidoNaoAutentica() {
+        controller.login(EMAIL_INVALIDO, SENHA);
+        verify(login, never()).autenticarUsuario(any(), any());
+    }
+
+    @Test
+    public void testeLoginComEmailInvalidoNaoNavega() throws Exception {
+        controller.login(EMAIL_INVALIDO, SENHA);
+        verify(navigator, never()).showLobby(any());
+    }
+
+    @Test
+    public void testeLoginComSenhaInvalidaNaoAutentica() {
+        controller.login(EMAIL, SENHA_FRACA);
+        verify(login, never()).autenticarUsuario(any(), any());
+    }
+
+    @Test
+    public void testeLoginComSenhaInvalidaNaoNavega() throws Exception {
+        controller.login(EMAIL, SENHA_FRACA);
+        verify(navigator, never()).showLobby(any());
+    }
+
+    @Test
+    public void testeLoginRecusadoRetornaFalse() {
+        doThrow(new FalhaNoLoginException("Falha no login."))
+                .when(login).autenticarUsuario(any(Usuario.class), eq(SENHA_ERRADA));
+
+        boolean resultado = controller.login(EMAIL, SENHA_ERRADA);
+        assertFalse(resultado);
+    }
+
+    @Test
+    public void testeLoginRecusadoNaoNavega() throws Exception {
+        doThrow(new FalhaNoLoginException("Falha no login."))
+                .when(login).autenticarUsuario(any(Usuario.class), eq(SENHA_ERRADA));
+
+        controller.login(EMAIL, SENHA_ERRADA);
+        verify(navigator, never()).showLobby(any());
+    }
+
+    @Test
+    public void testeLoginComFalhaNaNavegacaoNaoLancaExcecao() throws Exception {
+        doThrow(new Exception("Falha na navegação")).when(navigator).showLobby(EMAIL);
+        assertDoesNotThrow(() -> controller.login(EMAIL, SENHA));
+    }
+
+    @Test
+    public void testeCadastroValidoCriaUsuarioComNome() {
+        controller.register(EMAIL, SENHA, NOME);
+        verify(cadastro).criarUsuario(EMAIL, SENHA, NOME);
+    }
+
+    @Test
+    public void testeCadastroValidoNavegaParaLobby() throws Exception {
+        controller.register(EMAIL, SENHA, NOME);
+        verify(navigator).showLobby(EMAIL);
+    }
+
+    @Test
+    public void testeCadastroComEmailInvalidoRetornaFalse() {
+        doThrow(new EmailInvalidoException("Email inválido"))
+                .when(cadastro).criarUsuario(EMAIL_INVALIDO, SENHA, NOME);
+
+        boolean resultado = controller.register(EMAIL_INVALIDO, SENHA, NOME);
+        assertFalse(resultado);
+    }
+
+    @Test
+    public void testeCadastroComEmailInvalidoMostraErroNoEmail() {
+        doThrow(new EmailInvalidoException("Email inválido"))
+                .when(cadastro).criarUsuario(EMAIL_INVALIDO, SENHA, NOME);
+
+        controller.register(EMAIL_INVALIDO, SENHA, NOME);
+        verify(regEmailErr).setText("Email inválido");
+    }
+
+    @Test
+    public void testeCadastroComSenhaInvalidaMostraErroNaSenha() {
+        doThrow(new SenhaInvalidaException("Senha inválida"))
+                .when(cadastro).criarUsuario(EMAIL, SENHA_FRACA, NOME);
+
+        controller.register(EMAIL, SENHA_FRACA, NOME);
+        verify(regSenhaErr).setText("Senha inválida");
+    }
+
+    @Test
+    public void testeCadastroComSenhaInvalidaNaoNavega() throws Exception {
+        doThrow(new SenhaInvalidaException("Senha inválida"))
+                .when(cadastro).criarUsuario(EMAIL, SENHA_FRACA, NOME);
+
+        controller.register(EMAIL, SENHA_FRACA, NOME);
+        verify(navigator, never()).showLobby(any());
+    }
+
+    @Test
+    public void testeCadastroComEmailJaCadastradoNaoNavega() throws Exception {
+        doThrow(new EmailJaCadastradoException("E-mail já está em uso"))
+                .when(cadastro).criarUsuario(EMAIL, SENHA, NOME);
+
+        controller.register(EMAIL, SENHA, NOME);
+        verify(navigator, never()).showLobby(any());
+    }
+
+    @Test
+    public void testeCadastroComFalhaNaNavegacaoNaoLancaExcecao() throws Exception {
+        doThrow(new Exception("Falha na navegação")).when(navigator).showLobby(EMAIL);
+        assertDoesNotThrow(() -> controller.register(EMAIL, SENHA, NOME));
+    }
+}
