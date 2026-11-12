@@ -57,8 +57,9 @@ public class LoginDAOTest {
     }
 
     private void bancoIndisponivel() {
+        SQLException erroSQL = new SQLException("Connection refused");
         driverManager.when(() -> DriverManager.getConnection(anyString(), anyString(), anyString()))
-                .thenThrow(new SQLException("Connection refused"));
+                .thenThrow(erroSQL);
     }
 
     private void prepararStatement() throws SQLException {
@@ -144,5 +145,12 @@ public class LoginDAOTest {
 
         assertNull(loginDAO.autenticarUser(email, senha));
         verifyNoInteractions(preparedStatement);
+    }
+
+    @Test
+    public void testeFalhaComHashNuloNoBanco() throws SQLException {
+        usuarioExisteNoBanco(null);
+
+        assertNull(loginDAO.autenticarUser(email, senha));
     }
 }
