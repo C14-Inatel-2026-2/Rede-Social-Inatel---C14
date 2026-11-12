@@ -3,9 +3,11 @@ package chat;
 import br.inatel.redesocial.servidor.GerenciadorSalas;
 import br.inatel.redesocial.servidor.Sala;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ResourceLock("server-static-state")
 public class TestGerenciadorSalas {
     @Test
     public void retornarSalaAdicionada() {

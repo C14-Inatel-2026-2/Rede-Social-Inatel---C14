@@ -4,6 +4,8 @@ import br.inatel.redesocial.cliente.Cliente;
 import br.inatel.redesocial.cliente.comandos.ExecutarComandoSala;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -12,6 +14,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@ResourceLock(Resources.SYSTEM_OUT)
 public class TestExecutarComandoSala {
 
     private Cliente cliente;
