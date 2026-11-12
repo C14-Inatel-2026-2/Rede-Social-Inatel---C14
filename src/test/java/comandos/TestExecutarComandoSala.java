@@ -88,5 +88,15 @@ public class TestExecutarComandoSala {
         verify(cliente, never()).setSalaAtiva(anyString());
     }
 
+    @Test
+    void naoDeveExecutarAcaoParaComandoDesconhecido() {
 
+        ExecutarComandoSala.executar(
+                "*comando_invalido",
+                "geral",
+                cliente
+        );
+
+        verifyNoInteractions(cliente);
+    }
 }
