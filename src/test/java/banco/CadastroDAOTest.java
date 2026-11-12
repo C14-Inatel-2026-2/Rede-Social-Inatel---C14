@@ -127,4 +127,14 @@ public class CadastroDAOTest {
         verify(preparedStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeFalhaAoPrepararStatement() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao preparar");
+        when(connection.prepareStatement(anyString())).thenThrow(erroSQL);
+
+        assertFalse(cadastroDAO.insertUsuario(email, senha, nome));
+        verify(connection).close();
+        verifyNoInteractions(preparedStatement);
+    }
 }
