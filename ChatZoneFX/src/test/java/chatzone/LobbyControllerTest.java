@@ -176,4 +176,15 @@ public class LobbyControllerTest {
         assertEquals("Senha atual incorreta.", senhaFeedback.getText());
     }
 
+    @Test
+    public void testeTrocarSenhaComConfirmacaoDiferenteMostraErro() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText("Outra@1234");
+
+        controller.onTrocarSenha();
+
+        assertEquals("A confirmação não confere com a nova senha.", senhaFeedback.getText());
+    }
 }
