@@ -36,5 +36,22 @@ public class TestExecutarComandoSala {
         verify(cliente).setSalaAtiva(sala);
     }
 
+    @Test
+    void deveMudarParaSalaCadastrada() {
 
+        String sala = "geral";
+
+        when(cliente.getSala()).thenReturn(Set.of(sala));
+
+        ExecutarComandoSala.executar(
+                "*mudar_sala",
+                sala,
+                cliente
+        );
+
+        verify(cliente).getSala();
+        verify(cliente).setSalaAtiva(sala);
+        verify(cliente, never()).addSala(anyString());
+    }
+    
 }
