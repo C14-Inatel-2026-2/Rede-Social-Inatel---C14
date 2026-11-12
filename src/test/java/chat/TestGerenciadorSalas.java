@@ -49,4 +49,46 @@ public class TestGerenciadorSalas {
         GerenciadorSalas.addSala(10, "Geral");
         assertNull(GerenciadorSalas.getSala("geral"));
     }
+
+
+    @Test
+    public void existeSalaRetornaTrueParaSalaExistente() {
+        GerenciadorSalas.addSala(10, "salaExiste");
+
+        assertTrue(GerenciadorSalas.existeSala("salaExiste"));
+    }
+
+    @Test
+    public void existeSalaRetornaFalseParaSalaInexistente() {
+        assertFalse(GerenciadorSalas.existeSala("salaInexistente"));
+    }
+
+    @Test
+    public void existeSalaRetornaFalseParaNomeNulo() {
+        assertFalse(GerenciadorSalas.existeSala(null));
+    }
+
+    @Test
+    public void salasJsonDeveRetornarDadosDasSalas() {
+        GerenciadorSalas.addSala(10, "salaJson");
+
+        String json = GerenciadorSalas.salasJson();
+
+        assertTrue(json.contains("\"name\":\"salaJson\""));
+        assertTrue(json.contains("\"capacity\":10"));
+        assertTrue(json.contains("\"users\":"
+                + GerenciadorSalas.getSala("salaJson").getQuantidadeUsuarios()));
+    }
+
+    @Test
+    public void salasJsonDeveIncluirTodasAsSalas() {
+        GerenciadorSalas.addSala(5, "salaJsonA");
+        GerenciadorSalas.addSala(20, "salaJsonB");
+
+        String json = GerenciadorSalas.salasJson();
+
+        assertTrue(json.contains("\"name\":\"salaJsonA\""));
+        assertTrue(json.contains("\"name\":\"salaJsonB\""));
+    }
+
 }
