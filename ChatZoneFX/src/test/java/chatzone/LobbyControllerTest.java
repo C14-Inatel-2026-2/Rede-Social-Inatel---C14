@@ -212,4 +212,15 @@ public class LobbyControllerTest {
 
         assertEquals("", senhaAtualField.getText());
     }
+
+    @Test
+    public void testeSalaDisponivelPodeSerClicada() throws Exception {
+        controller.init(EMAIL);
+        assertTrue(salasCarregadas.await(5, TimeUnit.SECONDS));
+
+        VBox salaGeral = (VBox) roomsGrid.getChildren().get(0);
+
+        assertNotNull(salaGeral.getOnMouseClicked());
+    }
+
 }
