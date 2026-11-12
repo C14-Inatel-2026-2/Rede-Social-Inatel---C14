@@ -120,4 +120,12 @@ public class UsuarioDAOTest {
         assertNull(usuarioDAO.buscarPorEmail("naoexiste@inatel.br"));
         verify(resultSet, never()).getString(anyString());
     }
+
+    @Test
+    public void testeBuscarSemConexao() {
+        bancoIndisponivel();
+
+        assertNull(usuarioDAO.buscarPorEmail(email));
+        verifyNoInteractions(selectStatement);
+    }
 }
