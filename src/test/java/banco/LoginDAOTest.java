@@ -157,7 +157,8 @@ public class LoginDAOTest {
     @Test
     public void testeFalhaNaConsulta() throws SQLException {
         prepararStatement();
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Erro na consulta"));
+        SQLException erroSQL = new SQLException("Erro na consulta");
+        when(preparedStatement.executeQuery()).thenThrow(erroSQL);
 
         assertNull(loginDAO.autenticarUser(email, senha));
         verify(preparedStatement).close();
@@ -166,10 +167,21 @@ public class LoginDAOTest {
 
     @Test
     public void testeFalhaAoPrepararStatement() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenThrow(new SQLException("Erro ao preparar"));
+        SQLException erroSQL = new SQLException("Erro ao preparar");
+        when(connection.prepareStatement(anyString())).thenThrow(erroSQL);
 
         assertNull(loginDAO.autenticarUser(email, senha));
         verify(connection).close();
         verifyNoInteractions(preparedStatement);
+    }
+
+    @Test
+    public void testeFalhaAoLerResultSet() throws SQLException {
+        prepararConsulta();
+        SQLException erroSQL = new SQLException("Erro ao ler resultado");
+        when(resultSet.next()).thenThrow(erroSQL);
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+        verify(connection).close();
     }
 }
