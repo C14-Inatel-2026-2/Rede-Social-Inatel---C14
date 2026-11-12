@@ -116,3 +116,81 @@ Os requisitos não funcionais estabelecem características de qualidade, seguran
 | RNF07 | Compatibilidade | A aplicação deverá funcionar em ambientes compatíveis com Java 21 e JavaFX, considerando as dependências necessárias. |
 | RNF08 | Integridade dos dados | As informações de cadastro e autenticação deverão ser mantidas de maneira consistente no banco de dados. |
 
+Relatório da I.A - Gilberto Cezar Silveira Júnior
+
+## Uso de IA — Front-end (JavaFX) e integração
+
+### Ferramentas
+* Amazon Q Developer: geração do front e integração login/cadastro
+* Claude: testes de autenticação, ChatConfig e ChatController, apoio na depuração de erros da pipeline (Jenkins) e esclarecimento de dúvida sobre o tipo de serviço no Render
+
+### Prompts e resultados
+
+1. Geração do front (Amazon Q Developer)
+Contexto: zip com o que já existia do projeto.
+Prompt: "Gere arquivos de frontend utilizando o JavaFX com um visual moderno, é um
+aplicativo de chats online com telas para cadastro e login, lobby de salas e o próprio
+chat. O usuário possui email, nome e senha. Faça de uma maneira simples para integrar
+as funcionalidades disponíveis no back end"
+Um exemplo do que foi ignorado é que a i.a desenvolveu um novo regex, o que já havia sido feito no back end, então alteramos depois manualmente para excluir essas funções redundantes.
+AJUSTADO
+
+2. Integração com o back-end (Amazon Q Developer)
+Antes da IA: a função de login no AuthController já estava feita à mão, a register também porém foi largamente modificada pela i.a para se encaixar aos padrões de exceções do código.
+Prompt: "Analisando o que já foi implementado, como a questão do login e registro, analise as
+demais funções do back end e comece a implementá-las para o front end, levando em conta
+o banco de dados e sua visualização para o usuário, além das exceções originais do projeto"
+Resultado: a IA completou as demais funções e usou as exceptions que já
+existiam, foi desenvolvido sem muitos erros já que essas funções já funcionavam no back end.
+ACEITO
+
+3. Testes de autenticação (Claude)
+Contexto: enviamos nossos primeiros testes (ex.: loginValido_navegaParaLobby), os
+slides de testes unitários e o repositório.
+Prompt: "Preciso de testes unitarios para testar as funcionalidades de autentificação,
+usando mockito em alguns e podendo utilizar injeção de dependencia. Siga os padrões de
+testes unitarios dos slides. Os códigos devem seguir o padrão dos powerpoints e os que
+já foram implementados, sem alterar o código. Devem ser apenas testes para o front e
+suas funcionalidades"
+Resultado: o Claude sugeriu um toolkit para testar o front e aplicamos a dependência JavaFX Monocle para testar o ambiente em headless, sem interface gráfica, isso foi aplicado manualmente.
+Mesmo tendo sido requisitado utilizando apenas testes unitários e mock a i.a ainda desenvolveu alguns testes que foram corrigidos posteriormente por declarar e utilizar métodos de classe sem utilizar do mock. O que acabava gerando um teste de integração, que não era permitido. A solução foi mockar manualmente e desenvolver a classe Navigator para isso.
+AJUSTADO
+
+4. Mensagens no ChatController (Claude)
+Antes da IA: método conectar() (versão inicial) e início do init (e-mail).
+Prompt: "Observe o que já foi implementado do back end no front end e me auxilie em como
+fazer o encaminhamento de mensagens entre usuários, visando principalmente o que já foi
+feito no back. Veja como o método de conexão está sendo feito"
+Resultado: o Claude devolveu ChatConfig, ChatController e LobbyController atualizados.
+Além disso, no LobbyController o método buscarSalas teve que ser implementado manualmente, já que a i.a definiu toda a integração de salas no loadRooms e isso impossibilitava a utilização do mock. A i.a desenvolveu alguns trechos utilizando string ao invés da própria classe MensagemCliente que havia sido feita com esse propósito, outro erro corrigido manualmente.
+AJUSTADO
+
+### Qual i.a fez o que
+https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
+| Parte | Origem |
+|---|---|
+| Visual (.fxml e o código em chatzone que aplica funções às telas) | IA (Amazon Q) |
+| Demais funções do AuthController | IA, com ajustes à mão para integração (incluindo a remoção do regex redundante gerado pela IA) |
+| Demais testes de login e cadastro | IA (Claude), com ajustes à mão |
+| conectar() do ChatController | À mão (versão inicial), depois modificado pela IA (Claude) |
+| init (e-mail) | Feito à mão a princípio, assim como o início do conectar(). A IA (Claude) modificou o init ao alterar o código, por exemplo no envio da mensagem ao apertar Enter |
+| Restante do ChatController e ChatConfig | IA (Claude), com ajustes à mão |
+| Pipeline Jenkins | Feita sem IA a partir de material de base; a IA (Claude) só ajudou a resolver erros |
+
+### O que não foi feito por IA
+* Função de login e cadastro inicial no AuthController
+* Primeiros testes (loginValido_navegaParaLobby, loginEmailInvalido_naoNavega)
+* Versão inicial do conectar() e do init (e-mail) no ChatController
+* Remoção do regex redundante gerado pela IA no front
+* Dependência JavaFX Monocle para testes em headless
+* Interface Navigator para permitir a injeção de mocks de navegação entre testes
+* Método buscarSalas no LobbyController
+* Correção dos trechos que usavam string em vez da classe MensagemCliente
+* Deploy Pipeline Jenkins e Pipeline Front (a IA só ajudou na depuração de erros)
+* Demais testes do front : LobbyControllerTest,ChatControllerTest
+
+### Como usamos a IA
+Individualmente. Sempre enviamos o código existente como contexto, pedimos que a IA
+seguisse o padrão do que já estava feito e revisamos o resultado antes do commit.
+A IA não foi usada na revisão de PRs. Antes do commit, o código era verificado
+pelos testes da pipeline.
