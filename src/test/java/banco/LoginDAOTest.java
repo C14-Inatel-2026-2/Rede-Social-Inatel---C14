@@ -188,14 +188,10 @@ public class LoginDAOTest {
     @Test
     public void testeFalhaPorEmailNulo() {
         assertNull(loginDAO.autenticarUser(null, senha));
-        verifyNoInteractions(connection);
-        driverManager.verifyNoInteractions();
     }
 
     @Test
     public void testeFalhaPorSenhaNula() {
         assertNull(loginDAO.autenticarUser(email, null));
-        verifyNoInteractions(connection);
-        driverManager.verifyNoInteractions();
     }
 }

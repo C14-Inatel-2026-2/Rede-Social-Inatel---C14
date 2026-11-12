@@ -9,7 +9,13 @@ public class LoginDAO extends ConnectionDAO {
 
     public String autenticarUser(String email, String password){
         String nome = null;
+
+        if (email == null || password == null) {
+            return null;
+        }
+
         connectToDb();
+
         if (connection == null) {
             return null;
         }
@@ -30,6 +36,8 @@ public class LoginDAO extends ConnectionDAO {
             }
         } catch(SQLException e){
             System.out.println("Falha de Login: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Hash de senha inválido para o usuário informado.");
         } finally {
             try {
                 if(rs != null) rs.close();
@@ -42,5 +50,4 @@ public class LoginDAO extends ConnectionDAO {
 
         return nome;
     }
-
 }
