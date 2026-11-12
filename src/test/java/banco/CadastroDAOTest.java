@@ -74,4 +74,16 @@ public class CadastroDAOTest {
         verify(preparedStatement).setString(3, nome);
         verify(preparedStatement).execute();
     }
+
+    @Test
+    public void testeSenhaSalvaComoHash() throws SQLException {
+        prepararStatement();
+        ArgumentCaptor<String> senhaSalva = ArgumentCaptor.forClass(String.class);
+
+        cadastroDAO.insertUsuario(email, senha, nome);
+
+        verify(preparedStatement).setString(eq(2), senhaSalva.capture());
+        assertNotEquals(senha, senhaSalva.getValue());
+        assertTrue(BCrypt.checkpw(senha, senhaSalva.getValue()));
+    }
 }
