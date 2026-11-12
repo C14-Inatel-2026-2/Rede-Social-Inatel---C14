@@ -1,4 +1,4 @@
-package CRUDTestes;
+package crud;
 
 import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 import br.inatel.redesocial.usuario.GerenciadorUsuariosBD;
