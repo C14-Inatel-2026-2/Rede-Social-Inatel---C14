@@ -219,6 +219,16 @@ public class UsuarioDAOTest {
     }
 
     @Test
+    public void testeAlterarSenhaFalhaQuandoNenhumaLinhaEAtualizada() throws SQLException {
+        prepararSelectEUpdate(hashDaSenhaAtual);
+        when(updateStatement.executeUpdate()).thenReturn(0);
+
+        assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verify(updateStatement).close();
+        verify(connection).close();
+    }
+
+    @Test
     public void testeAlterarSenhaFalhaSemConexao() {
         bancoIndisponivel();
 
