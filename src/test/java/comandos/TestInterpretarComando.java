@@ -32,4 +32,16 @@ class TestInterpretarComando {
         );
     }
 
+    @Test
+    void deveInterpretarMensagemSemSeparador() {
+
+        String msg = "Olá, tudo bem?";
+
+        String[] resultado = InterpretarComando.interpretar(msg);
+
+        assertArrayEquals(
+                new String[]{"mensagem", "Olá, tudo bem?"},
+                resultado
+        );
+    }
 }
