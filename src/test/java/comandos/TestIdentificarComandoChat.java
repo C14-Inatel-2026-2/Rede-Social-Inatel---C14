@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -40,5 +42,17 @@ class TestIdentificarComandoChat {
         assertEquals("Leonardo", resultado.usuario);
         assertEquals("leo@email.com", resultado.email);
     }
-    
+
+    @Test
+    void deveIdentificarMensagemComEspacos() {
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "   Olá pessoal!   ", cliente);
+
+        assertEquals("mensagem", resultado.type);
+        assertEquals("Olá pessoal!", resultado.texto);
+    }
+
+
 }
