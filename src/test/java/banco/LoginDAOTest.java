@@ -110,4 +110,15 @@ public class LoginDAOTest {
         assertNull(loginDAO.autenticarUser(email, senhaInvalida));
         verify(resultSet, never()).getString("nome");
     }
+
+    @Test
+    public void testeFalhaComSenhaIncorretaFechaRecursos() throws SQLException {
+        usuarioExisteNoBanco(hashDaSenha);
+
+        loginDAO.autenticarUser(email, senhaInvalida);
+
+        verify(resultSet).close();
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
 }
