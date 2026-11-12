@@ -99,7 +99,10 @@ public class ServidorHandler extends Thread {
                 }
                 break;
             case "mensagem":
-                if (instanciaSala!=null){
+                if (msg.texto==null){
+                    servidorSocket.enviar(Mensagem.erro("Texto da mensagem ausente."));
+                }
+                else if (instanciaSala!=null){
                     msg.usuario = emailUsuario;
                     msg.timestamp = System.currentTimeMillis();
                     for (PrintWriter escritorDestino : instanciaSala.getEscritores()) {
