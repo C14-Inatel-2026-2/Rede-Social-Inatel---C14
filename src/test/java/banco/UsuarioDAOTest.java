@@ -221,4 +221,15 @@ public class UsuarioDAOTest {
         verify(selectStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaNoUpdate() throws SQLException {
+        prepararSelectEUpdate(hashDaSenhaAtual);
+        SQLException erroSQL = new SQLException("Erro no update");
+        when(updateStatement.executeUpdate()).thenThrow(erroSQL);
+
+        assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verify(updateStatement).close();
+        verify(connection).close();
+    }
 }
