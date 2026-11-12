@@ -193,4 +193,13 @@ public class UsuarioDAOTest {
         verify(connection, never()).prepareStatement(contains("UPDATE"));
         verify(connection).close();
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaComHashNuloNoBanco() throws SQLException {
+        bancoRetornaHash(null);
+
+        assertFalse(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verify(connection, never()).prepareStatement(contains("UPDATE"));
+        verify(connection).close();
+    }
 }
