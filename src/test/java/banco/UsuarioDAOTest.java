@@ -150,4 +150,15 @@ public class UsuarioDAOTest {
         verifyNoInteractions(selectStatement);
     }
 
+    @Test
+    public void testeAlterarSenhaComSucesso() throws SQLException {
+        prepararSelectEUpdate(hashDaSenhaAtual);
+        when(updateStatement.executeUpdate()).thenReturn(1);
+
+        assertTrue(usuarioDAO.alterarSenha(email, senhaAtual, senhaNova));
+        verify(connection).prepareStatement(contains("SELECT senha FROM usuario"));
+        verify(connection).prepareStatement(contains("UPDATE usuario SET senha"));
+        verify(selectStatement).setString(1, email);
+        verify(updateStatement).setString(2, email);
+    }
 }
