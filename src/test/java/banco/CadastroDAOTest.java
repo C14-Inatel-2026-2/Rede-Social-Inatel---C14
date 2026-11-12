@@ -161,4 +161,22 @@ public class CadastroDAOTest {
 
         assertTrue(inserido);
     }
+
+    @Test
+    public void testeFalhaPorEmailNulo() {
+        assertFalse(cadastroDAO.insertUsuario(null, senha, nome));
+        verifyNoInteractions(connection);
+    }
+
+    @Test
+    public void testeFalhaPorSenhaNula() {
+        assertFalse(cadastroDAO.insertUsuario(email, null, nome));
+        verifyNoInteractions(connection);
+    }
+
+    @Test
+    public void testeFalhaPorNomeNulo() {
+        assertFalse(cadastroDAO.insertUsuario(email, senha, null));
+        verifyNoInteractions(connection);
+    }
 }
