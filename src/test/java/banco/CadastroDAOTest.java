@@ -96,4 +96,12 @@ public class CadastroDAOTest {
         verify(preparedStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeFalhaSemConexao() {
+        bancoIndisponivel();
+
+        assertFalse(cadastroDAO.insertUsuario(email, senha, nome));
+        verifyNoInteractions(preparedStatement);
+    }
 }
