@@ -153,4 +153,14 @@ public class LoginDAOTest {
 
         assertNull(loginDAO.autenticarUser(email, senha));
     }
+
+    @Test
+    public void testeFalhaNaConsulta() throws SQLException {
+        prepararStatement();
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Erro na consulta"));
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
 }
