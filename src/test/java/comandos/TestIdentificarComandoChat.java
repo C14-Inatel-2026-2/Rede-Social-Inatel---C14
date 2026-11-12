@@ -70,5 +70,21 @@ class TestIdentificarComandoChat {
         assertEquals("leo@email.com", resultado.email);
     }
 
-  
+    @Test
+    void deveMudarSalaQuandoUsuarioJaEstaCadastrado() {
+
+        when(cliente.getSala()).thenReturn(
+                Set.of("geral", "tecnologia"));
+
+        MensagemCliente resultado =
+                IdentificarComandoChat.identificarComando(
+                        "*mudar_sala -> tecnologia", cliente);
+
+        verify(cliente).setSalaAtiva("tecnologia");
+        verify(cliente, never()).addSala(anyString());
+
+        assertEquals("mudar_sala", resultado.type);
+        assertEquals("tecnologia", resultado.texto);
+    }
+
 }
