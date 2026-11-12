@@ -54,6 +54,7 @@ public class LobbyControllerTest {
                 new LobbyController.Room(0, "Sala Música", 0, 12, 0)
         });
 
+        when(trocarSenha.alterarSenha(EMAIL, SENHA, NOVA_SENHA)).thenReturn(true);
         controller = new LobbyController(buscadorDeSalas, trocarSenha);
 
         FXMLLoader loader = new FXMLLoader(LobbyController.class.getResource("lobby.fxml"));
@@ -198,5 +199,17 @@ public class LobbyControllerTest {
         controller.onTrocarSenha();
 
         assertEquals("A confirmação não confere com a nova senha.", senhaFeedback.getText());
+    }
+
+    @Test
+    public void testeTrocarSenhaValidaLimpaCampos() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("", senhaAtualField.getText());
     }
 }
