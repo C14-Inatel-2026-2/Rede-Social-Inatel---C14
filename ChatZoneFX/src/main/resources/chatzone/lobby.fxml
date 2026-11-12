@@ -48,6 +48,16 @@
                 <Label text="CONTA" styleClass="profile-label"/>
                 <Label fx:id="profileEmailLabel" text="—" styleClass="profile-value" wrapText="true"/>
             </VBox>
+            <VBox spacing="8" styleClass="profile-card" maxWidth="Infinity">
+                <Label text="TROCAR SENHA" styleClass="profile-label"/>
+                <PasswordField fx:id="senhaAtualField" promptText="Senha atual" styleClass="form-input"/>
+                <PasswordField fx:id="novaSenhaField" promptText="Nova senha" styleClass="form-input"/>
+                <PasswordField fx:id="confirmarSenhaField" promptText="Confirme a nova senha" styleClass="form-input"/>
+                <Label text="Mín. 8 chars · 1 maiúscula · 1 número · 1 especial ($*&amp;@#!)" styleClass="hint" wrapText="true"/>
+                <Label fx:id="senhaFeedback" styleClass="feedback-msg" maxWidth="Infinity" wrapText="true"
+                       visible="false" managed="false"/>
+                <Button text="Salvar nova senha" styleClass="btn-primary" maxWidth="Infinity" onAction="#onTrocarSenha"/>
+            </VBox>
             <Button text="Sair da conta" styleClass="btn-logout" maxWidth="Infinity" onAction="#onLogout"/>
         </VBox>
     </StackPane>

@@ -2,6 +2,7 @@ package chatzone;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -14,25 +15,34 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import br.inatel.redesocial.usuario.TrocarSenha;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(JavaFxExtension.class)
 public class LobbyControllerTest {
 
     private static final String EMAIL = "user@email.com";
+    private static final String SENHA = "Senha@123";
+    private static final String NOVA_SENHA = "Nova@1234";
 
     @Mock
     private LobbyController.BuscadorDeSalas buscadorDeSalas;
+
+    @Mock
+    private TrocarSenha trocarSenha;
 
     private LobbyController controller;
     private Label profileEmailLabel;
     private StackPane profileModal;
     private CountDownLatch salasCarregadas;
     private FlowPane roomsGrid;
+    private PasswordField senhaAtualField;
+    private PasswordField novaSenhaField;
+    private PasswordField confirmarSenhaField;
+    private Label senhaFeedback;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -44,7 +54,7 @@ public class LobbyControllerTest {
                 new LobbyController.Room(0, "Sala Música", 0, 12, 0)
         });
 
-        controller = new LobbyController(buscadorDeSalas);
+        controller = new LobbyController(buscadorDeSalas, trocarSenha);
 
         FXMLLoader loader = new FXMLLoader(LobbyController.class.getResource("lobby.fxml"));
         loader.setControllerFactory(tipo -> controller);
@@ -54,6 +64,10 @@ public class LobbyControllerTest {
         profileModal = (StackPane) loader.getNamespace().get("profileModal");
         roomsGrid = (FlowPane) loader.getNamespace().get("roomsGrid");
 
+        senhaAtualField = (PasswordField) loader.getNamespace().get("senhaAtualField");
+        novaSenhaField = (PasswordField) loader.getNamespace().get("novaSenhaField");
+        confirmarSenhaField = (PasswordField) loader.getNamespace().get("confirmarSenhaField");
+        senhaFeedback = (Label) loader.getNamespace().get("senhaFeedback");
 
         salasCarregadas = new CountDownLatch(1);
         roomsGrid.getChildren().addListener((ListChangeListener<Node>) mudanca -> {
@@ -133,4 +147,22 @@ public class LobbyControllerTest {
 
         assertNull(salaJogos.getOnMouseClicked());
     }
+
+    @Test
+    public void testeFeedbackDeSenhaComecaEscondido() {
+        assertFalse(senhaFeedback.isVisible());
+    }
+
+    @Test
+    public void testeTrocarSenhaValidaChamaServico() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        verify(trocarSenha).alterarSenha(EMAIL, SENHA, NOVA_SENHA);
+    }
+
 }
