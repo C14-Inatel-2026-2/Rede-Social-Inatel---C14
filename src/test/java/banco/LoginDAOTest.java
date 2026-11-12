@@ -89,4 +89,15 @@ public class LoginDAOTest {
         verify(connection).prepareStatement(contains("SELECT nome, senha FROM usuario"));
         verify(preparedStatement).setString(1, email);
     }
+
+    @Test
+    public void testeFechaRecursosNoSucesso() throws SQLException {
+        usuarioExisteNoBanco(hashDaSenha);
+
+        loginDAO.autenticarUser(email, senha);
+
+        verify(resultSet).close();
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
 }
