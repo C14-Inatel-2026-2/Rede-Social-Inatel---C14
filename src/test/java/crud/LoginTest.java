@@ -1,4 +1,4 @@
-package CRUDTestes;
+package crud;
 
 import br.inatel.redesocial.usuario.Login;
 import br.inatel.redesocial.banco.funcoes.LoginDAO;
@@ -112,10 +112,44 @@ public class LoginTest {
 
     @Test
     public void testeAutenticarComSenhaVazia() {
+        String senhaVazia = "";
+
         Usuario usuario = new Usuario(email, senha);
 
         assertThrows(CampoObrigatorioException.class,
-                () -> login.autenticarUsuario(usuario, ""));
+                () -> login.autenticarUsuario(usuario, senhaVazia));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
+    public void testAutentificarComSenhaNula(){
+        Usuario usuario = new Usuario(email, null);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, null));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
+    public void testeAutenticarComEmailVazio(){
+        String emailVazio = "";
+
+        Usuario usuario = new Usuario(emailVazio, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, senha));
+
+        Mockito.verifyNoInteractions(loginDAO);
+    }
+
+    @Test
+    public void testeAutenticarComEmailNulo(){
+        Usuario usuario = new Usuario(null, senha);
+
+        assertThrows(CampoObrigatorioException.class,
+                () -> login.autenticarUsuario(usuario, senha));
 
         Mockito.verifyNoInteractions(loginDAO);
     }

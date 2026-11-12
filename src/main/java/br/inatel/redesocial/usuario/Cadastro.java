@@ -15,9 +15,9 @@ public class Cadastro {
 
         verificacaoCampoObrigatorio(email, senha, nome);
 
-        if(verificacoesParaCriacao(email, senha, nome)) {
-            cadastrarNoBanco(email, senha, nome);
-        }
+        verificacoesParaCriacao(email, senha, nome);
+
+        cadastrarNoBanco(email, senha, nome);
 
         Usuario usuario = new Usuario(email, senha);
         usuario.setNome(nome);

@@ -1,4 +1,4 @@
-package Sockets;
+package sockets;
 
 import br.inatel.redesocial.servidor.GerenciadorSalas;
 import br.inatel.redesocial.servidor.Mensagem;

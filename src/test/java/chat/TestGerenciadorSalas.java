@@ -1,4 +1,4 @@
-package Chat;
+package chat;
 
 import br.inatel.redesocial.servidor.GerenciadorSalas;
 import br.inatel.redesocial.servidor.Sala;

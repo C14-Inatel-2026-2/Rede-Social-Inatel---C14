@@ -1,4 +1,4 @@
-package Cliente;
+package cliente;
 
 import br.inatel.redesocial.cliente.ClienteFactory;
 import br.inatel.redesocial.cliente.ClienteHandler;
