@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
@@ -99,5 +100,16 @@ public class UsuarioDAOTest {
         assertEquals(nome, usuario.getNome());
         verify(connection).prepareStatement(contains("SELECT email, nome FROM usuario"));
         verify(selectStatement).setString(1, email);
+    }
+
+    @Test
+    public void testeBuscarFechaRecursosNoSucesso() throws SQLException {
+        usuarioEncontrado();
+
+        usuarioDAO.buscarPorEmail(email);
+
+        verify(resultSet).close();
+        verify(selectStatement).close();
+        verify(connection).close();
     }
 }
