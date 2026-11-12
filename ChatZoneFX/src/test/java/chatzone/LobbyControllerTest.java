@@ -154,6 +154,18 @@ public class LobbyControllerTest {
     }
 
     @Test
+    public void testeTrocarSenhaValidaMostraSucesso() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("Senha alterada com sucesso!", senhaFeedback.getText());
+    }
+
+    @Test
     public void testeTrocarSenhaValidaChamaServico() {
         controller.init(EMAIL);
         senhaAtualField.setText(SENHA);
