@@ -19,5 +19,17 @@ class TestInterpretarComando {
         );
     }
 
-  
+    @Test
+    void deveRemoverEspacosDesnecessarios() {
+
+        String msg = "  *mudar_sala  ->  geral  ";
+
+        String[] resultado = InterpretarComando.interpretar(msg);
+
+        assertArrayEquals(
+                new String[]{"*mudar_sala", "geral"},
+                resultado
+        );
+    }
+
 }
