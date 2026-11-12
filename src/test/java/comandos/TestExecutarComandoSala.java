@@ -53,5 +53,40 @@ public class TestExecutarComandoSala {
         verify(cliente).setSalaAtiva(sala);
         verify(cliente, never()).addSala(anyString());
     }
-    
+
+    @Test
+    void naoDeveMudarParaSalaNaoCadastrada() {
+
+        String sala = "privada";
+
+        when(cliente.getSala()).thenReturn(Set.of("geral"));
+
+        ByteArrayOutputStream saida =
+                new ByteArrayOutputStream();
+
+        PrintStream saidaOriginal = System.out;
+
+        try {
+            System.setOut(new PrintStream(saida));
+
+            ExecutarComandoSala.executar(
+                    "*mudar_sala",
+                    sala,
+                    cliente
+            );
+
+        } finally {
+            System.setOut(saidaOriginal);
+        }
+
+        assertEquals(
+                "Você não está cadastrado nesta sala!",
+                saida.toString().trim()
+        );
+
+        verify(cliente).getSala();
+        verify(cliente, never()).setSalaAtiva(anyString());
+    }
+
+
 }
