@@ -163,4 +163,13 @@ public class LoginDAOTest {
         verify(preparedStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeFalhaAoPrepararStatement() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenThrow(new SQLException("Erro ao preparar"));
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+        verify(connection).close();
+        verifyNoInteractions(preparedStatement);
+    }
 }
