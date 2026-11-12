@@ -183,4 +183,14 @@ public class UsuarioDAOTest {
         verify(connection, never()).prepareStatement(contains("UPDATE"));
         verify(connection).close();
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaComEmailNaoCadastrado() throws SQLException {
+        prepararConsulta();
+        when(resultSet.next()).thenReturn(false);
+
+        assertFalse(usuarioDAO.alterarSenha("naoexiste@inatel.br", senhaAtual, senhaNova));
+        verify(connection, never()).prepareStatement(contains("UPDATE"));
+        verify(connection).close();
+    }
 }
