@@ -8,6 +8,7 @@ import br.inatel.redesocial.banco.funcoes.UsuarioDAO;
 import br.inatel.redesocial.exceptions.CampoObrigatorioException;
 import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 import br.inatel.redesocial.usuario.TrocarSenha;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -30,10 +31,12 @@ public class LobbyController {
     @FXML private PasswordField novaSenhaField;
     @FXML private PasswordField confirmarSenhaField;
     @FXML private Label         senhaFeedback;
+    @FXML private Button criarSalaBtn;
 
     private String currentEmail;
 
     private static final Gson GSON = new Gson();
+    private static final boolean CRIAR_SALA_HABILITADO = false;
 
     interface BuscadorDeSalas {
         Room[] buscar() throws Exception;
@@ -62,6 +65,10 @@ public class LobbyController {
     public void initialize() {
         // Impede que clique dentro do modal feche o overlay
         profileModal.lookup(".modal");
+        if (!CRIAR_SALA_HABILITADO) {
+            criarSalaBtn.setVisible(false);
+        }
+
     }
 
     public void init(String email) {
@@ -141,6 +148,7 @@ public class LobbyController {
 
     @FXML
     void onCreateRoom() {
+        if (!CRIAR_SALA_HABILITADO) return;
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Criar sala");
         dialog.setHeaderText("Nome da nova sala");

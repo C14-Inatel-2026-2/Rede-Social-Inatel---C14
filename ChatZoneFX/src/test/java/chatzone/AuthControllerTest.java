@@ -7,14 +7,15 @@ import br.inatel.redesocial.exceptions.SenhaInvalidaException;
 import br.inatel.redesocial.usuario.Cadastro;
 import br.inatel.redesocial.usuario.Login;
 import br.inatel.redesocial.usuario.Usuario;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -38,15 +39,24 @@ public class AuthControllerTest {
     private Cadastro cadastro;
     private AuthController controller;
     private Label regEmailErr;
+    private PasswordField loginSenha;
+    private TextField loginSenhaTexto;
     private Label regSenhaErr;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         navigator = mock(Navigator.class);
         login = mock(Login.class);
         cadastro = mock(Cadastro.class);
         when(login.autenticarUsuario(any(Usuario.class), eq(SENHA))).thenReturn(true);
         controller = new AuthController(login, cadastro, navigator);
+
+        FXMLLoader loader = new FXMLLoader(AuthController.class.getResource("auth.fxml"));
+        loader.setControllerFactory(tipo -> controller);
+        loader.load();
+
+        loginSenha = (PasswordField) loader.getNamespace().get("loginSenha");
+        loginSenhaTexto = (TextField) loader.getNamespace().get("loginSenhaTexto");
 
         regEmailErr = mock(Label.class);
         regSenhaErr = mock(Label.class);
@@ -182,5 +192,21 @@ public class AuthControllerTest {
     public void testeCadastroComFalhaNaNavegacaoNaoLancaExcecao() throws Exception {
         doThrow(new Exception("Falha na navegação")).when(navigator).showLobby(EMAIL);
         assertDoesNotThrow(() -> controller.register(EMAIL, SENHA, NOME));
+    }
+
+    @Test
+    public void testeMostrarSenhaDoLoginCopiaOTexto() {
+        loginSenha.setText(SENHA);
+
+        controller.onToggleLoginSenha();
+
+        assertEquals(SENHA, loginSenhaTexto.getText());
+    }
+
+    @Test
+    public void testeMostrarSenhaDoLoginEscondeOCampoDeSenha() {
+        controller.onToggleLoginSenha();
+
+        assertFalse(loginSenha.isVisible());
     }
 }

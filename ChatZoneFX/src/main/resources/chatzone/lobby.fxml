@@ -25,8 +25,7 @@
                 <Label text="Salas públicas" styleClass="section-title"/>
                 <Label text="Clique em uma sala disponível para entrar" styleClass="section-subtitle"/>
             </VBox>
-            <Button text="+  Criar sala" styleClass="btn-secondary" onAction="#onCreateRoom"/>
-        </HBox>
+            <Button fx:id="criarSalaBtn" text="+  Criar sala" styleClass="btn-secondary" onAction="#onCreateRoom"/>        </HBox>
 
         <ScrollPane fitToWidth="true" styleClass="rooms-scroll" VBox.vgrow="ALWAYS">
             <FlowPane fx:id="roomsGrid" hgap="18" vgap="18" styleClass="rooms-grid">

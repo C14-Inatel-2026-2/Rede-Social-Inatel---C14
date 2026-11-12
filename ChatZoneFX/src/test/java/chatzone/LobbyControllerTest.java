@@ -54,6 +54,7 @@ public class LobbyControllerTest {
                 new LobbyController.Room(0, "Sala Música", 0, 12, 0)
         });
 
+        when(trocarSenha.alterarSenha(EMAIL, SENHA, NOVA_SENHA)).thenReturn(true);
         controller = new LobbyController(buscadorDeSalas, trocarSenha);
 
         FXMLLoader loader = new FXMLLoader(LobbyController.class.getResource("lobby.fxml"));
@@ -154,6 +155,18 @@ public class LobbyControllerTest {
     }
 
     @Test
+    public void testeTrocarSenhaValidaMostraSucesso() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("Senha alterada com sucesso!", senhaFeedback.getText());
+    }
+
+    @Test
     public void testeTrocarSenhaValidaChamaServico() {
         controller.init(EMAIL);
         senhaAtualField.setText(SENHA);
@@ -163,6 +176,51 @@ public class LobbyControllerTest {
         controller.onTrocarSenha();
 
         verify(trocarSenha).alterarSenha(EMAIL, SENHA, NOVA_SENHA);
+    }
+    @Test
+    public void testeTrocarSenhaComSenhaAtualErradaMostraErro() {
+        controller.init(EMAIL);
+        senhaAtualField.setText("Errada@123");
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("Senha atual incorreta.", senhaFeedback.getText());
+    }
+
+    @Test
+    public void testeTrocarSenhaComConfirmacaoDiferenteMostraErro() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText("Outra@1234");
+
+        controller.onTrocarSenha();
+
+        assertEquals("A confirmação não confere com a nova senha.", senhaFeedback.getText());
+    }
+
+    @Test
+    public void testeTrocarSenhaValidaLimpaCampos() {
+        controller.init(EMAIL);
+        senhaAtualField.setText(SENHA);
+        novaSenhaField.setText(NOVA_SENHA);
+        confirmarSenhaField.setText(NOVA_SENHA);
+
+        controller.onTrocarSenha();
+
+        assertEquals("", senhaAtualField.getText());
+    }
+
+    @Test
+    public void testeSalaDisponivelPodeSerClicada() throws Exception {
+        controller.init(EMAIL);
+        assertTrue(salasCarregadas.await(5, TimeUnit.SECONDS));
+
+        VBox salaGeral = (VBox) roomsGrid.getChildren().get(0);
+
+        assertNotNull(salaGeral.getOnMouseClicked());
     }
 
 }
