@@ -6,7 +6,6 @@ module chatzone {
     requires jdk.httpserver;
     requires com.google.gson;
     requires jbcrypt;
-    requires jdk.httpserver;
 
     opens chatzone to javafx.fxml, org.mockito, com.google.gson;
     opens br.inatel.redesocial.cliente.dto to com.google.gson;
