@@ -137,4 +137,15 @@ public class CadastroDAOTest {
         verify(connection).close();
         verifyNoInteractions(preparedStatement);
     }
+
+    @Test
+    public void testeFalhaAoFecharStatementNaoPropagaExcecao() throws SQLException {
+        prepararStatement();
+        doThrow(new SQLException("Erro ao fechar statement")).when(preparedStatement).close();
+
+        boolean inserido = assertDoesNotThrow(
+                () -> cadastroDAO.insertUsuario(email, senha, nome));
+
+        assertTrue(inserido);
+    }
 }
