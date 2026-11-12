@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +28,7 @@ public class LoginDAOTest {
     private final String email = "christopher@inatel.br";
     private final String nome = "Christopher";
     private final String senha = "Chizinho67!";
+    private final String senhaInvalida = "senha123";
     private final String hashInvalido = "senhazinha";
     private final String hashDaSenha = BCrypt.hashpw(senha, BCrypt.gensalt(4));
 
@@ -99,5 +101,13 @@ public class LoginDAOTest {
         verify(resultSet).close();
         verify(preparedStatement).close();
         verify(connection).close();
+    }
+
+    @Test
+    public void testeFalhaComSenhaIncorreta() throws SQLException {
+        usuarioExisteNoBanco(hashDaSenha);
+
+        assertNull(loginDAO.autenticarUser(email, senhaInvalida));
+        verify(resultSet, never()).getString("nome");
     }
 }
