@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import br.inatel.redesocial.usuario.TrocarSenha;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(JavaFxExtension.class)
 public class LobbyControllerTest {
@@ -27,6 +27,9 @@ public class LobbyControllerTest {
 
     @Mock
     private LobbyController.BuscadorDeSalas buscadorDeSalas;
+
+    @Mock
+    private TrocarSenha trocarSenha;
 
     private LobbyController controller;
     private Label profileEmailLabel;
@@ -44,7 +47,7 @@ public class LobbyControllerTest {
                 new LobbyController.Room(0, "Sala Música", 0, 12, 0)
         });
 
-        controller = new LobbyController(buscadorDeSalas);
+        controller = new LobbyController(buscadorDeSalas, trocarSenha);
 
         FXMLLoader loader = new FXMLLoader(LobbyController.class.getResource("lobby.fxml"));
         loader.setControllerFactory(tipo -> controller);
@@ -53,7 +56,6 @@ public class LobbyControllerTest {
         profileEmailLabel = (Label) loader.getNamespace().get("profileEmailLabel");
         profileModal = (StackPane) loader.getNamespace().get("profileModal");
         roomsGrid = (FlowPane) loader.getNamespace().get("roomsGrid");
-
 
         salasCarregadas = new CountDownLatch(1);
         roomsGrid.getChildren().addListener((ListChangeListener<Node>) mudanca -> {
