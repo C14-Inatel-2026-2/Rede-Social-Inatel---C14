@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -136,11 +137,14 @@ public class TestServidorHandler {
     @Test
     public void entrarEmSalaAdicionaUsuarioComEscritor() throws Exception {
         salaExiste("geral");
-        when(servidorSocket.receber()).thenReturn(entrar("thiago", "geral"), (Mensagem) null);
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
+        when(servidorSocket.receber())
+                .thenReturn(entrar("thiago", "geral"), (Mensagem) null);
+
         handler.run();
+
         verify(sala).addUsuario("thiago", escritor);
     }
-
     @Test
     public void removeUsuarioEEscritorDaSalaNoFinal() throws Exception {
         salaExiste("geral");
@@ -185,5 +189,111 @@ public class TestServidorHandler {
         verify(servidorSocket).enviar(
                 argThat((Mensagem m) -> "thiago".equals(m.usuario) && "oi".equals(m.texto)),
                 eq(escritor));
+    }
+    @Test
+    public void mensagemComTextoNuloEnviaErro() throws Exception {
+        Mensagem m = msg("mensagem");
+        m.texto = null;
+        when(servidorSocket.receber()).thenReturn(m, (Mensagem) null);
+        handler.run();
+        verificaErroEnviado();
+    }
+
+    @Test
+    public void erroAoCriarServidorSocketFechaSocket() throws IOException {
+        when(servidorFactory.criarServidorSocket(socket, servidorFactory)).thenThrow(new RuntimeException("falha"));
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, handler::run);
+        verify(socket).close();
+    }
+
+    @Test
+    public void salaLotadaEnviaErroENaoRemoveUsuario() throws Exception {
+        salaExiste("geral");
+        when(sala.addUsuario("thiago", escritor)).thenReturn(false);
+        when(servidorSocket.receber()).thenReturn(entrar("thiago", "geral"), (Mensagem) null);
+        handler.run();
+        verificaErroEnviado();
+        verify(sala, never()).removeUsuario(any(String.class), any(PrintWriter.class));
+    }
+
+    @Test
+    public void salaJaExistenteEnviaErroENaoAdicionaSala() throws Exception {
+        gerenciadorSalas.when(() -> GerenciadorSalas.existeSala("geral")).thenReturn(true);
+        Mensagem mensagem = msg("criar_sala");
+        mensagem.sala = "geral";
+        mensagem.valorInt = 5;
+        when(servidorSocket.receber()).thenReturn(mensagem, (Mensagem) null);
+
+        handler.run();
+
+        verificaErroEnviado();
+        gerenciadorSalas.verify(() -> GerenciadorSalas.addSala(5, "geral"), never());
+    }
+
+    @Test
+    public void criarSalaComNomeNuloEnviaErro() throws Exception {
+        gerenciadorSalas.when(() -> GerenciadorSalas.existeSala(null)).thenReturn(false);
+        Mensagem mensagem = msg("criar_sala");
+        mensagem.valorInt = 5;
+        when(servidorSocket.receber()).thenReturn(mensagem, (Mensagem) null);
+
+        handler.run();
+
+        verificaErroEnviado();
+        gerenciadorSalas.verify(() -> GerenciadorSalas.addSala(5, null), never());
+    }
+
+    @Test
+    public void criarSalaComNomeEmBrancoEnviaErro() throws Exception {
+        gerenciadorSalas.when(() -> GerenciadorSalas.existeSala("  ")).thenReturn(false);
+        Mensagem mensagem = msg("criar_sala");
+        mensagem.sala = "  ";
+        mensagem.valorInt = 5;
+        when(servidorSocket.receber()).thenReturn(mensagem, (Mensagem) null);
+
+        handler.run();
+
+        verificaErroEnviado();
+        gerenciadorSalas.verify(() -> GerenciadorSalas.addSala(5, "  "), never());
+    }
+
+    @Test
+    public void criarSalaComCapacidadeInvalidaEnviaErro() throws Exception {
+        gerenciadorSalas.when(() -> GerenciadorSalas.existeSala("geral")).thenReturn(false);
+        Mensagem mensagem = msg("criar_sala");
+        mensagem.sala = "geral";
+        mensagem.valorInt = 0;
+        when(servidorSocket.receber()).thenReturn(mensagem, (Mensagem) null);
+
+        handler.run();
+
+        verificaErroEnviado();
+        gerenciadorSalas.verify(() -> GerenciadorSalas.addSala(0, "geral"), never());
+    }
+
+    @Test
+    public void mensagemComTextoNuloNaSalaEnviaErroSemEncaminhar() throws Exception {
+        salaExiste("geral");
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
+        Mensagem mensagemNula = texto(null);
+        when(servidorSocket.receber())
+                .thenReturn(entrar("thiago", "geral"), mensagemNula, (Mensagem) null);
+
+        handler.run();
+
+        verificaErroEnviado();
+        verify(servidorSocket, never()).enviar(
+                argThat((Mensagem enviada) -> enviada != null && "mensagem".equals(enviada.type)),
+                eq(escritor));
+    }
+
+    @Test
+    public void erroAoFecharSocketNaoEscapa() throws Exception {
+        when(servidorSocket.receber()).thenReturn((Mensagem) null);
+        doThrow(new IOException("falha ao fechar")).when(socket).close();
+
+        assertDoesNotThrow(handler::run);
+
+        verify(socket).close();
     }
 }
