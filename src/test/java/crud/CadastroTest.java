@@ -69,15 +69,33 @@ public class CadastroTest {
     }
 
     @Test
+    public void testeFalhaNoCadastroPorEmailNulo(){
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(null, senhaValida, nomeValido));
+    }
+
+    @Test
     public void testeFalhaNoCadastroPorSenhaNaoInformada() {
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaVazia, nomeValido));
     }
 
     @Test
+    public void testeFalhaNoCadastroPorSenhaNula() {
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(emailValido, null, nomeValido));
+    }
+
+    @Test
     public void testeFalhaNoCadastroPorNomeNaoInformado() {
         assertThrows(CampoObrigatorioException.class,
                 () -> cadastro.criarUsuario(emailValido, senhaValida, nomeVazio));
+    }
+
+    @Test
+    public void testeFalhaNoCadastroPorNomeNulo() {
+        assertThrows(CampoObrigatorioException.class,
+                () -> cadastro.criarUsuario(emailValido, senhaValida, null));
     }
 
     @Test

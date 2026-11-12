@@ -1,5 +1,6 @@
 package chatzone;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -96,5 +100,56 @@ public class ChatControllerTest {
         HBox linha = (HBox) messagesBox.getChildren().get(0);
 
         assertEquals(Pos.CENTER_LEFT, linha.getAlignment());
+    }
+    @Test
+    public void testeBolhaRecebidaMostraAutorETexto() {
+        controller.appendReceived("outro@email.com", "Oi","14:30");
+
+        HBox linha = (HBox) messagesBox.getChildren().get(0);
+        VBox bolha = (VBox) linha.getChildren().get(0);
+        Label autor = (Label) bolha.getChildren().get(0);
+        Label texto = (Label) bolha.getChildren().get(1);
+        Label hora  = (Label) bolha.getChildren().get(2);
+
+        assertEquals("outro@email.com", autor.getText());
+        assertEquals("Oi", texto.getText());
+        assertEquals("14:30", hora.getText());
+    }
+
+    @Test
+    public void testeConversaEntreDoisUsuariosAlternaOsLados() {
+        controller.appendReceived(OUTRO, "Oi, tudo bem?", "11:16");
+        controller.appendSent(EMAIL, "Tudo sim!", "11:16");
+        controller.appendReceived(OUTRO, "Que bom", "11:17");
+
+        HBox primeira = (HBox) messagesBox.getChildren().get(0);
+        HBox segunda  = (HBox) messagesBox.getChildren().get(1);
+        HBox terceira = (HBox) messagesBox.getChildren().get(2);
+
+        assertEquals(Pos.CENTER_LEFT, primeira.getAlignment());
+        assertEquals(Pos.CENTER_RIGHT, segunda.getAlignment());
+        assertEquals(Pos.CENTER_LEFT, terceira.getAlignment());
+    }
+    @Test
+    public void testeConversaRolaParaUltimaMensagem() throws Exception {
+        controller.appendReceived(OUTRO, "Oi","12:30");
+        controller.appendSent(EMAIL, "Olá","12:30");
+        CountDownLatch telaAtualizada = new CountDownLatch(1);
+        Platform.runLater(telaAtualizada::countDown);
+
+        telaAtualizada.await(5, TimeUnit.SECONDS);
+
+        assertEquals(1.0, messagesScroll.getVvalue());
+    }
+
+    @Test
+    public void testeAvisoDoSistemaNoMeioDaConversa() {
+        controller.appendReceived(OUTRO, "Tchau","12:00");
+        controller.appendSystem("Conexão encerrada");
+        controller.appendReceived(EMAIL, "Alguém aí?","12:01");
+
+        Label aviso = (Label) messagesBox.getChildren().get(1);
+
+        assertEquals("Conexão encerrada", aviso.getText());
     }
 }
