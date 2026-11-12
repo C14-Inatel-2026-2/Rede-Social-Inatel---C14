@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +29,6 @@ public class UsuarioDAOTest {
     private final String senhaAtual = "Chizinho67!";
     private final String senhaNova = "NovaSenha123!";
     private final String senhaErrada = "senha123";
-    private final String hashInvalido = "senhazinha";
     private final String hashDaSenhaAtual = BCrypt.hashpw(senhaAtual, BCrypt.gensalt(4));
 
     @Mock
@@ -160,6 +160,21 @@ public class UsuarioDAOTest {
         verify(connection).prepareStatement(contains("UPDATE usuario SET senha"));
         verify(selectStatement).setString(1, email);
         verify(updateStatement).setString(2, email);
+    }
+
+    @Test
+    public void testeAlterarSenhaSalvaHashDaNovaSenha() throws SQLException {
+        prepararSelectEUpdate(hashDaSenhaAtual);
+        when(updateStatement.executeUpdate()).thenReturn(1);
+
+        usuarioDAO.alterarSenha(email, senhaAtual, senhaNova);
+
+        ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
+        verify(updateStatement).setString(eq(1), hashCaptor.capture());
+        String hashSalvo = hashCaptor.getValue();
+
+        assertNotEquals(senhaNova, hashSalvo);
+        assertTrue(BCrypt.checkpw(senhaNova, hashSalvo));
     }
 
     @Test
