@@ -4,7 +4,7 @@ import br.inatel.redesocial.cliente.comandos.InterpretarComando;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-class TestInterpretarComando {
+public class TestInterpretarComando {
 
     @Test
     void deveInterpretarComandoComSeparador() {
@@ -44,4 +44,17 @@ class TestInterpretarComando {
                 resultado
         );
     }
+
+    @Test
+    void deveRetornarMensagemVaziaQuandoReceberNull() {
+
+        String[] resultado = InterpretarComando.interpretar(null);
+
+        assertArrayEquals(
+                new String[]{"mensagem", ""},
+                resultado
+        );
+    }
+
+
 }
