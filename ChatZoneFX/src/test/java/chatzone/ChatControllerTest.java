@@ -21,8 +21,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(JavaFxExtension.class)
 public class ChatControllerTest {
@@ -218,5 +217,14 @@ public class ChatControllerTest {
         controller.onSend();
 
         assertEquals(0, messagesBox.getChildren().size());
+    }
+    @Test
+    public void testeEntradaConfirmadaHabilitaEnvio() {
+        MensagemCliente confirmacao = new MensagemCliente();
+        confirmacao.type = "entrada_confirmada";
+
+        controller.tratarMensagem(confirmacao);
+
+        assertFalse(sendBtn.isDisabled());
     }
 }
