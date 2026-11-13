@@ -37,6 +37,7 @@ public class AuthControllerTest {
     private static final String NOME = "user_01";
 
     private Button tabRegister;
+    private TextField loginEmail;
     private VBox panelLogin;
     private VBox panelRegister;
     private Navigator navigator;
@@ -47,6 +48,7 @@ public class AuthControllerTest {
     private PasswordField loginSenha;
     private TextField loginSenhaTexto;
     private Label regSenhaErr;
+    private Label loginFeedback;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -64,6 +66,8 @@ public class AuthControllerTest {
         panelLogin = (VBox) loader.getNamespace().get("panelLogin");
         loginSenha = (PasswordField) loader.getNamespace().get("loginSenha");
         loginSenhaTexto = (TextField) loader.getNamespace().get("loginSenhaTexto");
+        loginEmail = (TextField) loader.getNamespace().get("loginEmail");
+        loginFeedback = (Label) loader.getNamespace().get("loginFeedback");
         panelRegister = (VBox) loader.getNamespace().get("panelRegister");
         regEmailErr = mock(Label.class);
         regSenhaErr = mock(Label.class);
@@ -238,5 +242,45 @@ public class AuthControllerTest {
         controller.onTabLogin();
 
         assertTrue(panelLogin.isVisible());
+    }
+    @Test
+
+    public void testeBotaoEntrarSemEmailMostraAviso() {
+        loginEmail.setText("");
+        loginSenha.setText(SENHA);
+
+        controller.onLogin();
+
+        assertEquals("Informe seu e-mail para entrar.", loginFeedback.getText());
+    }
+
+    @Test
+    public void testeBotaoEntrarComEmailInvalidoMostraAviso() {
+        loginEmail.setText(EMAIL_INVALIDO);
+        loginSenha.setText(SENHA);
+
+        controller.onLogin();
+
+        assertEquals("Digite um e-mail valido, por exemplo: voce@email.com.", loginFeedback.getText());
+    }
+
+    @Test
+    public void testeBotaoEntrarSemSenhaMostraAviso() {
+        loginEmail.setText(EMAIL);
+        loginSenha.setText("");
+
+        controller.onLogin();
+
+        assertEquals("Informe sua senha para entrar.", loginFeedback.getText());
+    }
+
+    @Test
+    public void testeBotaoEntrarComSenhaFracaMostraAviso() {
+        loginEmail.setText(EMAIL);
+        loginSenha.setText(SENHA_FRACA);
+
+        controller.onLogin();
+
+        assertEquals("A senha deve ter 8+ caracteres, maiuscula, minuscula, numero e simbolo.", loginFeedback.getText());
     }
 }
