@@ -16,8 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -182,6 +181,22 @@ public class LoginDAOTest {
 
         assertNull(loginDAO.autenticarUser(email, senha));
         verify(connection).close();
+    }
+
+    @Test
+    public void testeFalhaAoFecharResultSet() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar ResultSet");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(resultSet).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
+        verify(resultSet).close();
     }
 
     @Test
