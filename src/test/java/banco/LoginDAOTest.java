@@ -16,8 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -147,6 +146,17 @@ public class LoginDAOTest {
     }
 
     @Test
+    public void testeHashInvalidoNoBanco() throws SQLException {
+        usuarioExisteNoBanco("hash_invalido");
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+
+        verify(resultSet).close();
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
+
+    @Test
     public void testeFalhaComHashNuloNoBanco() throws SQLException {
         usuarioExisteNoBanco(null);
 
@@ -181,6 +191,54 @@ public class LoginDAOTest {
         when(resultSet.next()).thenThrow(erroSQL);
 
         assertNull(loginDAO.autenticarUser(email, senha));
+        verify(connection).close();
+    }
+
+    @Test
+    public void testeFalhaAoFecharResultSet() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar ResultSet");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(resultSet).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
+        verify(resultSet).close();
+    }
+
+    @Test
+    public void testeFalhaAoFecharStatement() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar Statement");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(preparedStatement).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
+        verify(preparedStatement).close();
+    }
+
+    @Test
+    public void testeFalhaAoFecharConexao() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar conexão");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(connection).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
         verify(connection).close();
     }
 

@@ -9,7 +9,7 @@ A aplicação segue o modelo cliente-servidor: um servidor central gerencia as c
 
 ## ✨ Funcionalidades
 
-* **Registro de usuários** com e-mail e senha
+* **Registro de usuários** com e-mail, nome e senha
 * **Login** com validação das credenciais no banco de dados
 * **Menu de chats** com todas as salas disponíveis
 * **Entrada em salas**, com ou sem outros usuários online no momento
@@ -26,9 +26,28 @@ A aplicação segue o modelo cliente-servidor: um servidor central gerencia as c
 
 ## 📁 Estrutura
 
-├── front/   # interface JavaFX
-├── src/     # servidor e lógica da aplicação
-└── pom.xml
+├── ChatZoneFX/         # Interface gráfica JavaFX
+│   ├── src/            # Código-fonte da interface
+│   ├── Jenkinsfile     # Pipeline do front
+│   └── pom.xml         # Configurações e dependências do front-end
+│
+├── database/           # Arquivo relacionado ao bd
+├── jenkins/            # Configurações relacionadas ao Jenkins
+│
+├── src/                # Código-fonte do back-end
+
+├── .env.exemplo        # Exemplo de variáveis de ambiente
+├── .env.front.exemplo  # Exemplo de variáveis do front-end
+├── .env.render.exemplo # Exemplo de variáveis do Render
+│
+├── docker-compose.yml  # Orquestração dos serviços
+├── Dockerfile          # Configuração da imagem Docker
+│
+├── Jenkinsfile         # Pipeline do back-end
+├── pom.xml             # Configurações e dependências do back-end
+│
+├── README.md           # Documentação do projeto
+└── render.yaml         # Configuração de deploy no Render
 
 ### Pré-requisitos
 * JDK instalado
@@ -49,7 +68,7 @@ pois o Render não fornece seis portas TCP públicas para o modelo atual.
 As variáveis necessárias estão documentadas em `.env.render.exemplo`. O Render
 injeta `PORT` automaticamente; não é necessário cadastrá-la manualmente.
 
-## Pipeline de CI/CD (Back)
+## Pipeline de CI/CD
 
 O projeto usa Jenkins, executado por Docker Compose, para automatizar o fluxo:
 
@@ -301,7 +320,7 @@ Requisitos:
 5. Verifique chamadas, argumentos, retornos e exceções.
 6. Siga o padrão de nomenclatura e organização dos testes existentes.
 7. Evite testes redundantes e não altere a implementação original da classe.
-   8.Entregue o código completo da classe de testes, preservando os testes existentes e acrescentando apenas os necessários.
+8. Entregue o código completo da classe de testes, preservando os testes existentes e acrescentando apenas os necessários.
 
 ---------------------------------------
 Relatório de I.A. - Nathan Bispo de Aguiar
@@ -343,3 +362,90 @@ Relatório de I.A. - Nathan Bispo de Aguiar
 - Decisão de lançar exceções no back-end para que o front capture e exiba as mensagens
 - Adição do campo `nome` ao banco e às classes
 - Aplicação das correções, execução dos testes e validação no Jenkins
+
+---------------------------------------
+relatório de IA: Luis Eduardo Alves Marques
+
+## Uso de IA: Back-end (usuario e banco) e testes
+
+### Ferramentas
+* Claude: apoio direcionado para revisar testes ou criar novos esclarecer dúvidas técnicas.
+* Chatgpt: apoio direcionado para revisar testes ou criar novos esclarecer dúvidas técnicas.
+
+### Usos e resultados
+
+1. Criação de testes de LoginDAO e CadastroDAO (Claude)
+   Contexto: foi pedido a criação de testes a partir do código de LoginDAO e CadastroDAO.
+   Resultado: a IA criou uma lista de testes que cobriram boa parte dos códigos e que tiveram que ser feitas poucas mudanças para rodarem na suíte de testes ou retirar testes que não eram unitários.
+
+2. Protocolo de criptografia (Claude)
+   Contexto: o autor mandou o código de Cadastro e CadastroDAO e perguntou onde seria ideal ter a criptografia do BCrypto.
+   Resultado: a IA respondeu que deveria parar de salvar o hash da senha direto em Usuario e só fazer o hash no momento que fosse adicionar no banco de dados.
+
+3. Revisão e ampliação da suíte de testes (Claude)
+   Contexto: o autor pediu a revisão dos testes existentes.
+   Resultado: a IA ajudou a identificar casos ausentes ou que não validavam o comportamento pretendido.
+
+4. Comandos no terminal (Chatgpt)
+   Contexto: era pedido ao chat o comando ou os comandos que resolviam a necessidade do momento (exemplo: como deletar um commit específico).
+   Resultado: a IA sempre mandava o comando a sequência que resolvia ou sequências possíveis para resolver.
+
+5. Melhoria na mensagem de conclusão da pipeline (Chatgpt)
+   Contexto: foi pedido como poderia acrescentar detalhes como autor do último commit e em qual branch.
+   Resultado: a IA fez a lógica e adicionou as variáveis no  `description` da função do plugin Discord Notification.
+
+### O que não foi feito por IA
+* Classe Usuario
+* Classe GerenciadorUsuariosBD
+* Classe TrocarSenha
+* Classe UsuarioDAO
+* Regex da classe Login
+* Pequenos ajustes nas classes CadastroDAO e LoginDAO
+* Escolha de qual dependência de hash usar
+* Na pipeline o refactor do Post Acitions e o Source
+* Testes de: GerenciadorUsuariosBDTest, TrocarSenhaTest e alguns de LoginTest
+* Remoção do teste de sistema, por exigência do projeto de apenas testes unitários
+* Execução dos testes e correção dos erros de compilação e de build
+---------------------------------------
+relatório de IA: Luis Eduardo Alves Marques
+
+## Uso de IA: Back-end (usuario e banco) e testes
+
+### Ferramentas
+* Claude: apoio direcionado para revisar testes ou criar novos esclarecer dúvidas técnicas.
+* Chatgpt: apoio direcionado para revisar testes ou criar novos esclarecer dúvidas técnicas.
+
+### Usos e resultados
+
+1. Criação de testes de LoginDAO e CadastroDAO (Claude)
+   Contexto: foi pedido a criação de testes a partir do código de LoginDAO e CadastroDAO.
+   Resultado: a IA criou uma lista de testes que cobriram boa parte dos códigos e que tiveram que ser feitas poucas mudanças para rodarem na suíte de testes ou retirar testes que não eram unitários.
+
+2. Protocolo de criptografia (Claude)
+   Contexto: o autor mandou o código de Cadastro e CadastroDAO e perguntou onde seria ideal ter a criptografia do BCrypto.
+   Resultado: a IA respondeu que deveria parar de salvar o hash da senha direto em Usuario e só fazer o hash no momento que fosse adicionar no banco de dados.
+
+3. Revisão e ampliação da suíte de testes (Claude)
+   Contexto: o autor pediu a revisão dos testes existentes.
+   Resultado: a IA ajudou a identificar casos ausentes ou que não validavam o comportamento pretendido.
+
+4. Comandos no terminal (Chatgpt)
+   Contexto: era pedido ao chat o comando ou os comandos que resolviam a necessidade do momento (exemplo: como deletar um commit específico).
+   Resultado: a IA sempre mandava o comando a sequência que resolvia ou sequências possíveis para resolver.
+
+5. Melhoria na mensagem de conclusão da pipeline (Chatgpt)
+   Contexto: foi pedido como poderia acrescentar detalhes como autor do último commit e em qual branch.
+   Resultado: a IA fez a lógica e adicionou as variáveis no  `description` da função do plugin Discord Notification.
+
+### O que não foi feito por IA
+* Classe Usuario
+* Classe GerenciadorUsuariosBD
+* Classe TrocarSenha
+* Classe UsuarioDAO
+* Regex da classe Login
+* Pequenos ajustes nas classes CadastroDAO e LoginDAO
+* Escolha de qual dependência de hash usar
+* Na pipeline o refactor do Post Acitions e o Source
+* Testes de: GerenciadorUsuariosBDTest, TrocarSenhaTest e alguns de LoginTest
+* Remoção do teste de sistema, por exigência do projeto de apenas testes unitários
+* Execução dos testes e correção dos erros de compilação e de build
