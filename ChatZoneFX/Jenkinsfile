@@ -76,6 +76,11 @@ pipeline {
                         mvn -B dependency:copy-dependencies \
                           -DincludeScope=runtime \
                           -DoutputDirectory=target/dist/lib
+                        mkdir -p target/dist/lib-windows
+                        cp target/dist/lib/javafx-*.jar target/dist/lib-windows/ 2>/dev/null || true
+                        find target/dist/lib -type f -name '*-win.jar' -exec cp {} target/dist/lib-windows/ \;
+                        find target/dist/lib-windows -type f -name '*-linux.jar' -delete
+                        find target/dist/lib-windows -type f -name '*-mac.jar' -delete
                         cp target/*.jar target/dist/ChatZoneFX.jar
                         cat > target/dist/abrir-windows.bat <<'EOF'
 @echo off
@@ -85,7 +90,7 @@ where java >nul 2>&1 || (
   pause
   exit /b 1
 )
-java --module-path lib --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar;lib/*" chatzone.Main
+java --module-path lib-windows --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar;lib/*" chatzone.Main
 if errorlevel 1 pause
 EOF
                         cat > target/dist/abrir-linux-macos.sh <<'EOF'
