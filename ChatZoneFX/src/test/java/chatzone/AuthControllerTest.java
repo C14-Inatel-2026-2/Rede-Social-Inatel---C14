@@ -8,9 +8,11 @@ import br.inatel.redesocial.usuario.Cadastro;
 import br.inatel.redesocial.usuario.Login;
 import br.inatel.redesocial.usuario.Usuario;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +36,9 @@ public class AuthControllerTest {
     private static final String SENHA_FRACA = "fraca";
     private static final String NOME = "user_01";
 
+    private Button tabRegister;
+    private VBox panelLogin;
+    private VBox panelRegister;
     private Navigator navigator;
     private Login login;
     private Cadastro cadastro;
@@ -55,9 +60,11 @@ public class AuthControllerTest {
         loader.setControllerFactory(tipo -> controller);
         loader.load();
 
+        tabRegister = (Button) loader.getNamespace().get("tabRegister");
+        panelLogin = (VBox) loader.getNamespace().get("panelLogin");
         loginSenha = (PasswordField) loader.getNamespace().get("loginSenha");
         loginSenhaTexto = (TextField) loader.getNamespace().get("loginSenhaTexto");
-
+        panelRegister = (VBox) loader.getNamespace().get("panelRegister");
         regEmailErr = mock(Label.class);
         regSenhaErr = mock(Label.class);
         controller.regEmailErr = regEmailErr;
@@ -208,5 +215,28 @@ public class AuthControllerTest {
         controller.onToggleLoginSenha();
 
         assertFalse(loginSenha.isVisible());
+    }
+    @Test
+    public void testeAbaCadastroMostraPainelDeCadastro() {
+        controller.onTabRegister();
+        assertTrue(panelRegister.isVisible());
+    }
+    @Test
+    public void testeAbaCadastroEscondePainelDeLogin() {
+        controller.onTabRegister();
+        assertFalse(panelLogin.isVisible());
+    }
+
+    @Test
+    public void testeAbaCadastroFicaDestacada() {
+        controller.onTabRegister();
+        assertTrue(tabRegister.getStyleClass().contains("tab-active"));
+    }
+    @Test
+    public void testeAbaLoginVoltaParaOLogin() {
+        controller.onTabRegister();
+        controller.onTabLogin();
+
+        assertTrue(panelLogin.isVisible());
     }
 }

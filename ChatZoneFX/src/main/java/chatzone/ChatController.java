@@ -89,7 +89,7 @@ public class ChatController {
         t.start();
     }
 
-    private void tratarMensagem(MensagemCliente mensagem) {
+    void tratarMensagem(MensagemCliente mensagem) {
         if (mensagem == null) return;
         if (TIPO_ERRO.equals(mensagem.type)) {
             appendSystem("Erro: " + mensagem.texto);

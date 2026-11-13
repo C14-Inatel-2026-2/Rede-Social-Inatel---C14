@@ -29,7 +29,7 @@
     <HBox styleClass="chat-input-area" alignment="BOTTOM_CENTER" spacing="10">
         <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
         <TextArea fx:id="msgInput"
-                  promptText="Digite uma mensagemCliente… (Enter para enviar)"
+                  promptText="Digite uma mensagem (Enter para enviar)"
                   styleClass="msg-input"
                   prefRowCount="1"
                   HBox.hgrow="ALWAYS"/>

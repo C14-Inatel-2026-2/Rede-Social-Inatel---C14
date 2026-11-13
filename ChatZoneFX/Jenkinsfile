@@ -71,8 +71,118 @@ pipeline {
                     sh '''
                         mvn -B -DskipTests package
                         test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
+                        rm -rf target/dist
+                        mkdir -p target/dist/lib
+                        mvn -B dependency:copy-dependencies \
+                          -DincludeScope=runtime \
+                          -DoutputDirectory=target/dist/lib
+                        mkdir -p target/dist/lib-windows
+                        cp target/dist/lib/javafx-*.jar target/dist/lib-windows/ 2>/dev/null || true
+                        find target/dist/lib -type f -name '*-win.jar' -exec cp {} target/dist/lib-windows/ ';'
+                        find target/dist/lib-windows -type f -name '*-linux.jar' -delete
+                        find target/dist/lib-windows -type f -name '*-mac.jar' -delete
+                        cp target/*.jar target/dist/ChatZoneFX.jar
+                        cat > target/dist/abrir-windows.bat <<'EOF'
+@echo off
+cd /d "%~dp0"
+if not defined DB_URL set "DB_URL=jdbc:mysql://localhost:3307/db"
+if not defined DB_USER set "DB_USER=redesocial"
+if not defined DB_PASSWORD set "DB_PASSWORD=redesocial"
+where java >nul 2>&1 || (
+  echo Java nao foi encontrado. Instale o Java 17 ou superior.
+  pause
+  exit /b 1
+)
+java --module-path lib-windows --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar;lib/*" chatzone.Main
+if errorlevel 1 pause
+EOF
+                        cat > target/dist/abrir-linux-macos.sh <<'EOF'
+#!/usr/bin/env sh
+cd "$(dirname "$0")"
+export DB_URL="${DB_URL:-jdbc:mysql://localhost:3307/db}"
+export DB_USER="${DB_USER:-redesocial}"
+export DB_PASSWORD="${DB_PASSWORD:-redesocial}"
+command -v java >/dev/null 2>&1 || { echo "Java 17 ou superior nao foi encontrado."; exit 1; }
+exec java --module-path lib --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar:lib/*" chatzone.Main
+EOF
+                        chmod +x target/dist/abrir-linux-macos.sh
+                        cat > target/dist/README.txt <<'EOF'
+ChatZoneFX
+
+## Como abrir no Windows
+
+1. Instale o Java 17 ou superior.
+2. Extraia este ZIP.
+3. Dê duplo clique em `abrir-windows.bat`.
+
+## Como abrir no Linux/macOS
+
+Execute `./abrir-linux-macos.sh` no terminal.
+
+## Configuração opcional
+
+O cliente usa localhost por padrão. Para apontar para outro servidor,
+configure CHAT_SERVER_HOST, CHAT_SERVER_PORT_BASE e CHAT_SERVER_HTTP_URL.
+EOF
+                        jar --create --file target/ChatZoneFX.zip -C target/dist .
                     '''
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.jar,target/*.zip', fingerprint: true
+                }
+            }
+        }
+
+        stage('Publish download page') {
+            when {
+                branch 'integration'
+            }
+            steps {
+                echo 'Publicando o pacote do front na branch gh-pages'
+                withCredentials([usernamePassword(credentialsId: 'github-publish',
+                        usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        set -eu
+                        PAGES_DIR="$(mktemp -d)"
+                        REPO_URL="${GITHUB_REPO_URL%.git}"
+                        AUTH_URL="https://${GITHUB_USER}:${GITHUB_TOKEN}@${REPO_URL#https://}"
+
+                        if ! git clone --depth 1 --branch gh-pages "$AUTH_URL" "$PAGES_DIR"; then
+                            rm -rf "$PAGES_DIR"
+                            PAGES_DIR="$(mktemp -d)"
+                            git clone --depth 1 "$AUTH_URL" "$PAGES_DIR"
+                            cd "$PAGES_DIR"
+                            git checkout --orphan gh-pages
+                            git rm -rf . || true
+                        fi
+
+                        cd "$PAGES_DIR"
+                        mkdir -p downloads
+                        cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX.zip" downloads/ChatZoneFX.zip
+                        cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX-"*.jar downloads/ChatZoneFX.jar
+                        cat > index.html <<EOF
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>ChatZoneFX</title></head>
+<body>
+  <h1>ChatZoneFX</h1>
+  <p>Cliente desktop da Rede Social Inatel.</p>
+  <p><a href="downloads/ChatZoneFX.zip">Baixar pacote completo (JAR + dependências)</a></p>
+  <p><a href="downloads/ChatZoneFX.jar">Baixar apenas o JAR</a></p>
+  <p>Build ${BUILD_NUMBER} · commit ${GIT_COMMIT:-unknown}</p>
+</body>
+</html>
+EOF
+                        PUBLISHED_AT="$(date -u '+%Y-%m-%d %H:%M UTC')"
+                        sed -e "s/__BUILD_NUMBER__/${BUILD_NUMBER}/g" \
+                            -e "s/__GIT_COMMIT__/${GIT_COMMIT:-unknown}/g" \
+                            -e "s/__PUBLISHED_AT__/${PUBLISHED_AT}/g" \
+                            "$WORKSPACE/ChatZoneFX/site/index.html" > index.html
+                        git config user.name "Jenkins"
+                        git config user.email "jenkins@localhost"
+                        git add index.html downloads
+                        git commit -m "deploy: publish ChatZoneFX build ${BUILD_NUMBER}" || true
+                        git push "$AUTH_URL" HEAD:gh-pages
+                        rm -rf "$PAGES_DIR"
+                    '''
                 }
             }
         }
