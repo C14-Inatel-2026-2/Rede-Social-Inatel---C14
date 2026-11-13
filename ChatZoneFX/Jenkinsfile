@@ -131,7 +131,7 @@ EOF
             }
             steps {
                 echo 'Publicando o pacote do front na branch gh-pages'
-                withCredentials([usernamePassword(credentialsId: 'github',
+                withCredentials([usernamePassword(credentialsId: 'github-publish',
                         usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
                     sh '''
                         set -eu
