@@ -11,10 +11,5 @@ public class MensagemCliente {
     public List<String> usuariosOnline;
     public long timestamp;
     public int valorInt;
-    public static br.inatel.redesocial.servidor.Mensagem erro(String texto) {
-        br.inatel.redesocial.servidor.Mensagem m = new br.inatel.redesocial.servidor.Mensagem();
-        m.type = "erro";
-        m.texto = texto;
-        return m;
-    }
+
 }
