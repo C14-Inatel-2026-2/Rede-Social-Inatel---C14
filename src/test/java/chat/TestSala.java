@@ -241,4 +241,19 @@ public class TestSala {
         salaTeste.addUsuario(usuario, escritor);
         assertTrue(outra.getEscritores().isEmpty());
     }
+
+    @Test
+    public void removeUsuarioSemEscritorNaoLancaExcecao() {
+        salaTeste.addUsuario(usuario, null);
+
+        assertDoesNotThrow(() -> salaTeste.removeUsuario(usuario));
+
+        assertEquals(0, salaTeste.getQuantidadeUsuarios());
+        assertTrue(salaTeste.getEscritores().isEmpty());
+    }
+
+    @Test
+    public void getEscritorComUsuarioNuloRetornaNull() {
+        assertNull(salaTeste.getEscritor((Usuario) null));
+    }
 }

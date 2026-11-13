@@ -309,4 +309,14 @@ class TestServidor {
         assertThrows(NullPointerException.class, servidor::servidorAtivo);
         verify(serverSocket, times(1)).close();
     }
+
+    @Test
+    void construtorDeveRejeitarPortaAcimaDoLimite() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Servidor(65536, servidorFactory)
+        );
+
+        assertEquals("Porta inválida.", ex.getMessage());
+    }
 }
