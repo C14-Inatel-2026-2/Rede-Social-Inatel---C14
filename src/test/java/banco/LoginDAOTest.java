@@ -200,6 +200,22 @@ public class LoginDAOTest {
     }
 
     @Test
+    public void testeFalhaAoFecharStatement() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar Statement");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(preparedStatement).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
+        verify(preparedStatement).close();
+    }
+
+    @Test
     public void testeFalhaPorEmailNulo() {
         assertNull(loginDAO.autenticarUser(null, senha));
     }
