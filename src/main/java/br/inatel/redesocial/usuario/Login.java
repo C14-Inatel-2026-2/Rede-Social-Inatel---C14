@@ -19,7 +19,6 @@ public class Login{
         verificaSucessoNoLogin(nome);
 
         usuario.setNome(nome);
-        usuario.setLogado(true);
 
         return true;
     }
