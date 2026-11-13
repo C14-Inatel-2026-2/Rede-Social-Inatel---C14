@@ -401,6 +401,8 @@ relatório de IA: Luis Eduardo Alves Marques
 * Classe UsuarioDAO
 * Regex da classe Login
 * Pequenos ajustes nas classes CadastroDAO e LoginDAO
+* Escolha de qual dependência de hash usar
+* Na pipeline o refactor do Post Acitions e o Source
 * Testes de: GerenciadorUsuariosBDTest, TrocarSenhaTest e alguns de LoginTest
 * Remoção do teste de sistema, por exigência do projeto de apenas testes unitários
 * Execução dos testes e correção dos erros de compilação e de build
