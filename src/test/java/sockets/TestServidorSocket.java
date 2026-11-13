@@ -97,4 +97,17 @@ public class TestServidorSocket{
 
         verify(destino).println(new Gson().toJson(m));
     }
+
+    @Test
+    public void receberIgnoraJsonNull() throws IOException {
+        ServidorSocket s = criar(
+                "null\n{\"type\":\"mensagem\",\"texto\":\"oi\"}\n"
+        );
+
+        Mensagem m = s.receber();
+
+        assertEquals("mensagem", m.type);
+        assertEquals("oi", m.texto);
+        assertTrue(saida.toString().contains("erro"));
+    }
 }
