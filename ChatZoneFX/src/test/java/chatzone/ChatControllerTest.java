@@ -3,11 +3,11 @@ package chatzone;
 import br.inatel.redesocial.cliente.ClienteFactory;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import javafx.application.Platform;
+import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(JavaFxExtension.class)
 public class ChatControllerTest {
@@ -186,5 +185,26 @@ public class ChatControllerTest {
         controller.tratarMensagem(erro);
 
         assertTrue(sendBtn.isDisabled());
+    }
+    @Test
+    public void testeEntradaConfirmadaMostraUsuariosOnline() {
+        MensagemCliente confirmacao = new MensagemCliente();
+        confirmacao.type = "entrada_confirmada";
+        confirmacao.valorInt = 2;
+        confirmacao.usuariosOnline = List.of("ana", "bruno");
+
+        controller.tratarMensagem(confirmacao);
+
+        assertEquals("2 online: ana, bruno", usersCountLabel.getText());
+    }
+
+    @Test
+    public void testePresencaSemUsuariosMostraNenhum() {
+        MensagemCliente presenca = new MensagemCliente();
+        presenca.type = "presenca";
+
+        controller.tratarMensagem(presenca);
+
+        assertEquals("0 online: nenhum", usersCountLabel.getText());
     }
 }
