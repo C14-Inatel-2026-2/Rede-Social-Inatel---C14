@@ -85,6 +85,9 @@ pipeline {
                         cat > target/dist/abrir-windows.bat <<'EOF'
 @echo off
 cd /d "%~dp0"
+if not defined DB_URL set "DB_URL=jdbc:mysql://localhost:3307/db"
+if not defined DB_USER set "DB_USER=redesocial"
+if not defined DB_PASSWORD set "DB_PASSWORD=redesocial"
 where java >nul 2>&1 || (
   echo Java nao foi encontrado. Instale o Java 17 ou superior.
   pause
@@ -96,6 +99,9 @@ EOF
                         cat > target/dist/abrir-linux-macos.sh <<'EOF'
 #!/usr/bin/env sh
 cd "$(dirname "$0")"
+export DB_URL="${DB_URL:-jdbc:mysql://localhost:3307/db}"
+export DB_USER="${DB_USER:-redesocial}"
+export DB_PASSWORD="${DB_PASSWORD:-redesocial}"
 command -v java >/dev/null 2>&1 || { echo "Java 17 ou superior nao foi encontrado."; exit 1; }
 exec java --module-path lib --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar:lib/*" chatzone.Main
 EOF
