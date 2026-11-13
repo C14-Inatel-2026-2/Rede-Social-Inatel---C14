@@ -71,8 +71,78 @@ pipeline {
                     sh '''
                         mvn -B -DskipTests package
                         test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
+                        rm -rf target/dist
+                        mkdir -p target/dist/lib
+                        mvn -B dependency:copy-dependencies \
+                          -DincludeScope=runtime \
+                          -DoutputDirectory=target/dist/lib
+                        cp target/*.jar target/dist/ChatZoneFX.jar
+                        cat > target/dist/README.txt <<'EOF'
+ChatZoneFX
+
+Requisitos: Java 17 ou superior.
+
+Para executar no Windows, abra um terminal nesta pasta e rode:
+  java --module-path lib --add-modules javafx.controls,javafx.fxml -cp "ChatZoneFX.jar;lib/*" chatzone.Main
+
+Configure as variaveis DB_URL, DB_USER, DB_PASSWORD,
+CHAT_SERVER_HOST, CHAT_SERVER_PORT_BASE e CHAT_SERVER_HTTP_URL
+antes de iniciar o cliente.
+EOF
+                        jar --create --file target/ChatZoneFX.zip -C target/dist .
                     '''
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.jar,target/*.zip', fingerprint: true
+                }
+            }
+        }
+
+        stage('Publish download page') {
+            when {
+                branch 'integration'
+            }
+            steps {
+                echo 'Publicando o pacote do front na branch gh-pages'
+                withCredentials([usernamePassword(credentialsId: 'github',
+                        usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        set -eu
+                        PAGES_DIR="$(mktemp -d)"
+                        REPO_URL="${GITHUB_REPO_URL%.git}"
+                        AUTH_URL="https://${GITHUB_USER}:${GITHUB_TOKEN}@${REPO_URL#https://}"
+
+                        if ! git clone --depth 1 --branch gh-pages "$AUTH_URL" "$PAGES_DIR"; then
+                            rm -rf "$PAGES_DIR"
+                            PAGES_DIR="$(mktemp -d)"
+                            git clone --depth 1 "$AUTH_URL" "$PAGES_DIR"
+                            cd "$PAGES_DIR"
+                            git checkout --orphan gh-pages
+                            git rm -rf . || true
+                        fi
+
+                        cd "$PAGES_DIR"
+                        mkdir -p downloads
+                        cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX.zip" downloads/ChatZoneFX.zip
+                        cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX-"*.jar downloads/ChatZoneFX.jar
+                        cat > index.html <<EOF
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>ChatZoneFX</title></head>
+<body>
+  <h1>ChatZoneFX</h1>
+  <p>Cliente desktop da Rede Social Inatel.</p>
+  <p><a href="downloads/ChatZoneFX.zip">Baixar pacote completo (JAR + dependências)</a></p>
+  <p><a href="downloads/ChatZoneFX.jar">Baixar apenas o JAR</a></p>
+  <p>Build ${BUILD_NUMBER} · commit ${GIT_COMMIT:-unknown}</p>
+</body>
+</html>
+EOF
+                        git config user.name "Jenkins"
+                        git config user.email "jenkins@localhost"
+                        git add index.html downloads
+                        git commit -m "deploy: publish ChatZoneFX build ${BUILD_NUMBER}" || true
+                        git push "$AUTH_URL" HEAD:gh-pages
+                        rm -rf "$PAGES_DIR"
+                    '''
                 }
             }
         }
