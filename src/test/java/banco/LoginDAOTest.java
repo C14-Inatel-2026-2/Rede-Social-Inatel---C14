@@ -146,6 +146,17 @@ public class LoginDAOTest {
     }
 
     @Test
+    public void testeHashInvalidoNoBanco() throws SQLException {
+        usuarioExisteNoBanco("hash_invalido");
+
+        assertNull(loginDAO.autenticarUser(email, senha));
+
+        verify(resultSet).close();
+        verify(preparedStatement).close();
+        verify(connection).close();
+    }
+
+    @Test
     public void testeFalhaComHashNuloNoBanco() throws SQLException {
         usuarioExisteNoBanco(null);
 
