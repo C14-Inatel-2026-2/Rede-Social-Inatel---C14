@@ -189,6 +189,59 @@ https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
 * Deploy Pipeline Jenkins e Pipeline Front (a IA só ajudou na depuração de erros)
 * Demais testes do front : LobbyControllerTest,ChatControllerTest
 
+---------------------------------------
+relatório Thiago Villela
+## Uso de IA: Back-end (servidor de chat) e testes
+
+## Uso de IA: Back-end (servidor de chat) e testes
+
+### Ferramentas
+* Claude: apoio direcionado para revisar testes, completar a partir do padrão de testes humanos anteriores, esclarecer dúvidas técnicas e realizar algumas refatorações a partir do comando do autor
+* Copilot: apoio direcionado para revisar testes, esclarecer dúvidas técnicas e realizar uma refatoração específica. O autor definiu os objetivos, avaliou as sugestões e escolheu quais cenários eram pertinentes; a IA não foi usada para gerar todo o código nem para substituir a revisão do autor
+
+### Usos e resultados
+
+1. Revisão de código (Claude)
+   Resultado: apontou problemas como o `HashSet` de escritores sem proteção de concorrência, exceção não tratada e falta de `finally` no `ServidorHandler`, campos `static` indevidos e os bugs da `Sala` (`addUsuario` com lógica invertida, `nome` não guardado e contador decrementado sem remoção).
+   O autor aplicou as correções do `addUsuario` e do construtor da `Sala`.
+
+2. Protocolo de mensagens (Claude)
+   Contexto: o autor perguntou se o uso de texto pelo socket era uma opção fraca.
+   Resultado: a IA discutiu comandos em texto pelo socket e sugeriu mensagens em JSON, uma por linha (Gson), com uma classe `Mensagem`.
+
+3. Testes unitários (Claude)
+   Contexto: o autor pediu testes que seguissem o padrão feito por ele em outros testes, classe por classe (`Servidor`, `GerenciadorSalas`, `Sala`, `ServidorSocket`, `ServidorHandler`, `ServidorFactoryImp`), e decidiu quais cenários eram pertinentes. Pediu, por exemplo, testes só do gerenciador, sem depender da `Sala`, e testes só com mocks.
+   Resultado: a IA gerou versões mais complexas, que foram descartadas porque o autor definiu que os testes deveriam ser simples, sem comentários, sem salas auxiliares como "sala pequena" e com nomes de usuário fixos ("thiago", "beto"). O autor também removeu por conta própria certos testes que verificavam comportamentos muito próximos e, portanto, redundantes.
+
+4. Revisão e ampliação da suíte de testes (Copilot)
+   Contexto: o autor pediu a revisão dos testes existentes.
+   Resultado: a IA ajudou a identificar casos ausentes ou que não validavam o comportamento pretendido. Em `TestServidorHandler`, isso incluiu cenários como sala lotada ou inexistente, dados inválidos na criação de sala, mensagem sem texto e fechamento do socket. Em `TestSala`, ajudou a adaptar os testes à API atual e a cobrir adição de usuário nulo, remoção por e-mail, e-mail desconhecido, listagem de usuários e liberação de vagas. Também auxiliou na preparação de mensagens JSON de teste, evitando a montagem manual repetitiva dos dados.
+
+5. Revisão do isolamento dos testes (Copilot)
+   o autor especificou a revisão dos testes para conferir isolamento e se existiam somente testes unitários.
+   Resultado: a IA usou mocks para sockets e streams aonde estava faltando e removeu o caso que abria um `ServerSocket` real. Também ajudou a isolar testes que alteram `System.out` e `System.err` ou que compartilham estado estático, usando `@ResourceLock`. Um teste de sistema proposto pela IA não foi usado, porque o projeto exige apenas testes de unidade.
+
+6. Refatoração do `ServidorHandler` (Copilot)
+   Contexto: pedido do autor para separar o tratamento em métodos próprios.
+   Resultado: a IA extraiu o tratamento de entrada em sala, criação de sala e envio de mensagens em métodos próprios.
+
+7. Mock no programa, não só nos testes (Claude)
+   Contexto: a ideia de ter o `GerenciadorUsuarios` simulado, com a implementação real a ser feita depois (já concluida), partiu do autor.
+   Resultado: a IA apenas comparou as alternativas (interface com mock manual e fachada
+
+### O que não foi feito por IA
+* Arquitetura do chat (salas, usuários, capacidade, fluxo de entrada e saída)
+* Integração final do código
+* Padrão dos testes usado como base para a IA
+* Correções do `addUsuario`, do construtor da `Sala` e escolha do `indexOf` no `removeUsuario`
+* Ideia do `GerenciadorUsuarios` simulado em código temporário por um mock
+* Criação de cada tipo de envio de mensagem que executa uma função (apenas separado em métodos pela IA)
+* a estrutura das classes, servidor e protocolo.
+* Remoção dos testes redundantes
+* Remoção do teste de sistema, por exigência do projeto de apenas testes unitários
+* Execução dos testes e correção dos erros de compilação e de build
+
+
 ### Como usamos a IA
 Individualmente. Sempre enviamos o código existente como contexto, pedimos que a IA
 seguisse o padrão do que já estava feito e revisamos o resultado antes do commit.
