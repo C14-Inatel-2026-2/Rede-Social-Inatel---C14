@@ -78,7 +78,7 @@ pipeline {
                           -DoutputDirectory=target/dist/lib
                         mkdir -p target/dist/lib-windows
                         cp target/dist/lib/javafx-*.jar target/dist/lib-windows/ 2>/dev/null || true
-                        find target/dist/lib -type f -name '*-win.jar' -exec cp {} target/dist/lib-windows/ \;
+                        find target/dist/lib -type f -name '*-win.jar' -exec cp {} target/dist/lib-windows/ ';'
                         find target/dist/lib-windows -type f -name '*-linux.jar' -delete
                         find target/dist/lib-windows -type f -name '*-mac.jar' -delete
                         cp target/*.jar target/dist/ChatZoneFX.jar
