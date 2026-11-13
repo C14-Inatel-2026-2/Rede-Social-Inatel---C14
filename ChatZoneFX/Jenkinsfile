@@ -136,6 +136,11 @@ EOF
 </body>
 </html>
 EOF
+                        PUBLISHED_AT="$(date -u '+%Y-%m-%d %H:%M UTC')"
+                        sed -e "s/__BUILD_NUMBER__/${BUILD_NUMBER}/g" \
+                            -e "s/__GIT_COMMIT__/${GIT_COMMIT:-unknown}/g" \
+                            -e "s/__PUBLISHED_AT__/${PUBLISHED_AT}/g" \
+                            "$WORKSPACE/ChatZoneFX/site/index.html" > index.html
                         git config user.name "Jenkins"
                         git config user.email "jenkins@localhost"
                         git add index.html downloads
