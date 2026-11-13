@@ -19,25 +19,32 @@ public class ClienteHandler {
         this.clienteFactory=clienteFactory;
     }
 
+    public Cliente conectar(String email, String usuario) throws IOException
+    {
+        Socket socket = this.clienteFactory.criarSocket(this.host, this.porta);
+        ClienteSocket clienteSocket = this.clienteFactory.criarClienteSocket(socket);
+        Cliente cliente = this.clienteFactory.criarCliente(clienteSocket);
+        cliente.setEmail(email);
+        cliente.setUsuario(usuario);
+        return cliente;
+    }
+
     public void gerenciarChat(String email,String usuario)
     {
-        try (Socket socket = this.clienteFactory.criarSocket(this.host, this.porta);
-             ClienteSocket clienteSocket = this.clienteFactory.criarClienteSocket(socket))
+        try
         {
-            Cliente cliente = this.clienteFactory.criarCliente(clienteSocket);
-            cliente.setEmail(email);
-            cliente.setUsuario(usuario);
+            Cliente cliente = conectar(email, usuario);
+            try (ClienteSocket clienteSocket = cliente.getClienteSocket())
+            {
+                Thread threadReceber = this.clienteFactory.criarThread(cliente);
+                threadReceber.start();
 
-            Thread threadReceber = this.clienteFactory.criarThread(cliente);
-            threadReceber.start();
-
-            cliente.enviarMensagem(clienteFactory.criarScanner(),cliente);
-
+                cliente.enviarMensagem(clienteFactory.criarScanner(),cliente);
+            }
         } catch (IOException e) {
             System.out.println("Nao foi possivel conectar ao servidor"+e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
     }
 }

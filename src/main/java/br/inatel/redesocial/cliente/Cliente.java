@@ -3,6 +3,7 @@ package br.inatel.redesocial.cliente;
 import br.inatel.redesocial.cliente.comandos.IdentificarComandoChat;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;
 
+import java.util.function.Consumer;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Set;
@@ -15,6 +16,7 @@ public class Cliente implements Runnable {
     private String mensagemEnviada;
     private MensagemCliente mensagemCliente;
     private String usuario;
+    private Consumer<MensagemCliente> ouvinte;
     private String email;
     private final Set<String> sala = new LinkedHashSet<>();
     private String salaAtiva ="";
@@ -39,7 +41,8 @@ public class Cliente implements Runnable {
     public void receberMensagem() throws IOException {
         while((mensagemClienteRecebida = this.clienteSocket.ReceberMensagem() )!=null )
         {
-            System.out.println(mensagemClienteRecebida.texto);
+            if (ouvinte != null) ouvinte.accept(mensagemClienteRecebida);
+            else System.out.println(mensagemClienteRecebida.texto);
         }
     }
 
@@ -50,6 +53,10 @@ public class Cliente implements Runnable {
             mensagemCliente = IdentificarComandoChat.identificarComando(mensagemEnviada,cliente);
             this.clienteSocket.EnviarMensagem(mensagemCliente);
         } while (!mensagemEnviada.equals("saida"));
+    }
+
+    public void setOuvinte(Consumer<MensagemCliente> ouvinte) {
+        this.ouvinte = ouvinte;
     }
 
     public void setEmail(String email) {

@@ -1,7 +1,9 @@
 package chatzone;
 
-import br.inatel.redesocial.cliente.ClienteSocket;
+import br.inatel.redesocial.cliente.*;
 import br.inatel.redesocial.cliente.dto.MensagemCliente;
+import br.inatel.redesocial.cliente.dto.MensagemFactory;
+import br.inatel.redesocial.cliente.comandos.ExecutarComandoSala;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -9,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
-import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class ChatController {
+
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm")
             .withZone(ZoneId.systemDefault());
     private static final String TIPO_ENTRAR = "entrar_sala";
@@ -34,11 +36,21 @@ public class ChatController {
 
     private String currentEmail;
     private String roomName;
+    private Cliente cliente;
     private int roomId;
     private int port;
     private ClienteSocket clienteSocket;
-    private Socket socket;
     private volatile boolean saindo = false;
+
+    private final ClienteFactory clienteFactory;
+
+    public ChatController() {
+        this(new ClienteFactory());
+    }
+
+    ChatController(ClienteFactory clienteFactory) {
+        this.clienteFactory = clienteFactory;
+    }
 
     public void init(String roomName, int roomId, int port, String email) {
         this.roomName = roomName;
@@ -60,20 +72,14 @@ public class ChatController {
     private void conectar() {
         Thread t = new Thread(() -> {
             try {
-                socket = new Socket(ChatConfig.host(), port);
-                clienteSocket = new ClienteSocket(socket);
-                MensagemCliente entrar = new MensagemCliente();
-                entrar.type = TIPO_ENTRAR;
-                entrar.texto = roomName;
-                entrar.usuario = currentEmail;
-                entrar.email = currentEmail;
-                clienteSocket.EnviarMensagem(entrar);
-
-                MensagemCliente msg;
-                while ((msg = clienteSocket.ReceberMensagem()) != null) {
-                    MensagemCliente mensagem = msg;
-                    Platform.runLater(() -> tratarMensagem(mensagem));
-                }
+                ClienteHandler clienteHandler = new ClienteHandler(port, ChatConfig.host(), clienteFactory);
+                Cliente conectado = clienteHandler.conectar(currentEmail, currentEmail);
+                clienteSocket = conectado.getClienteSocket();
+                cliente = conectado;
+                ExecutarComandoSala.executar("*" + TIPO_ENTRAR, roomName, cliente);
+                cliente.setOuvinte(mensagem -> Platform.runLater(() -> tratarMensagem(mensagem)));
+                clienteSocket.EnviarMensagem(MensagemFactory.criar(TIPO_ENTRAR, roomName, cliente));
+                cliente.receberMensagem();
                 if (!saindo) mostrarDesconexao("Conexao encerrada pelo servidor.");
             } catch (Exception e) {
                 if (!saindo) mostrarDesconexao("Erro de conexao: " + e.getMessage());
@@ -128,12 +134,9 @@ public class ChatController {
 
     @FXML void onSend() {
         String text = msgInput.getText().trim().replace("\r", "").replace("\n", " ");
-        if (text.isEmpty() || clienteSocket == null) return;
+        if (text.isEmpty() || cliente == null) return;
         try {
-            MensagemCliente mensagem = new MensagemCliente();
-            mensagem.type = TIPO_MENSAGEM;
-            mensagem.texto = text;
-            clienteSocket.EnviarMensagem(mensagem);
+            clienteSocket.EnviarMensagem(MensagemFactory.criar(TIPO_MENSAGEM, text, cliente));
             msgInput.clear();
         } catch (Exception e) {
             appendSystem("Nao foi possivel enviar a mensagem. Verifique a conexao.");
@@ -143,12 +146,10 @@ public class ChatController {
     @FXML void onBack() {
         saindo = true;
         try {
-            if (clienteSocket != null) {
-                MensagemCliente sair = new MensagemCliente();
-                sair.type = TIPO_SAIR;
-                clienteSocket.EnviarMensagem(sair);
+            if (cliente != null) {
+                clienteSocket.EnviarMensagem(MensagemFactory.criar(TIPO_SAIR, "", cliente));
             }
-            if (socket != null) socket.close();
+            if (clienteSocket != null) clienteSocket.close();
         } catch (Exception ignored) { }
         try { Main.showLobby(currentEmail); } catch (Exception ignored) { }
     }
