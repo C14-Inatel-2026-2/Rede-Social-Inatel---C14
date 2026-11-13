@@ -21,7 +21,7 @@ public class ServidorFactoryImp implements ServidorFactory {
     }
 
     @Override
-    public ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory) {
+    public ServidorSocket criarServidorSocket(Socket socket,ServidorFactory servidorFactory) throws IOException{
         return new ServidorSocket(socket,servidorFactory);
     }
 
