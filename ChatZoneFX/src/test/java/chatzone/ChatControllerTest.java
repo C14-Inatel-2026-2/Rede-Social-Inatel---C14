@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import java.util.concurrent.CountDownLatch;
@@ -38,6 +38,7 @@ public class ChatControllerTest {
     private VBox messagesBox;
     private ScrollPane messagesScroll;
     private Button sendBtn;
+    private TextArea msgInput;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -53,6 +54,8 @@ public class ChatControllerTest {
         messagesBox = (VBox) loader.getNamespace().get("messagesBox");
         messagesScroll = (ScrollPane) loader.getNamespace().get("messagesScroll");
         sendBtn = (Button) loader.getNamespace().get("sendBtn");
+        msgInput = (TextArea) loader.getNamespace().get("msgInput");
+
     }
 
     @Test
@@ -206,5 +209,14 @@ public class ChatControllerTest {
         controller.tratarMensagem(presenca);
 
         assertEquals("0 online: nenhum", usersCountLabel.getText());
+    }
+
+    @Test
+    public void testeEnviarTextoVazioNaoAdicionaMensagem() {
+        msgInput.setText("   ");
+
+        controller.onSend();
+
+        assertEquals(0, messagesBox.getChildren().size());
     }
 }
