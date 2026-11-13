@@ -1,5 +1,7 @@
 package chatzone;
 
+import br.inatel.redesocial.cliente.ClienteFactory;
+import br.inatel.redesocial.cliente.dto.MensagemCliente;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -12,13 +14,16 @@ import javafx.geometry.Pos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.MockitoAnnotations;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(JavaFxExtension.class)
 public class ChatControllerTest {
@@ -26,25 +31,28 @@ public class ChatControllerTest {
     private static final String EMAIL = "user@email.com";
     private static final String OUTRO = "outro@email.com";
 
+    @Mock
+    private ClienteFactory clienteFactory;
+
     private ChatController controller;
-    private Label roomNameLabel;
     private Label usersCountLabel;
     private VBox messagesBox;
     private ScrollPane messagesScroll;
-    private TextArea msgInput;
     private Button sendBtn;
 
     @BeforeEach
     public void setup() throws Exception {
+        MockitoAnnotations.openMocks(this);
+
+        controller = new ChatController(clienteFactory);
+
         FXMLLoader loader = new FXMLLoader(ChatController.class.getResource("chat.fxml"));
+        loader.setControllerFactory(tipo -> controller);
         loader.load();
 
-        controller = loader.getController();
-        roomNameLabel = (Label) loader.getNamespace().get("roomNameLabel");
         usersCountLabel = (Label) loader.getNamespace().get("usersCountLabel");
         messagesBox = (VBox) loader.getNamespace().get("messagesBox");
         messagesScroll = (ScrollPane) loader.getNamespace().get("messagesScroll");
-        msgInput = (TextArea) loader.getNamespace().get("msgInput");
         sendBtn = (Button) loader.getNamespace().get("sendBtn");
     }
 
@@ -151,5 +159,32 @@ public class ChatControllerTest {
         Label aviso = (Label) messagesBox.getChildren().get(1);
 
         assertEquals("Conexão encerrada", aviso.getText());
+    }
+
+    @Test
+    public void testeErroDoServidorMostraAvisoNaConversa() {
+        MensagemCliente erro = new MensagemCliente();
+        erro.type = "erro";
+        erro.texto = "Sala lotada!";
+
+        controller.tratarMensagem(erro);
+
+        Label aviso = (Label) messagesBox.getChildren().get(0);
+
+        assertEquals("Erro: Sala lotada!", aviso.getText());
+    }
+
+    @Test
+    public void testeErroDoServidorDesabilitaEnvio() {
+        MensagemCliente confirmacao = new MensagemCliente();
+        confirmacao.type = "entrada_confirmada";
+        MensagemCliente erro = new MensagemCliente();
+        erro.type = "erro";
+        erro.texto = "Sala lotada!";
+        controller.tratarMensagem(confirmacao);
+
+        controller.tratarMensagem(erro);
+
+        assertTrue(sendBtn.isDisabled());
     }
 }
