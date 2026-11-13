@@ -49,7 +49,7 @@ pois o Render não fornece seis portas TCP públicas para o modelo atual.
 As variáveis necessárias estão documentadas em `.env.render.exemplo`. O Render
 injeta `PORT` automaticamente; não é necessário cadastrá-la manualmente.
 
-## Pipeline de CI/CD
+## Pipeline de CI/CD (Back)
 
 O projeto usa Jenkins, executado por Docker Compose, para automatizar o fluxo:
 
@@ -81,6 +81,27 @@ O Jenkins ficará disponível em `http://localhost:8080`. O job multibranch é c
 - `Post Actions`: envia no discord o resultado da pipeline, qual a branch onde foi feita e quem deu o último commit.
 
 Nunca versione o arquivo `.env`; use `.env.example` como modelo.
+
+### Pipeline do front (ChatZoneFX)
+
+O cliente desktop tem uma pipeline própria, o job projeto-front, que usa o arquivo ChatZoneFX/Jenkinsfile:
+
+Checkout SCM → Source → Build → Análise estática → Test → Package → Publish download page
+
+A publicação é executada somente na branch integration e atualiza a página de download no GitHub Pages:
+https://c14-inatel-2026-2.github.io/Rede-Social-Inatel---C14/
+
+#### Estágios
+
+- Checkout SCM: baixa o código-fonte do GitHub para execução da pipeline.
+- Source: exibe a branch, o commit e o conteúdo da pasta ChatZoneFX.
+- Build: compila o cliente junto com o código do servidor que ele usa (login, cadastro, troca de senha e conexão com o chat).
+- Análise estática: executa Checkstyle e SpotBugs no código do cliente.
+- Test: executa os testes do cliente em modo headless (JavaFX Monocle, sem interface gráfica), publica os relatórios JUnit e gera a cobertura JaCoCo.
+- Package: gera o JAR e um pacote ZIP com as dependências, os scripts abrir-windows.bat e abrir-linux-macos.sh e as instruções de execução.
+- Publish download page: publica o ZIP, o JAR e a página de download na branch gh-pages, servida pelo GitHub Pages, somente na integration.
+
+O cliente é desktop (JavaFX), então não é publicado no Render: ele é distribuído pela página de download e se conecta ao servidor e ao banco configurados nas variáveis CHAT_SERVER_HOST, CHAT_SERVER_PORT_BASE, CHAT_SERVER_HTTP_URL, DB_URL, DB_USER e DB_PASSWORD.
 
 ## Requisitos do Sistema
 
