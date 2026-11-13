@@ -302,3 +302,44 @@ Requisitos:
 6. Siga o padrão de nomenclatura e organização dos testes existentes.
 7. Evite testes redundantes e não altere a implementação original da classe.
    8.Entregue o código completo da classe de testes, preservando os testes existentes e acrescentando apenas os necessários.
+
+---------------------------------------
+Relatório de I.A. - Nathan Bispo de Aguiar
+
+## Uso de IA: Cadastro, Login, banco de dados e CI
+
+### Ferramentas
+
+- Claude: apoio direcionado para revisar o código e os testes do cadastro e do login, esclarecer dúvidas técnicas e diagnosticar problemas de configuração (Docker, Maven e Jenkins). O autor escreveu o código de produção e a maior parte dos testes, avaliou as sugestões e escolheu quais aplicar.
+
+### Usos e resultados
+
+1. Revisão de código e testes (Claude)
+   Contexto: o autor enviou versões sucessivas das classes `Cadastro`, `Login`, `Usuario`, `CadastroDAO`, `LoginDAO` e `ConnectionDAO` e dos testes `CadastroTest`, `LoginTest` e `UsuarioTest`.
+   Resultado: a IA apontou o retorno `null` que escondia o motivo das falhas, a confirmação falsa de sucesso quando o `INSERT` falhava, o `NullPointerException` com o banco fora do ar, o `connectToDb()` que sempre retornava `null` e o `LoginDAO` que descartava o nome consultado. Nos testes, apontou um DAO sem `@Mock`, comparação de objetos sem `equals`, stubs com argumentos diferentes da chamada e um teste que falhava pelo motivo errado, além de explicar o uso de `verify`. O autor substituiu os retornos `null` por exceções específicas, adicionou a verificação de conexão nula, passou a ler as credenciais do banco de variáveis de ambiente, fez o login retornar o nome e corrigiu os testes.
+
+2. Banco de dados com Docker (Claude)
+   Contexto: o autor solicitou auxílio na criação do banco.
+   Resultado: a IA recomendou o banco local em container e escreveu um passo a passo para adicionar o MySQL ao `docker-compose.yml` do Jenkins. Ao seguir o tutorial, o autor encontrou o conflito da porta 3306 com o MySQL instalado na máquina, e a IA sugeriu expor o container na porta 3307.
+
+3. Dependência vulnerável (Claude)
+   Contexto: a IDE marcou CVEs no `mysql-connector-j`.
+   Resultado: a IA sugeriu atualizar a versão. A primeira versão indicada também tinha CVEs; após o novo alerta da IDE, a IA pesquisou e indicou a linha de versões atual do conector.
+
+4. Diagnóstico de CI (Claude)
+   Contexto: o autor enviou erros do pipeline.
+   Resultado: a IA identificou o commit que removeu o `@{argLine}` do `pom.xml`, o que impedia o JaCoCo de gerar o relatório de cobertura. O autor restaurou o `@{argLine}` com uma propriedade `argLine` vazia, para os testes continuarem rodando localmente.
+
+5. Auxílio na escrita do `UsuarioDAOTest` (Claude)
+   Contexto: o autor pediu auxílio para escrever os testes do `UsuarioDAO`.
+   Resultado: a IA sugeriu testes para a classe. O autor selecionou os pertinentes, reorganizou e adaptou alguns deles, como acrescentar a verificação de fechamento da conexão nos casos de falha do `alterarSenha`.
+
+### O que não foi feito por IA
+
+- Implementações nas classes `Cadastro`, `Login`, `Usuario`, `CadastroDAO`, `LoginDAO` e `ConnectionDAO`
+- Escrita dos testes do `CadastroTest`, `LoginTest` e `UsuarioTest`
+- Escolha dos cenários pertinentes e organização final do `UsuarioDAOTest`
+- Decisão de mover as validações do construtor de `Usuario` para o `Cadastro`
+- Decisão de lançar exceções no back-end para que o front capture e exiba as mensagens
+- Adição do campo `nome` ao banco e às classes
+- Aplicação das correções, execução dos testes e validação no Jenkins
