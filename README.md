@@ -245,3 +245,30 @@ Individualmente. Sempre enviamos o código existente como contexto, pedimos que 
 seguisse o padrão do que já estava feito e revisamos o resultado antes do commit.
 A IA não foi usada na revisão de PRs. Antes do commit, o código era verificado
 pelos testes da pipeline.
+
+---------------------------------------
+relatório Leonardo Cruz Zanin
+
+### Ferramentas
+.Chatgpt
+
+### Uso de IA na depuração e integração:
+- ClassNotFoundException.
+- Problemas com Maven e Surefire.
+- Configuração de pacotes no IntelliJ.
+- Problemas de integração entre cliente e servidor.
+- Problemas com Mockito e dependências.
+- Conflitos e operações Git.
+- Integração do Jenkins com Docker.
+
+#### Uso de IA com testes:
+*Analise a classe `Cliente` e desenvolva testes unitários utilizando JUnit 5 e Mockito.
+Requisitos:
+1. Teste cada comportamento público da classe.
+2. Utilize mocks para isolar dependências externas.
+3. Mocke métodos estáticos de utilitários, como `IdentificarComandoChat`, utilizando `MockedStatic`.
+4. Não teste novamente a lógica de outras classes dentro dos testes de `Cliente`.
+5. Verifique chamadas, argumentos, retornos e exceções.
+6. Siga o padrão de nomenclatura e organização dos testes existentes.
+7. Evite testes redundantes e não altere a implementação original da classe.
+   8.Entregue o código completo da classe de testes, preservando os testes existentes e acrescentando apenas os necessários.
