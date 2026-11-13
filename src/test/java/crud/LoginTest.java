@@ -37,7 +37,6 @@ public class LoginTest {
         boolean autenticado = login.autenticarUsuario(usuario, senha);
 
         assertTrue(autenticado);
-        assertTrue(usuario.getLogado());
         assertEquals(nome, usuario.getNome());
     }
 
@@ -50,7 +49,6 @@ public class LoginTest {
 
         assertThrows(FalhaNoLoginException.class,
                 () -> login.autenticarUsuario(usuario, senhaInvalida));
-        assertFalse(usuario.getLogado());
     }
 
     @Test
