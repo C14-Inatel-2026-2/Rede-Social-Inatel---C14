@@ -1,11 +1,41 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><title>ChatZoneFX</title></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChatZoneFX | Rede Social Inatel</title>
+  <style>
+    :root { color-scheme: dark; --bg:#15100d; --card:#2b1d16; --gold:#e0a63b; --text:#fff8ed; --muted:#c2ad96; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; color:var(--text); background:radial-gradient(circle at top,#51351d 0,#15100d 55%); font:16px system-ui,sans-serif; }
+    main { width:min(680px,100%); padding:42px; border:1px solid #68472b; border-radius:24px; background:rgba(43,29,22,.94); box-shadow:0 24px 80px #0008; }
+    .brand { color:var(--gold); letter-spacing:.08em; text-transform:uppercase; font-size:13px; font-weight:700; }
+    h1 { margin:10px 0 8px; font-size:clamp(34px,7vw,56px); }
+    .subtitle { margin:0 0 30px; color:var(--muted); line-height:1.6; }
+    .downloads { display:grid; gap:12px; margin:26px 0; }
+    a { display:block; padding:15px 18px; border-radius:12px; color:#21150b; background:var(--gold); font-weight:700; text-decoration:none; }
+    a.secondary { color:var(--text); background:#493020; border:1px solid #765337; }
+    a:hover { filter:brightness(1.1); transform:translateY(-1px); }
+    .meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; color:var(--muted); font-size:13px; }
+    .meta span { padding:8px 10px; border-radius:999px; background:#1d1511; }
+    code { color:#f2c56d; }
+  </style>
+</head>
 <body>
-  <h1>ChatZoneFX</h1>
-  <p>Cliente desktop da Rede Social Inatel.</p>
-  <p><a href="downloads/ChatZoneFX.zip">Baixar pacote completo (JAR + dependências)</a></p>
-  <p><a href="downloads/ChatZoneFX.jar">Baixar apenas o JAR</a></p>
-  <p>Build 4 · commit 25dcd9f5a6bd8e4c2c1315111ffa35179b90ba37</p>
+  <main>
+    <div class="brand">Rede Social Inatel</div>
+    <h1>ChatZoneFX</h1>
+    <p class="subtitle">Cliente desktop para conversas publicas em tempo real.</p>
+    <div class="downloads">
+      <a href="downloads/ChatZoneFX.zip">Baixar pacote completo</a>
+      <a class="secondary" href="downloads/ChatZoneFX.jar">Baixar somente o JAR</a>
+    </div>
+    <p class="subtitle">O pacote completo inclui o aplicativo, dependencias e instrucoes de execucao.</p>
+    <div class="meta">
+      <span>Build <code>5</code></span>
+      <span>Commit <code>dcb1123ac8c5efaecdc01f9666c59299e16e4f6f</code></span>
+      <span>2026-11-13 02:22 UTC</span>
+    </div>
+  </main>
 </body>
 </html>
