@@ -216,6 +216,22 @@ public class LoginDAOTest {
     }
 
     @Test
+    public void testeFalhaAoFecharConexao() throws SQLException {
+        SQLException erroSQL = new SQLException("Erro ao fechar conexão");
+
+        usuarioExisteNoBanco(hashDaSenha);
+
+        doThrow(erroSQL)
+                .when(connection).close();
+
+        assertDoesNotThrow(
+                () -> loginDAO.autenticarUser(email, senha)
+        );
+
+        verify(connection).close();
+    }
+
+    @Test
     public void testeFalhaPorEmailNulo() {
         assertNull(loginDAO.autenticarUser(null, senha));
     }
