@@ -199,7 +199,7 @@ https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
 | init (e-mail) | Feito à mão a princípio, assim como o início do conectar(). A IA (Claude) modificou o init ao alterar o código, por exemplo no envio da mensagem ao apertar Enter |
 | Restante do ChatController e ChatConfig | IA (Claude), com ajustes à mão |
 | Pipeline Jenkins | Feita sem IA a partir de material de base; a IA (Claude) só ajudou a resolver erros causados no deploy do front no Render |
-| Testes ChatController e LobbyController | Vários testes feitos a mão, porém com largo auxílio da i.a(claude) na configuração para classes do front como label. A i.a também ajudou na ideia de alguns testes dessas classes e algumas aplicações |
+| Parte dos Testes ChatController e LobbyController | Vários testes feitos a mão, porém com largo auxílio da i.a(claude) na configuração para classes do front como label. Mais testes foram requisitados para a i.a para uma maior cobertura |
 
 ### O que não foi feito por IA
 * Função de login inicial no AuthController
