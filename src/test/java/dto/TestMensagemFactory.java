@@ -35,5 +35,15 @@ public class TestMensagemFactory {
         assertEquals("@", mensagem.email);
     }
 
+    @Test
+    public void comandoSemAsterisco() {
 
+        var mensagem = MensagemFactory.criar("io", "uou", cliente);
+
+        assertEquals("io", mensagem.type);
+        assertEquals("uou", mensagem.texto);
+        assertEquals("sala", mensagem.sala);
+        assertEquals("hero", mensagem.usuario);
+        assertEquals("@", mensagem.email);
+    }
 }
