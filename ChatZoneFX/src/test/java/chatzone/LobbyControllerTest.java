@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import java.util.concurrent.CountDownLatch;
 import javafx.scene.layout.VBox;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +18,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import br.inatel.redesocial.usuario.TrocarSenha;
 import java.util.concurrent.TimeUnit;
+import org.mockito.MockedStatic;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 @ExtendWith(JavaFxExtension.class)
 public class LobbyControllerTest {
@@ -27,6 +31,7 @@ public class LobbyControllerTest {
     private static final String EMAIL = "user@email.com";
     private static final String SENHA = "Senha@123";
     private static final String NOVA_SENHA = "Nova@1234";
+    private static final int PORTA = 3000;
 
     @Mock
     private LobbyController.BuscadorDeSalas buscadorDeSalas;
@@ -34,6 +39,9 @@ public class LobbyControllerTest {
     @Mock
     private TrocarSenha trocarSenha;
 
+    private MockedStatic<Session> sessaoEstatica;
+    private MockedStatic<ChatConfig> chatConfigEstatico;
+    private MockedStatic<Main> mainEstatico;
     private LobbyController controller;
     private Label profileEmailLabel;
     private StackPane profileModal;
@@ -46,7 +54,11 @@ public class LobbyControllerTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        Session.clear();
+        sessaoEstatica = mockStatic(Session.class);
+        mainEstatico = mockStatic(Main.class);
+        chatConfigEstatico = mockStatic(ChatConfig.class);
+        chatConfigEstatico.when(() -> ChatConfig.portForRoom(1)).thenReturn(PORTA);
+        MockitoAnnotations.openMocks(this);
         MockitoAnnotations.openMocks(this);
         when(buscadorDeSalas.buscar()).thenReturn(new LobbyController.Room[] {
                 new LobbyController.Room(0, "Sala Geral", 5, 12, 0),
@@ -74,6 +86,13 @@ public class LobbyControllerTest {
         roomsGrid.getChildren().addListener((ListChangeListener<Node>) mudanca -> {
             if (roomsGrid.getChildren().size() == 3) salasCarregadas.countDown();
         });
+    }
+
+    @AfterEach
+    public void encerrarMocksEstaticos() {
+        sessaoEstatica.close();
+        mainEstatico.close();
+        chatConfigEstatico.close();
     }
 
     @Test
@@ -223,4 +242,14 @@ public class LobbyControllerTest {
         assertNotNull(salaGeral.getOnMouseClicked());
     }
 
+    @Test
+    public void testeClicarEmSalaDisponivelAbreOChat() throws Exception {
+        controller.init(EMAIL);
+        assertTrue(salasCarregadas.await(5, TimeUnit.SECONDS));
+        VBox salaGeral = (VBox) roomsGrid.getChildren().get(0);
+
+        salaGeral.getOnMouseClicked().handle(null);
+
+        mainEstatico.verify(() -> Main.showChat("Sala Geral", 1, PORTA, EMAIL));
+    }
 }
