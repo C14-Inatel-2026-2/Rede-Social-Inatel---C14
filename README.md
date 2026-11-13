@@ -193,8 +193,6 @@ https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
 relatório Thiago Villela
 ## Uso de IA: Back-end (servidor de chat) e testes
 
-## Uso de IA: Back-end (servidor de chat) e testes
-
 ### Ferramentas
 * Claude: apoio direcionado para revisar testes, completar a partir do padrão de testes humanos anteriores, esclarecer dúvidas técnicas e realizar algumas refatorações a partir do comando do autor
 * Copilot: apoio direcionado para revisar testes, esclarecer dúvidas técnicas e realizar uma refatoração específica. O autor definiu os objetivos, avaliou as sugestões e escolheu quais cenários eram pertinentes; a IA não foi usada para gerar todo o código nem para substituir a revisão do autor
