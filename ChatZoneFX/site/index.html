@@ -22,20 +22,22 @@
   </style>
 </head>
 <body>
-  <main>
-    <div class="brand">Rede Social Inatel</div>
-    <h1>ChatZoneFX</h1>
-    <p class="subtitle">Cliente desktop para conversas publicas em tempo real.</p>
-    <div class="downloads">
-      <a href="downloads/ChatZoneFX.zip">Baixar pacote completo</a>
-      <a class="secondary" href="downloads/ChatZoneFX.jar">Baixar somente o JAR</a>
-    </div>
-    <p class="subtitle">O pacote completo inclui o aplicativo, dependencias e instrucoes de execucao.</p>
-    <div class="meta">
-      <span>Build <code>__BUILD_NUMBER__</code></span>
-      <span>Commit <code>__GIT_COMMIT__</code></span>
-      <span>__PUBLISHED_AT__</span>
-    </div>
-  </main>
+<main>
+  <div class="brand">Rede Social Inatel</div>
+  <h1>ChatZoneFX</h1>
+  <p class="subtitle">Cliente desktop para conversas publicas em tempo real.</p>
+  <div class="downloads">
+    <a href="downloads/ChatZoneFX.zip">Baixar pacote completo</a>
+    <a class="secondary" href="downloads/ChatZoneFX.jar">Baixar somente o JAR</a>
+    <a class="secondary" href="downloads/servidor.zip">Baixar o servidor (Docker)</a>
+  </div>
+  <p class="subtitle">O pacote completo inclui o aplicativo, dependencias e instrucoes de execucao.</p>
+  <p class="subtitle">Para usar o chat, entre na pasta <code>servidor</code> do pacote completo e execute <code>docker compose up -d --build</code>. Isso sobe o banco de dados e o servidor de chat; e preciso ter o Docker instalado. O pacote do servidor tambem pode ser baixado separadamente.</p>
+  <div class="meta">
+    <span>Build <code>__BUILD_NUMBER__</code></span>
+    <span>Commit <code>__GIT_COMMIT__</code></span>
+    <span>__PUBLISHED_AT__</span>
+  </div>
+</main>
 </body>
 </html>

@@ -1,0 +1,28 @@
+Servidor do Mesão chat (ChatZoneFX)
+
+Este pacote sobe o banco de dados e o servidor de chat com Docker.
+Não é necessário clonar o repositório nem instalar Maven.
+
+Pré-requisito
+  Docker Desktop (Windows/macOS) ou Docker Engine com Compose (Linux), em execução.
+
+Como iniciar
+  1. Extraia este ZIP.
+  2. Abra um terminal dentro da pasta extraída.
+  3. Execute:
+       docker compose up -d --build
+  4. Confira em http://localhost:8089/rooms se a lista de salas aparece.
+
+Depois disso, abra o cliente ChatZoneFX normalmente.
+O cliente já vem configurado para este servidor e este banco.
+
+Portas usadas
+  3307        banco MySQL
+  8089        lista de salas (HTTP)
+  3000-3005   salas de chat
+
+Como parar
+  docker compose stop
+
+Como apagar tudo, inclusive os usuários cadastrados
+  docker compose down -v

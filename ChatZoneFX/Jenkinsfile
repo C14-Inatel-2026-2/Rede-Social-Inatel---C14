@@ -64,6 +64,25 @@ pipeline {
             }
         }
 
+        stage('Package servidor') {
+            steps {
+                echo 'Gerando o pacote do servidor para download'
+                sh '''
+                    mvn -B -DskipTests package
+                    rm -rf target/servidor
+                    mkdir -p target/servidor/lib target/servidor/database
+                    mvn -B dependency:copy-dependencies \
+                      -DincludeScope=runtime \
+                      -DoutputDirectory=target/servidor/lib
+                    cp "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)" target/servidor/app.jar
+                    cp database/*.sql target/servidor/database/
+                    cp servidor-download/docker-compose.yml servidor-download/Dockerfile servidor-download/LEIA-ME.txt target/servidor/
+                    jar --create --file target/servidor.zip -C target/servidor .
+                '''
+                archiveArtifacts artifacts: 'target/servidor.zip', fingerprint: true
+            }
+        }
+
         stage('Package') {
             steps {
                 echo 'Gerando o artefato do front'
@@ -109,6 +128,15 @@ EOF
                         cat > target/dist/README.txt <<'EOF'
 ChatZoneFX
 
+## Antes de abrir o cliente
+
+O chat precisa do servidor e do banco rodando. Com o Docker instalado,
+abra um terminal na pasta servidor e execute:
+
+    docker compose up -d --build
+
+Confira em http://localhost:8089/rooms se as salas aparecem.
+
 ## Como abrir no Windows
 
 1. Instale o Java 17 ou superior.
@@ -124,6 +152,7 @@ Execute `./abrir-linux-macos.sh` no terminal.
 O cliente usa localhost por padrão. Para apontar para outro servidor,
 configure CHAT_SERVER_HOST, CHAT_SERVER_PORT_BASE e CHAT_SERVER_HTTP_URL.
 EOF
+                        cp -r ../target/servidor target/dist/servidor
                         jar --create --file target/ChatZoneFX.zip -C target/dist .
                     '''
                     archiveArtifacts artifacts: 'target/*.jar,target/*.zip', fingerprint: true
@@ -158,6 +187,7 @@ EOF
                         mkdir -p downloads
                         cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX.zip" downloads/ChatZoneFX.zip
                         cp "$WORKSPACE/ChatZoneFX/target/ChatZoneFX-"*.jar downloads/ChatZoneFX.jar
+                        cp "$WORKSPACE/target/servidor.zip" downloads/servidor.zip
                         cat > index.html <<EOF
 <!doctype html>
 <html lang="pt-BR">
