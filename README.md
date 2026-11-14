@@ -288,6 +288,7 @@ docker compose logs servidor
 
 > Para testar a conversa entre dois usuários na mesma máquina, abra o cliente duas vezes e entre
 > com contas diferentes na mesma sala.
+
 Relatório da I.A - Gilberto Cezar Silveira Júnior
 
 ## Uso de IA — Front-end (JavaFX) e integração
@@ -371,7 +372,8 @@ A IA não foi usada na revisão de PRs. Antes do commit, o código era verificad
 pelos testes da pipeline.
 
 ---------------------------------------
-relatório Thiago Villela
+Relatório Thiago Villela
+
 ## Uso de IA: Back-end (servidor de chat) e testes
 
 ### Ferramentas
@@ -581,3 +583,41 @@ relatório de IA: Luis Eduardo Alves Marques
 * Testes de: GerenciadorUsuariosBDTest, TrocarSenhaTest e alguns de LoginTest
 * Remoção do teste de sistema, por exigência do projeto de apenas testes unitários
 * Execução dos testes e correção dos erros de compilação e de build
+
+## 🔧 Refactorings
+
+### Gilberto Cezar Silveira Junior
+
+#### 1. Validação de e-mail e senha duplicada no front
+
+- **Smell:** Duplicated Code. O `AuthController` tinha os métodos privados `isValidEmail` e
+  `isValidSenha`, com as mesmas expressões regulares já implementadas no back-end
+  (`Login.verificarEmail` e `Login.verificarSenha`). Havia duas regras de validação que podiam
+  divergir: uma alteração no back não seria refletida na tela.
+- **Refactoring aplicado:** Substitute Algorithm, trocando as regex locais pela chamada aos métodos
+  já existentes no back-end. Os dois métodos privados foram removidos, junto com comentários
+  `TODO` obsoletos e verificações defensivas de `null` desnecessárias.
+- **Por quê:** a regra de validação passa a existir em um único lugar, coberta pelos testes do
+  back-end (`LoginTest`), e o front exibe sempre o mesmo resultado que o servidor aplicaria.
+- **Commit:** [`b990d92`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/b990d92213519e1fc441405d05ce953e8f461f9b)
+- **PR:** [#21](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/21)
+
+#### 2. Conexão e protocolo do chat reimplementados no front
+
+- **Smell:** Duplicated Code. O `ChatController` abria o `Socket` manualmente e montava cada
+  `MensagemCliente` campo a campo (`type`, `texto`, `usuario`, `email`), reimplementando a conexão
+  e o protocolo que o cliente do back-end já oferecia em `ClienteHandler`, `Cliente` e
+  `MensagemFactory`.
+- **Refactoring aplicado:**
+  1. Extract Method no back-end: a abertura da conexão foi extraída de `ClienteHandler.gerenciarChat`
+     para o novo método `ClienteHandler.conectar()`, que pode ser reutilizado sem iniciar o chat de
+     terminal ([`5bf56e1`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/5bf56e1)).
+  2. Substitute Algorithm no front: o `ChatController` passou a usar `ClienteHandler.conectar`,
+     `MensagemFactory.criar`, `ExecutarComandoSala` e o ouvinte do `Cliente`, removendo o uso direto
+     de `Socket` e a montagem manual das mensagens. O `ClienteFactory` passou a ser recebido pelo
+     construtor (injeção de dependência).
+- **Por quê:** o protocolo de comunicação passa a ter uma única implementação, já testada no
+  back-end (`ClienteHandlerTest`, `TestCliente`, `TestMensagemFactory`), e o `ChatController` pode
+  ser testado com um `ClienteFactory` mockado, sem abrir conexões reais.
+- **Commit:** [`60394aa`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/60394aa9ef4adf7f2c6ee8ed3f44d39f65a7f519)
+- **PR:** [#47](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/47)
