@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,18 +19,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TestServidorHandler {
@@ -296,4 +293,60 @@ public class TestServidorHandler {
 
         verify(socket).close();
     }
+
+    @Test
+    public void saidaDaSalaNotificaUsuariosEAtualizaPresenca() throws Exception {
+        salaExiste("geral");
+
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
+        when(sala.getQuantidadeUsuarios()).thenReturn(1, 0);
+
+        when(servidorSocket.receber())
+                .thenReturn(entrar("thiago", "geral"), (Mensagem) null);
+
+        handler.run();
+
+        verify(sala).removeUsuario("thiago");
+
+        ArgumentCaptor<Mensagem> captor =
+                ArgumentCaptor.forClass(Mensagem.class);
+
+        verify(servidorSocket, times(4))
+                .enviar(captor.capture(), eq(escritor));
+
+        List<Mensagem> mensagens = captor.getAllValues();
+
+        assertTrue(mensagens.stream()
+                .anyMatch(m -> "presenca".equals(m.type)));
+
+        verify(socket).close();
+    }
+
+    @Test
+    public void entradaBemSucedidaEnviaConfirmacaoComQuantidadeDeUsuarios()
+            throws Exception {
+
+        salaExiste("geral");
+
+        when(sala.addUsuario("thiago", escritor)).thenReturn(true);
+        when(sala.getQuantidadeUsuarios()).thenReturn(1);
+
+        when(servidorSocket.receber())
+                .thenReturn(entrar("thiago", "geral"), (Mensagem) null);
+
+        handler.run();
+
+        ArgumentCaptor<Mensagem> captor =
+                ArgumentCaptor.forClass(Mensagem.class);
+
+        verify(servidorSocket).enviar(captor.capture());
+
+        Mensagem enviada = captor.getValue();
+
+        assertEquals("entrada_confirmada", enviada.type);
+        assertEquals(1, enviada.valorInt);
+
+        verify(sala).getNomesUsuariosAtivos();
+    }
+
 }
