@@ -367,7 +367,7 @@ Resultado: o Claude devolveu ChatConfig, ChatController e LobbyController atuali
 Além disso, no LobbyController o método buscarSalas teve que ser implementado manualmente, já que a i.a definiu toda a integração de salas no loadRooms e isso impossibilitava a utilização do mock. A i.a desenvolveu alguns trechos utilizando string ao invés da própria classe MensagemCliente que havia sido feita com esse propósito, outro erro corrigido manualmente.
 *AJUSTADO*
 
-## Refactorings da entrega final
+## Histórico de integração e contribuição
 
 Pull Request para revisão: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/58
 
