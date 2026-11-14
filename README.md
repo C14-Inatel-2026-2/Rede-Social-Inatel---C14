@@ -68,6 +68,22 @@ pois o Render não fornece seis portas TCP públicas para o modelo atual.
 As variáveis necessárias estão documentadas em `.env.render.exemplo`. O Render
 injeta `PORT` automaticamente; não é necessário cadastrá-la manualmente.
 
+### Onde cada parte está rodando
+
+| Componente | Local de execução | Acesso |
+|---|---|---|
+| Back-end HTTP (`Main`) | Render Web Service, quando o deploy da `main` está ativo | URL pública exibida no painel do Render |
+| Banco MySQL de desenvolvimento | Container `mysql` do Docker Compose | `localhost:3307`, banco `db` |
+| Jenkins | Docker local | `http://localhost:8080` |
+| Cliente JavaFX | Computador do usuário | ZIP/JAR publicado no GitHub Pages |
+| Página de download | GitHub Pages, branch `gh-pages` | https://c14-inatel-2026-2.github.io/Rede-Social-Inatel---C14/ |
+
+A URL do Render depende do serviço criado na conta e não fica definida no código.
+Para a apresentação, copie a URL exibida no serviço `rede-social-inatel-api` e
+teste `/health`. O banco usado pelo Docker Compose é local; um banco remoto
+precisa ser fornecido separadamente nas variáveis `DB_URL`, `DB_USER` e
+`DB_PASSWORD`.
+
 ## Pipeline de CI/CD
 
 O projeto usa Jenkins, executado por Docker Compose, para automatizar o fluxo:
@@ -78,7 +94,7 @@ O deploy é executado somente para a branch `main` e dispara o Deploy Hook do Re
 
 ### Configuração local
 
-1. Copie `.env.example` para `.env`.
+1. Copie `.env.exemplo` para `.env`.
 2. Preencha as credenciais do Jenkins, do GitHub e o `RENDER_DEPLOY_HOOK`.
 3. Inicie o Jenkins:
 
@@ -99,7 +115,19 @@ O Jenkins ficará disponível em `http://localhost:8080`. O job multibranch é c
 - `Deploy`: dispara o deploy no Render somente na `main`.
 - `Post Actions`: envia no discord o resultado da pipeline, qual a branch onde foi feita e quem deu o último commit.
 
-Nunca versione o arquivo `.env`; use `.env.example` como modelo.
+Nunca versione o arquivo `.env`; use `.env.exemplo` como modelo.
+
+### Executar o pacote baixado no Windows
+
+1. Baixe o pacote completo na página do GitHub Pages.
+2. Extraia o ZIP inteiro, mantendo as pastas `lib` e `lib-windows`.
+3. Instale o Java 17 ou superior.
+4. Inicie o MySQL local com `docker compose up -d mysql`.
+5. Execute `abrir-windows.bat` por duplo clique.
+
+O iniciador Windows usa, por padrão, `localhost:3307`, banco `db`, usuário
+`redesocial` e senha `redesocial`. Essas variáveis podem ser substituídas antes
+da execução para apontar para outro ambiente.
 
 ### Pipeline do front (ChatZoneFX)
 
@@ -336,6 +364,18 @@ feito no back. Veja como o método de conexão está sendo feito"
 Resultado: o Claude devolveu ChatConfig, ChatController e LobbyController atualizados.
 Além disso, no LobbyController o método buscarSalas teve que ser implementado manualmente, já que a i.a definiu toda a integração de salas no loadRooms e isso impossibilitava a utilização do mock. A i.a desenvolveu alguns trechos utilizando string ao invés da própria classe MensagemCliente que havia sido feita com esse propósito, outro erro corrigido manualmente.
 *AJUSTADO*
+
+## Refactorings da entrega final
+
+1. **Centralização da configuração do ChatZoneFX** (`ChatConfig`)
+   - Smell: leitura repetida de variáveis de ambiente e tratamento de porta misturado à regra de configuração.
+   - Refactoring: extração dos métodos `envOrDefault` e `parsePortBase`.
+   - Resultado: defaults e validação ficam centralizados e mais fáceis de testar.
+
+2. **Centralização dos padrões de conexão do banco** (`ConnectionDAO`)
+   - Smell: valores padrão de URL, usuário e senha pouco expressivos.
+   - Refactoring: constantes nomeadas e método reutilizável para leitura da configuração.
+   - Resultado: configuração mais legível e simples de alterar.
 
 ### Quem fez o quê
 https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git

@@ -4,31 +4,35 @@ package chatzone;
 public final class ChatConfig {
 
     private static final String DEFAULT_HOST = "localhost";
+    private static final String DEFAULT_HTTP_BASE_URL = "http://localhost:8089";
     private static final int DEFAULT_PORT_BASE = 3000;
 
     private ChatConfig() {
     }
 
     public static String host() {
-        String value = System.getenv("CHAT_SERVER_HOST");
-        return value == null || value.isBlank() ? DEFAULT_HOST : value;
+        return envOrDefault("CHAT_SERVER_HOST", DEFAULT_HOST);
     }
 
     public static String httpBaseUrl() {
-        String value = System.getenv("CHAT_SERVER_HTTP_URL");
-        return value == null || value.isBlank() ? "http://localhost:8089" : value;
+        return envOrDefault("CHAT_SERVER_HTTP_URL", DEFAULT_HTTP_BASE_URL);
     }
 
     public static int portForRoom(int roomId) {
-        String configured = System.getenv("CHAT_SERVER_PORT_BASE");
-        int basePort = DEFAULT_PORT_BASE;
-        if (configured != null && !configured.isBlank()) {
-            try {
-                basePort = Integer.parseInt(configured);
-            } catch (NumberFormatException ignored) {
-                // Keep the local default when the variable is invalid.
-            }
+        return parsePortBase(envOrDefault("CHAT_SERVER_PORT_BASE", String.valueOf(DEFAULT_PORT_BASE)))
+                + roomId - 1;
+    }
+
+    private static String envOrDefault(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? defaultValue : value;
+    }
+
+    private static int parsePortBase(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ignored) {
+            return DEFAULT_PORT_BASE;
         }
-        return basePort + roomId - 1;
     }
 }
