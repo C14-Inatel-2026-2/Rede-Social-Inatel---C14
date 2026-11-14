@@ -1,0 +1,35 @@
+name: chatzone-servidor
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: redesocial
+      MYSQL_DATABASE: db
+      MYSQL_USER: redesocial
+      MYSQL_PASSWORD: redesocial
+    ports:
+      - "3307:3306"
+    volumes:
+      - dados:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  servidor:
+    build: .
+    environment:
+      PORT: 8080
+      DB_URL: "jdbc:mysql://mysql:3306/db"
+      DB_USER: redesocial
+      DB_PASSWORD: redesocial
+      CHAT_SERVER_PORT_BASE: 3000
+      CHAT_ROOM_CAPACITY: 12
+    depends_on:
+      - mysql
+    ports:
+      - "8089:8080"
+      - "3000-3005:3000-3005"
+    restart: unless-stopped
+
+volumes:
+  dados:

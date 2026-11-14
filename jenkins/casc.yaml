@@ -21,6 +21,12 @@ credentials:
               description: "Token do GitHub para baixar o repositorio"
               username: "${GITHUB_USER}"
               password: "${GITHUB_TOKEN}"
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-publish"
+              description: "Token do GitHub para publicar na branch gh-pages"
+              username: "${GITHUB_USER}"
+              password: "${GITHUB_TOKEN}"
           - string:
               scope: GLOBAL
               id: "render-deploy-hook"
