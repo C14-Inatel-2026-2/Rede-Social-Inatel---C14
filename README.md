@@ -663,3 +663,145 @@ relatório de IA: Luis Eduardo Alves Marques
   com o valor retornado pelo banco.
 - **Commit:** [`36b6f86`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/36b6f86d1f699f036894720b92f63b98ff4672f6)
 - **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
+
+
+## Refactorings realizados — Leonardo Cruz Zanin
+
+Durante o desenvolvimento do projeto, foram identificados problemas relacionados à concentração de responsabilidades, acoplamento entre classes e dificuldade de testar componentes isoladamente.
+
+As refatorações tiveram como objetivo melhorar a organização do código, aplicar o princípio da responsabilidade única (SRP), favorecer a injeção de dependências e facilitar a manutenção.
+
+### 1. Separação de responsabilidades na identificação e execução de comandos
+
+**Code Smell:** Large Class / Multiple Responsibilities e responsabilidades misturadas.
+
+**Problema:**
+
+A classe utilitária responsável por identificar comandos do chat acumulava diferentes responsabilidades: interpretar o conteúdo recebido, executar operações relacionadas às salas e construir objetos de mensagem (`MensagemCliente`).
+
+Essa concentração dificultava a manutenção, pois mudanças na interpretação de comandos, na execução de operações ou na criação de mensagens exigiam alterações na mesma classe.
+
+**Refactoring aplicado:** Extract Class e distribuição de responsabilidades.
+
+**Solução:**
+
+A lógica foi distribuída entre classes com responsabilidades específicas:
+
+- `InterpretarComando`: responsável por interpretar e separar o comando do texto da mensagem.
+- `ExecutarComandoSala`: responsável por executar operações relacionadas às salas, como entrar ou mudar de sala.
+- `MensagemFactory`: responsável por construir e configurar os objetos `MensagemCliente`.
+- `IdentificarComandoChat`: permaneceu como ponto de integração dessas operações.
+
+Com essa divisão, cada classe passou a ter uma finalidade mais específica, reduzindo a concentração de responsabilidades.
+
+**Benefícios:**
+- Aplicação do princípio da responsabilidade única (SRP).
+- Melhor organização da lógica de comandos.
+- Redução da complexidade da classe utilitária original.
+- Maior facilidade para testar cada responsabilidade isoladamente.
+- Melhor possibilidade de evolução e reutilização das funcionalidades.
+
+**Referências:**
+- [Commit 501ef6f — Separação das responsabilidades](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/501ef6f)
+- [Commit ecd0958 — Execução de comandos](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/ecd0958)
+- [Commit 4d5017f — Interpretação de comandos](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/4d5017f)
+- [Commit 9ed9873 — Criação da MensagemFactory](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/9ed9873)
+
+---
+
+### 2. Injeção de dependências e melhoria da testabilidade do cliente
+
+**Code Smell:** Tight Coupling (Alto acoplamento).
+
+**Problema:**
+
+O gerenciamento do cliente possuía dependências que dificultavam a realização de testes isolados. A criação e utilização de objetos como `ClienteFactory`, `Scanner` e outros recursos estavam muito associadas à implementação interna do gerenciamento do chat.
+
+Isso dificultava substituir dependências reais por objetos simulados durante os testes.
+
+**Refactoring aplicado:** Dependency Injection e separação de responsabilidades.
+
+**Solução:**
+
+Foram realizadas alterações na estrutura do cliente:
+
+- O `ClienteHandler` passou por modificações para melhorar sua testabilidade.
+- A `ClienteFactory` passou a ser recebida como dependência, em vez de ficar diretamente acoplada à criação interna dos objetos.
+- O `Scanner` passou a ser fornecido ao método de envio de mensagens pelo gerenciamento do chat.
+- Foram adicionadas verificações para impedir a utilização de uma `ClienteFactory` nula.
+
+Essas mudanças permitiram controlar melhor as dependências utilizadas pelo cliente e substituí-las por mocks durante os testes.
+
+**Benefícios:**
+- Redução do acoplamento entre as classes.
+- Maior facilidade para utilizar Mockito.
+- Possibilidade de testar o gerenciamento do cliente sem depender de todas as implementações reais.
+- Maior controle sobre a criação e o ciclo de vida das dependências.
+
+**Referências:**
+- [Commit fa82e32 — Handler modificado para melhor testabilidade](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/fa82e32)
+- [Commit bebe6c5 — Injeção de dependência em enviarMensagem](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/bebe6c5)
+- [Commit 835b419 — Scanner fornecido por gerenciarChat](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/835b419)
+- [Commit 9cc4112 — Proteção contra ClienteFactory nula](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/9cc4112)
+
+---
+
+### 3. Simplificação do gerenciamento de recursos do ClienteSocket
+
+**Code Smell:** Complexidade desnecessária no gerenciamento de recursos.
+
+**Problema:**
+
+O fechamento dos recursos utilizados pela comunicação Socket possuía verificações e operações que poderiam ser simplificadas, tornando o código mais complexo do que o necessário.
+
+**Refactoring aplicado:** Simplificação de código e remoção de verificações redundantes.
+
+**Solução:**
+
+O fechamento dos recursos em `ClienteSocket` foi simplificado, reduzindo a quantidade de operações necessárias para encerrar a conexão.
+
+**Benefícios:**
+- Código mais simples e legível.
+- Menor quantidade de verificações desnecessárias.
+- Gerenciamento de recursos mais direto.
+- Facilidade de manutenção.
+
+**Referência:**
+- [Commit d7a3a10 — Simplificação do fechamento dos recursos](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/d7a3a10)
+
+---
+
+### 4. Validação das dependências no construtor de Cliente
+
+**Code Smell:** Falta de validação de estado do objeto.
+
+**Problema:**
+
+A classe `Cliente` dependia de um `ClienteSocket` para realizar suas operações de comunicação. Sem uma validação adequada, seria possível construir um objeto com uma dependência nula, permitindo que o erro aparecesse posteriormente durante a execução.
+
+**Refactoring aplicado:** Introdução de validação no construtor.
+
+**Solução:**
+
+Foi adicionada uma validação no construtor de `Cliente`, impedindo a criação de instâncias com dependências inválidas.
+
+**Benefícios:**
+- Garantia de um estado inicial válido.
+- Falhas identificadas no momento da construção do objeto.
+- Redução da possibilidade de `NullPointerException` em operações posteriores.
+- Maior previsibilidade do comportamento da classe.
+
+**Referência:**
+- [Commit a76d788 — Validação no construtor de Cliente](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/a76d788)
+
+---
+
+### Resultados gerais
+
+As refatorações contribuíram para uma arquitetura mais organizada, com responsabilidades melhor distribuídas e dependências mais controladas.
+
+Um dos principais resultados foi a transformação de uma classe utilitária que concentrava interpretação, execução de comandos e criação de mensagens em uma estrutura composta por classes especializadas.
+
+Além disso, as alterações no cliente favoreceram a injeção de dependências e o isolamento dos testes, permitindo verificar comportamentos sem depender necessariamente de conexões reais.
+
+Essas melhorias tornam o projeto mais fácil de manter, testar e evoluir.
