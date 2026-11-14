@@ -72,17 +72,18 @@ injeta `PORT` automaticamente; não é necessário cadastrá-la manualmente.
 
 | Componente | Local de execução | Acesso |
 |---|---|---|
-| Back-end HTTP (`Main`) | Render Web Service, quando o deploy da `main` está ativo | URL pública exibida no painel do Render |
+| Back-end HTTP (`Main`) | Render Web Service | https://rede-social-inatel-api.onrender.com |
 | Banco MySQL de desenvolvimento | Container `mysql` do Docker Compose | `localhost:3307`, banco `db` |
 | Jenkins | Docker local | `http://localhost:8080` |
 | Cliente JavaFX | Computador do usuário | ZIP/JAR publicado no GitHub Pages |
 | Página de download | GitHub Pages, branch `gh-pages` | https://c14-inatel-2026-2.github.io/Rede-Social-Inatel---C14/ |
 
-A URL do Render depende do serviço criado na conta e não fica definida no código.
-Para a apresentação, copie a URL exibida no serviço `rede-social-inatel-api` e
-teste `/health`. O banco usado pelo Docker Compose é local; um banco remoto
-precisa ser fornecido separadamente nas variáveis `DB_URL`, `DB_USER` e
-`DB_PASSWORD`.
+Back-end em produção: https://rede-social-inatel-api.onrender.com
+
+Health check: https://rede-social-inatel-api.onrender.com/health
+
+O banco usado pelo Docker Compose é local; um banco remoto precisa ser fornecido
+separadamente nas variáveis `DB_URL`, `DB_USER` e `DB_PASSWORD`.
 
 ## Pipeline de CI/CD
 
