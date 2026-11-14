@@ -368,6 +368,11 @@ Além disso, no LobbyController o método buscarSalas teve que ser implementado 
 
 ## Refactorings da entrega final
 
+Pull Request para revisão: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/58
+
+Commit principal: `310ed6f refactor: centralizar configuracoes do cliente e banco`.
+Validação antes/depois: testes do back-end aprovados (104 testes, 0 falhas).
+
 1. **Centralização da configuração do ChatZoneFX** (`ChatConfig`)
    - Smell: leitura repetida de variáveis de ambiente e tratamento de porta misturado à regra de configuração.
    - Refactoring: extração dos métodos `envOrDefault` e `parsePortBase`.
