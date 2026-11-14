@@ -156,6 +156,138 @@ Os requisitos não funcionais estabelecem características de qualidade, seguran
 | RNF07 | Compatibilidade | A aplicação deverá funcionar em ambientes compatíveis com Java 21 e JavaFX, considerando as dependências necessárias. |
 | RNF08 | Integridade dos dados | As informações de cadastro e autenticação deverão ser mantidas de maneira consistente no banco de dados. |
 
+## 🚀 Instalação e execução
+
+O Mesão chat é composto por duas partes, que são distribuídas juntas no mesmo pacote:
+
+- **Servidor:** banco de dados MySQL e servidor de chat, executados com Docker.
+- **Cliente:** aplicativo desktop JavaFX (ChatZoneFX), usado para conversar.
+
+### Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e em execução
+- [Java 17 ou superior](https://adoptium.net/)
+
+### 1. Baixar o pacote
+
+Acesse a página de download e clique em **Baixar pacote completo**:
+
+https://c14-inatel-2026-2.github.io/Rede-Social-Inatel---C14/
+
+Extraia o arquivo `ChatZoneFX.zip`. A pasta extraída terá esta estrutura:
+
+```
+ChatZoneFX/
+├── ChatZoneFX.jar
+├── abrir-windows.bat
+├── abrir-linux-macos.sh
+├── README.txt
+├── lib/
+├── lib-windows/
+└── servidor/
+    ├── docker-compose.yml
+    ├── Dockerfile
+    ├── LEIA-ME.txt
+    ├── app.jar
+    ├── lib/
+    └── database/
+```
+
+### 2. Iniciar o servidor
+
+Abra um terminal **dentro da pasta `servidor`** e execute:
+
+```bash
+docker compose up -d --build
+```
+
+Esse comando cria e inicia dois containers:
+
+| Container | Função | Porta |
+|---|---|---|
+| `chatzone-servidor-mysql-1` | Banco de dados (usuários e senhas) | 3307 |
+| `chatzone-servidor-servidor-1` | Lista de salas (HTTP) e salas de chat | 8089 e 3000 a 3005 |
+
+Para confirmar que o servidor está no ar, acesse no navegador:
+
+```
+http://localhost:8089/rooms
+```
+
+A página deve exibir a lista das 6 salas disponíveis.
+
+> Na primeira execução, o banco leva de 10 a 20 segundos para criar as tabelas.
+
+### 3. Abrir o cliente
+
+Volte para a pasta principal do pacote e execute:
+
+- **Windows:** dê dois cliques em `abrir-windows.bat`
+- **Linux e macOS:** siga a seção [Executar pelo código-fonte](#executar-pelo-código-fonte)
+
+O cliente já vem configurado para se conectar ao servidor e ao banco iniciados no passo anterior.
+
+### 4. Encerrar
+
+Dentro da pasta `servidor`:
+
+```bash
+docker compose stop
+```
+
+Para remover os containers e **apagar todos os usuários cadastrados**:
+
+```bash
+docker compose down -v
+```
+
+### Executar pelo código-fonte
+
+Alternativa para Linux, macOS ou para desenvolvimento. Requer também Git e Maven.
+
+```bash
+git clone https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
+cd Rede-Social-Inatel---C14/servidor-download
+```
+
+Inicie o servidor com Docker, como no passo 2, e depois execute o cliente:
+
+```bash
+export DB_USER=redesocial
+export DB_PASSWORD=redesocial
+cd ../ChatZoneFX
+mvn javafx:run
+```
+
+### Problemas comuns
+
+| Problema | Solução |
+|---|---|
+| `no configuration file provided: not found` | O comando foi executado fora da pasta `servidor`. Entre nela com `cd servidor`. |
+| `port is already allocated` | Outro programa ou container está usando as portas 3307, 8089 ou 3000 a 3005. Encerre-o (veja com `docker ps`) e tente novamente. |
+| Cadastro ou login falha logo após iniciar | O banco ainda está sendo criado. Aguarde alguns segundos e tente novamente. |
+| Nenhuma sala aparece no lobby | Verifique se o servidor está no ar em `http://localhost:8089/rooms`. |
+| `Java nao foi encontrado` | Instale o Java 17 ou superior e abra o cliente novamente. |
+
+Para ver os logs do servidor, dentro da pasta `servidor`:
+
+```bash
+docker compose logs servidor
+```
+
+## 💡 Como usar
+
+1. Na tela inicial, abra a aba **Cadastrar** e crie uma conta com nome de usuário, e-mail e senha
+   (a senha precisa ter 8 ou mais caracteres, com letra maiúscula, letra minúscula, número e símbolo).
+2. Entre com o e-mail e a senha na aba **Entrar**.
+3. No lobby, escolha uma das salas disponíveis. Salas lotadas aparecem marcadas e não podem ser abertas.
+4. No chat, digite a mensagem e pressione **Enter** ou clique em enviar.
+   O topo da tela mostra quantos usuários estão online e quem são.
+5. Use o botão de voltar para retornar ao lobby.
+6. No perfil, é possível **trocar a senha** (informando a senha atual) ou **sair** da conta.
+
+> Para testar a conversa entre dois usuários na mesma máquina, abra o cliente duas vezes e entre
+> com contas diferentes na mesma sala.
 Relatório da I.A - Gilberto Cezar Silveira Júnior
 
 ## Uso de IA — Front-end (JavaFX) e integração
