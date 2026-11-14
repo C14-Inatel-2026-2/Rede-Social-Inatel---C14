@@ -807,3 +807,24 @@ Um dos principais resultados foi a transformação de uma classe utilitária que
 Além disso, as alterações no cliente favoreceram a injeção de dependências e o isolamento dos testes, permitindo verificar comportamentos sem depender necessariamente de conexões reais.
 
 Essas melhorias tornam o projeto mais fácil de manter, testar e evoluir.
+
+### Luis Eduardo Alves Marques
+
+#### 1. Nome enganoso de teste
+
+- **Smell:** Mysterious Name. O nome `testeAlterarSenhaNula` e era um nome enganoso que não representava o verdadeiro cenário do teste. Além disso, tinha o Temporary Field com `senhaNovaVazia` que só era usado nesse teste, mas era uma variável da classe.
+- **Refactoring aplicado:**
+    1. Renomeação: o Nome do teste foi alterado para `testeAlterarSenhaVazia` representando a string vazia que era o que realmente testava no teste.
+    2. Replace Field with Local Variable: a variável `senhaNovaVazia` saiu da classe e passou a ser local do método.
+- **Por quê:** Os nomes dos testes devem ser claros e mostrar realmente o que está sendo testado. E a mudança para local foi porque `senhaNovaVazia` só é utilizada naquele teste em específico.
+- **Commit:** [`10927b3`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/10927b3ce81fc24d33e44836430d17ee7c9d7e30)
+- **PR:** [#37](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/37)
+
+#### 2. Desvio de responsabilidade
+
+- **Smell:** Divergent Change. O método `alterarSenha` estava fazendo a classe `Usuario` ter um desvio da sua responsabilidade principal.
+- - **Refactoring aplicado:**
+    1. Extract Class: foi removido de `Usuario` o método e adicionado numa classe chamada `TrocarSenha` que a sua única responsabilidade é essa.
+- **Por quê:** O `Usuario` deveria ser um POJO e com o método `alterarSenha` era ferido o Princípio da Responsabilidade Única. As regras de troca de senha não era ele que devia ter.
+- - **Commit:** [`edb5ffc`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/edb5ffcbf6fc9340ea2672b327b4f8d86e306954)
+- **PR:** [#31](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/31)
