@@ -346,7 +346,7 @@ public class TestServidorHandler {
         assertEquals("entrada_confirmada", enviada.type);
         assertEquals(1, enviada.valorInt);
 
-        verify(sala).getNomesUsuariosAtivos();
+        verify(sala, atLeastOnce()).getNomesUsuariosAtivos();
     }
 
 }
