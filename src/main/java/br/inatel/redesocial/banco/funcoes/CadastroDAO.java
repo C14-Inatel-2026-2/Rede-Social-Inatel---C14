@@ -43,7 +43,8 @@ public class CadastroDAO extends ConnectionDAO {
 
             try {
                 if (pst != null) pst.close();
-                if (connection != null) connection.close();
+
+                connection.close();
             } catch (SQLException e){
                 System.out.println("Erro ao fechar recursos: " + e.getMessage());
             }
