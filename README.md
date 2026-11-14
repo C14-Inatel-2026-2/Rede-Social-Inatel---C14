@@ -897,9 +897,9 @@ Refactors mais importantes tipo 1:
 - `312128e`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/312128ea9a399f35bab69639db3122f685ad389e
 
 Commit para restaurar o refactor tipo 1 que tinha sido apagado:
-- `3570f49`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/312128ea9a399f35bab69639db3122f685ad389e
+- `3570f49`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/3570f491933168e0ceb0f4ac7019a6d3f5e1b553
 
 Refactors mais importantes tipo 2:
-- `1398534`:https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/1398534946b73790388226fdfe00214a9f769fa2
+- `1398534`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/1398534946b73790388226fdfe00214a9f769fa2
 
 
