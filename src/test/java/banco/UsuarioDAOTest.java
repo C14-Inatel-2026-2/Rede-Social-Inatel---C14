@@ -166,6 +166,20 @@ public class UsuarioDAOTest {
     }
 
     @Test
+    public void testeBuscarFalhaAoFecharResultSet() throws SQLException {
+        usuarioEncontrado();
+        SQLException erroSQL = new SQLException("Erro ao fechar ResultSet");
+
+        doThrow(erroSQL)
+                .when(resultSet).close();
+
+        assertNull(usuarioDAO.buscarPorEmail(email));
+
+        verify(resultSet).close();
+        verify(connection).close();
+    }
+
+    @Test
     public void testeAlterarSenhaComSucesso() throws SQLException {
         prepararSelectEUpdate(hashDaSenhaAtual);
         when(updateStatement.executeUpdate()).thenReturn(1);
