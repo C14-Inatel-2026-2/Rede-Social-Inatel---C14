@@ -621,3 +621,45 @@ relatório de IA: Luis Eduardo Alves Marques
   ser testado com um `ClienteFactory` mockado, sem abrir conexões reais.
 - **Commit:** [`60394aa`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/60394aa9ef4adf7f2c6ee8ed3f44d39f65a7f519)
 - **PR:** [#47](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/47)
+
+### Nathan Bispo de Aguiar
+
+#### 1. Verificação de campos obrigatórios misturada ao fluxo do cadastro
+
+- **Smell:** Long Method. O `criarUsuario` do `Cadastro` misturava o fluxo principal do cadastro
+  (validar, gravar e retornar o usuário) com o detalhe da condição de campos obrigatórios
+  (`email == null || email.isBlank() || senha == null || senha.isBlank()`), em níveis de
+  abstração diferentes.
+- **Refactoring aplicado:** Extract Method, movendo a condição para o método privado
+  `verificacaoCampoObrigatorio`.
+- **Por quê:** o `criarUsuario` passa a ser lido como uma sequência de etapas, e a regra de campos
+  obrigatórios fica concentrada em um único método. Quando o campo `nome` foi adicionado, bastou
+  alterar esse método.
+- **Commit:** [`cea9193`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/cea919316981cd83c661c5b0876786cd1aa14937)
+- **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
+
+#### 2. Construtor de `Usuario` com validação e inicialização juntas
+
+- **Smell:** Long Method. O construtor de `Usuario` tinha três blocos condicionais de validação
+  (campos obrigatórios, formato do e-mail e formato da senha) antes de inicializar os atributos.
+- **Refactoring aplicado:** Extract Method, extraindo as validações para os métodos privados
+  `verificacaoCampoObrigatorio` e `verificacaoEmailESenha`.
+- **Por quê:** o construtor passa a mostrar a intenção em duas chamadas, separando a validação da
+  inicialização do objeto.
+- **Commit:** [`0636863`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/0636863d636460f84fa4eb3f65256ca6558b6cfa)
+- **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
+
+#### 3. Validação duplicada entre `Usuario` e `Cadastro`
+
+- **Smell:** Duplicated Code. O construtor de `Usuario` repetia as mesmas validações já feitas
+  no `Cadastro` (campos obrigatórios, e-mail e senha), com as mesmas mensagens. Além disso, ao
+  exigir o `nome`, o construtor obrigava o `Login` a informar um nome antes mesmo de consultá-lo
+  no banco.
+- **Refactoring aplicado:** remoção das validações do construtor, concentrando-as no `Cadastro`,
+  e Remove Parameter: o construtor passou de `Usuario(email, senha, nome)` para
+  `Usuario(email, senha)`, com o nome definido por `setNome`.
+- **Por quê:** a regra de validação passa a existir em um único lugar, coberta pelo
+  `CadastroTest`, e o `Login` consegue criar o usuário só com e-mail e senha, preenchendo o nome
+  com o valor retornado pelo banco.
+- **Commit:** [`36b6f86`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/36b6f86d1f699f036894720b92f63b98ff4672f6)
+- **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
