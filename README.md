@@ -828,3 +828,78 @@ Essas melhorias tornam o projeto mais fácil de manter, testar e evoluir.
 - **Por quê:** O `Usuario` deveria ser um POJO e com o método `alterarSenha` era ferido o Princípio da Responsabilidade Única. As regras de troca de senha não era ele que devia ter.
 - - **Commit:** [`edb5ffc`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/edb5ffcbf6fc9340ea2672b327b4f8d86e306954)
 - **PR:** [#31](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/31)
+
+## Thiago Villela
+
+### Lista de refactors
+
+1. `b1e4e11`: corrige o erro de digitação `mennsagemEnviada` → `mensagemEnviada`
+2. `d5504d5`: remove a sala do usuário ao usar `printLn`
+3. `05f14d9`: corrige o erro de digitação em `conected`
+4. `359930c`: renomeia o `enviar` local para `enviarTexto`
+5. `236a60e`: `escritores` agora usa um `HashMap` indexado pelo e-mail do usuário
+6. `312128e`: `quantidadeUsuarios` usa `size()` e `removeUsuario` deixa de receber o escritor como argumento
+7. `3570f49`: reverte o refactor do HashMap de escritores e remove o `PrintWriter` de `removeUsuario` (tinha sido removido)
+8. `9032715`: remove `nomeSala` e ajusta o `ServidorHandler` às mudanças da `Sala`
+9. `1398534`: divide o handler de `Mensagem` em métodos menores (`ServidorHandler`)
+
+## Principais refactors
+
+### 1. Associação entre escritores e usuários na sala
+
+**Code Smell:** Parallel Collections (estruturas paralelas sem vínculo explícito) e Data Clumps.
+
+**Problema:**
+
+Na classe `Sala`, os escritores (`PrintWriter`) eram armazenados em uma lista separada da lista de usuários, sem indicar a qual usuário cada um pertencia. Para enviar uma mensagem ou remover alguém da sala, era necessário manter as duas estruturas sincronizadas manualmente, o que favorecia inconsistências. Além disso, `removeUsuario` precisava receber o escritor como argumento, e `quantidadeUsuarios` dependia de uma estrutura auxiliar.
+
+**Refactoring aplicado:** Replace List with Map (indexação por chave) e Remove Parameter.
+
+**Solução:**
+
+- `236a60e`: `escritores` passou a ser um `HashMap` indexado pelo e-mail do usuário, tornando o vínculo entre usuário e escritor explícito.
+- `312128e`: `quantidadeUsuarios` passou a usar `size()` e `removeUsuario` deixou de receber o escritor como argumento, já que ele pode ser obtido a partir do e-mail.
+
+**Benefícios:**
+
+- Identificação direta do escritor a partir do e-mail do usuário, sem percorrer listas.
+- Menor risco de inconsistência entre usuários e escritores.
+- Assinaturas de método mais simples (`removeUsuario`).
+- Menos código para manter sincronizado.
+
+**Observação:** esse refactor foi removido sem intenção por outro desenvolvedor e depois reintroduzido seguindo a mesma lógica. (`3570f49`)
+
+
+### 2. Divisão do tratamento de mensagens no `ServidorHandler`
+
+**Code Smell:** Long Method e Switch Statements.
+
+**Problema:**
+
+O tratamento de `Mensagem` no `ServidorHandler` concentrava todos os cases do `switch` em um único método. Isso deixava o método longo, misturava a lógica de cada tipo de mensagem e dificultava a leitura, a manutenção e o teste de cada caso separadamente.
+
+**Refactoring aplicado:** Extract Method.
+
+**Solução:**
+
+`1398534`: Cada case do `switch` foi extraído para um método próprio, e o método principal ficou responsável apenas por direcionar cada tipo de mensagem para o método correspondente.
+
+**Benefícios:**
+
+- Métodos menores e com um único propósito.
+- Melhor organização e legibilidade do código.
+- Manutenção mais simples, pois alterar um tipo de mensagem não afeta os outros.
+- Maior testabilidade de cada comportamento isoladamente.
+
+referências:
+Refactors mais importantes tipo 1:
+- `236a60e`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/236a60eb14a74d1dd25f346f3aff1a7dd98cd5a7
+- `312128e`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/312128ea9a399f35bab69639db3122f685ad389e
+
+Commit para restaurar o refactor tipo 1 que tinha sido apagado:
+- `3570f49`: https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/312128ea9a399f35bab69639db3122f685ad389e
+
+Refactors mais importantes tipo 2:
+- `1398534`:https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/1398534946b73790388226fdfe00214a9f769fa2
+
+
