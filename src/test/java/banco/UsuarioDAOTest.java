@@ -286,4 +286,19 @@ public class UsuarioDAOTest {
         verify(updateStatement).close();
         verify(connection).close();
     }
+
+    @Test
+    public void testeAlterarSenhaFalhaAoFecharConexao() throws SQLException {
+        bancoRetornaHash(null);
+        SQLException erroSQL = new SQLException("Erro ao fechar conexão");
+
+        doThrow(erroSQL)
+                .when(connection).close();
+
+        assertDoesNotThrow(
+                () -> usuarioDAO.alterarSenha(email, senhaAtual, senhaNova)
+        );
+
+        verify(connection).close();
+    }
 }
