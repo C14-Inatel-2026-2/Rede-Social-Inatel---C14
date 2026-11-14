@@ -151,6 +151,21 @@ public class UsuarioDAOTest {
     }
 
     @Test
+    public void testeBuscarFalhaAoFecharConexao() throws SQLException {
+        usuarioEncontrado();
+        SQLException erroSQL = new SQLException("Erro ao fechar conexão");
+
+        doThrow(erroSQL)
+                .when(connection).close();
+
+        assertDoesNotThrow(
+                () -> usuarioDAO.buscarPorEmail(email)
+        );
+
+        verify(connection).close();
+    }
+
+    @Test
     public void testeAlterarSenhaComSucesso() throws SQLException {
         prepararSelectEUpdate(hashDaSenhaAtual);
         when(updateStatement.executeUpdate()).thenReturn(1);
