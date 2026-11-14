@@ -648,6 +648,7 @@ relatório de IA: Luis Eduardo Alves Marques
   inicialização do objeto.
 - **Commit:** [`0636863`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/0636863d636460f84fa4eb3f65256ca6558b6cfa)
 - **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
+- **Obs.:** este refactor foi posteriormente substituído pelo refactor 3, que removeu as validações do `Usuario`.
 
 #### 3. Validação duplicada entre `Usuario` e `Cadastro`
 
@@ -660,7 +661,8 @@ relatório de IA: Luis Eduardo Alves Marques
   `Usuario(email, senha)`, com o nome definido por `setNome`.
 - **Por quê:** a regra de validação passa a existir em um único lugar, coberta pelo
   `CadastroTest`, e o `Login` consegue criar o usuário só com e-mail e senha, preenchendo o nome
-  com o valor retornado pelo banco.
+  com o valor retornado pelo banco. Com isso, o `Usuario` deixa de validar os dados por conta própria;
+  a validação passa a ser responsabilidade de quem o cria (`Cadastro` e `Login`).
 - **Commit:** [`36b6f86`](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/commit/36b6f86d1f699f036894720b92f63b98ff4672f6)
 - **PR:** [#24](https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14/pull/24)
 
