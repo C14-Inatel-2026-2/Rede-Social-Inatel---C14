@@ -205,6 +205,18 @@ Resultado: o Claude devolveu ChatConfig, ChatController e LobbyController atuali
 Além disso, no LobbyController o método buscarSalas teve que ser implementado manualmente, já que a i.a definiu toda a integração de salas no loadRooms e isso impossibilitava a utilização do mock. A i.a desenvolveu alguns trechos utilizando string ao invés da própria classe MensagemCliente que havia sido feita com esse propósito, outro erro corrigido manualmente.
 *AJUSTADO*
 
+## Refactorings da entrega final
+
+1. **Centralização da configuração do ChatZoneFX** (`ChatConfig`)
+   - Smell: leitura repetida de variáveis de ambiente e tratamento de porta misturado à regra de configuração.
+   - Refactoring: extração dos métodos `envOrDefault` e `parsePortBase`.
+   - Resultado: defaults e validação ficam centralizados e mais fáceis de testar.
+
+2. **Centralização dos padrões de conexão do banco** (`ConnectionDAO`)
+   - Smell: valores padrão de URL, usuário e senha pouco expressivos.
+   - Refactoring: constantes nomeadas e método reutilizável para leitura da configuração.
+   - Resultado: configuração mais legível e simples de alterar.
+
 ### Quem fez o quê
 https://github.com/C14-Inatel-2026-2/Rede-Social-Inatel---C14.git
 | Parte | Origem |
